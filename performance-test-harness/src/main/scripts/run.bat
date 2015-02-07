@@ -1,0 +1,1 @@
+"%JAVA_HOME%\bin\java" -jar performance-test-10.3.1.jar %*

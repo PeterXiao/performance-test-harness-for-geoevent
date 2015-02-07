@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE Fixtures SYSTEM "Fixtures.dtd">
+<Fixtures>
+	<Report type="CSV">
+		<ReportFile>C:\Testing\performance-test-10.3.0\reports\rtrujillo\Tests\Multiple.csv</ReportFile>
+	</Report>
+	<Fixture name="InsideAny-County" protocol="TCP" commandPort="5010" isLocal="true">
+		<GeoEventHost producerPort="5565" consumerPort="5570">rtrujillo</GeoEventHost>
+		<Simulation consumerTimeOutInSec="5">
+			<SourceFile>C:\Testing\performance-test-10.3.0\simulations\county_envelopes_1000_points.csv</SourceFile>
+			<StressTest iterations="10" minEvents="1000" expectedResultCount="989"/>
+		</Simulation>
+	</Fixture>
+	<Fixture name="InsideAny-Flight" protocol="TCP" commandPort="5010" isLocal="true">
+		<GeoEventHost producerPort="5565" consumerPort="5570">rtrujillo</GeoEventHost>
+		<Simulation consumerTimeOutInSec="5">
+			<SourceFile>C:\Testing\performance-test-10.3.0\simulations\Flight.csv</SourceFile>
+			<StressTest iterations="10" minEvents="81" expectedResultCount="79"/>
+		</Simulation>
+	</Fixture>
+</Fixtures>

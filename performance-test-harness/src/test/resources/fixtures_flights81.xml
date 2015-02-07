@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE Fixtures SYSTEM "Fixtures.dtd">
+<Fixtures>
+	<Report type="XLSX" simpleColumnNames="false">
+		<ReportFile>C:\Testing\performance-test-10.3.0\reports\rtrujillo\Tests\Flight.xlsx</ReportFile>
+	</Report>
+	<Fixture name="basic" protocol="TCP" commandPort="5010" isLocal="true">
+		<GeoEventHost producerPort="5565" consumerPort="5665">rtrujillo</GeoEventHost>
+		<Simulation>
+			<SourceFile>C:\Testing\performance-test-10.3.0\simulations\Flight.csv</SourceFile>
+			<StressTest iterations="5" minEvents="81" expectedResultCount="79"/>
+		</Simulation>
+	</Fixture>
+</Fixtures>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Fixtures>
+	<Report type="XLSX" simpleColumnNames="true">
+		<ReportFile>C:\temp\ws-server.xlsx</ReportFile>
+	</Report>
+	<Fixture name="20k" protocol="WEBSOCKET_SERVER" commandPort="5010" isLocal="true">
+        <KafkaHost topic="taxis" acks="0">mingz14:9092</KafkaHost>
+        <GeoEventHost producerPort="5565" consumerPort="5775">localhost</GeoEventHost>
+        <Simulation consumerTimeOutInSec="10">
+            <SourceFile>C:\Projects\SparkClass\Adam-Performance-Test\simulation\truck_1000.csv</SourceFile>
+            <TimeTest eventsPerSec="1000" totalTimeInSec="10" staggeringInterval="10" />
+        </Simulation>
+    </Fixture>
+    <Fixture name="40k" protocol="WEBSOCKET_SERVER" commandPort="5010" isLocal="true">
+        <KafkaHost topic="taxis" acks="0">mingz14:9092</KafkaHost>
+        <GeoEventHost producerPort="5565" consumerPort="5775">localhost</GeoEventHost>
+        <Simulation consumerTimeOutInSec="10">
+            <SourceFile>C:\Projects\SparkClass\Adam-Performance-Test\simulation\truck_1000.csv</SourceFile>
+            <TimeTest eventsPerSec="2000" totalTimeInSec="10" staggeringInterval="10" />
+        </Simulation>
+    </Fixture>
+</Fixtures>

@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Fixtures>
+	<Report type="XLSX" simpleColumnNames="true">
+		<ReportFile>C:\temp\ws-server.xlsx</ReportFile>
+	</Report>
+	<Fixture name="20k" protocol="WEBSOCKET_SERVER" commandPort="5010" isLocal="true">
+        <KafkaHost topic="taxis" acks="0">mingz14:9092</KafkaHost>
+        <GeoEventHost producerPort="5565" consumerPort="5775">localhost</GeoEventHost>
+        <Simulation consumerTimeOutInSec="10">
+            <SourceFile>C:\Projects\SparkClass\Adam-Performance-Test\simulation\truck_1000.csv</SourceFile>
+            <TimeTest eventsPerSec="20000" totalTimeInSec="20" staggeringInterval="10" />
+        </Simulation>
+    </Fixture>
+    <Fixture name="40k" protocol="WEBSOCKET_SERVER" commandPort="5010" isLocal="true">
+        <KafkaHost topic="taxis" acks="0">mingz14:9092</KafkaHost>
+        <GeoEventHost producerPort="5565" consumerPort="5775">localhost</GeoEventHost>
+        <Simulation consumerTimeOutInSec="10">
+            <SourceFile>C:\Projects\SparkClass\Adam-Performance-Test\simulation\truck_1000.csv</SourceFile>
+            <TimeTest eventsPerSec="40000" totalTimeInSec="20" staggeringInterval="10" />
+        </Simulation>
+    </Fixture>
+    <Fixture name="60k" protocol="WEBSOCKET_SERVER" commandPort="5010" isLocal="true">
+        <KafkaHost topic="taxis" acks="0">mingz14:9092</KafkaHost>
+        <GeoEventHost producerPort="5565" consumerPort="5775">localhost</GeoEventHost>
+        <Simulation consumerTimeOutInSec="10">
+            <SourceFile>C:\Projects\SparkClass\Adam-Performance-Test\simulation\truck_1000.csv</SourceFile>
+            <TimeTest eventsPerSec="60000" totalTimeInSec="20" staggeringInterval="10" />
+        </Simulation>
+    </Fixture>
+	<Fixture name="80k" protocol="WEBSOCKET_SERVER" commandPort="5010" isLocal="true">
+        <KafkaHost topic="taxis" acks="0">mingz14:9092</KafkaHost>
+        <GeoEventHost producerPort="5565" consumerPort="5775">localhost</GeoEventHost>
+        <Simulation consumerTimeOutInSec="10">
+            <SourceFile>C:\Projects\SparkClass\Adam-Performance-Test\simulation\truck_1000.csv</SourceFile>
+            <TimeTest eventsPerSec="80000" totalTimeInSec="20" staggeringInterval="10" />
+        </Simulation>
+    </Fixture>
+	<Fixture name="100k" protocol="WEBSOCKET_SERVER" commandPort="5010" isLocal="true">
+        <KafkaHost topic="taxis" acks="0">mingz14:9092</KafkaHost>
+        <GeoEventHost producerPort="5565" consumerPort="5775">localhost</GeoEventHost>
+        <Simulation consumerTimeOutInSec="10">
+            <SourceFile>C:\Projects\SparkClass\Adam-Performance-Test\simulation\truck_1000.csv</SourceFile>
+            <TimeTest eventsPerSec="100000" totalTimeInSec="20" staggeringInterval="10" />
+        </Simulation>
+    </Fixture>
+	<Fixture name="120k" protocol="WEBSOCKET_SERVER" commandPort="5010" isLocal="true">
+        <KafkaHost topic="taxis" acks="0">mingz14:9092</KafkaHost>
+        <GeoEventHost producerPort="5565" consumerPort="5775">localhost</GeoEventHost>
+        <Simulation consumerTimeOutInSec="10">
+            <SourceFile>C:\Projects\SparkClass\Adam-Performance-Test\simulation\truck_1000.csv</SourceFile>
+            <TimeTest eventsPerSec="120000" totalTimeInSec="20" staggeringInterval="10" />
+        </Simulation>
+    </Fixture>
+	<Fixture name="140k" protocol="WEBSOCKET_SERVER" commandPort="5010" isLocal="true">
+        <KafkaHost topic="taxis" acks="0">mingz14:9092</KafkaHost>
+        <GeoEventHost producerPort="5565" consumerPort="5775">localhost</GeoEventHost>
+        <Simulation consumerTimeOutInSec="10">
+            <SourceFile>C:\Projects\SparkClass\Adam-Performance-Test\simulation\truck_1000.csv</SourceFile>
+            <TimeTest eventsPerSec="140000" totalTimeInSec="20" staggeringInterval="10" />
+        </Simulation>
+    </Fixture>
+	<Fixture name="160k" protocol="WEBSOCKET_SERVER" commandPort="5010" isLocal="true">
+        <KafkaHost topic="taxis" acks="0">mingz14:9092</KafkaHost>
+        <GeoEventHost producerPort="5565" consumerPort="5775">localhost</GeoEventHost>
+        <Simulation consumerTimeOutInSec="10">
+            <SourceFile>C:\Projects\SparkClass\Adam-Performance-Test\simulation\truck_1000.csv</SourceFile>
+            <TimeTest eventsPerSec="160000" totalTimeInSec="20" staggeringInterval="10" />
+        </Simulation>
+    </Fixture>
+	<Fixture name="180k" protocol="WEBSOCKET_SERVER" commandPort="5010" isLocal="true">
+        <KafkaHost topic="taxis" acks="0">mingz14:9092</KafkaHost>
+        <GeoEventHost producerPort="5565" consumerPort="5775">localhost</GeoEventHost>
+        <Simulation consumerTimeOutInSec="10">
+            <SourceFile>C:\Projects\SparkClass\Adam-Performance-Test\simulation\truck_1000.csv</SourceFile>
+            <TimeTest eventsPerSec="180000" totalTimeInSec="20" staggeringInterval="10" />
+        </Simulation>
+    </Fixture>
+	<Fixture name="200k" protocol="WEBSOCKET_SERVER" commandPort="5010" isLocal="true">
+        <KafkaHost topic="taxis" acks="0">mingz14:9092</KafkaHost>
+        <GeoEventHost producerPort="5565" consumerPort="5775">localhost</GeoEventHost>
+        <Simulation consumerTimeOutInSec="10">
+            <SourceFile>C:\Projects\SparkClass\Adam-Performance-Test\simulation\truck_1000.csv</SourceFile>
+            <TimeTest eventsPerSec="200000" totalTimeInSec="20" staggeringInterval="10" />
+        </Simulation>
+    </Fixture>
+	<Fixture name="220k" protocol="WEBSOCKET_SERVER" commandPort="5010" isLocal="true">
+        <KafkaHost topic="taxis" acks="0">mingz14:9092</KafkaHost>
+        <GeoEventHost producerPort="5565" consumerPort="5775">localhost</GeoEventHost>
+        <Simulation consumerTimeOutInSec="10">
+            <SourceFile>C:\Projects\SparkClass\Adam-Performance-Test\simulation\truck_1000.csv</SourceFile>
+            <TimeTest eventsPerSec="220000" totalTimeInSec="20" staggeringInterval="10" />
+        </Simulation>
+    </Fixture>
+	<Fixture name="240k" protocol="WEBSOCKET_SERVER" commandPort="5010" isLocal="true">
+        <KafkaHost topic="taxis" acks="0">mingz14:9092</KafkaHost>
+        <GeoEventHost producerPort="5565" consumerPort="5775">localhost</GeoEventHost>
+        <Simulation consumerTimeOutInSec="10">
+            <SourceFile>C:\Projects\SparkClass\Adam-Performance-Test\simulation\truck_1000.csv</SourceFile>
+            <TimeTest eventsPerSec="240000" totalTimeInSec="20" staggeringInterval="10" />
+        </Simulation>
+    </Fixture>
+	<Fixture name="260k" protocol="WEBSOCKET_SERVER" commandPort="5010" isLocal="true">
+        <KafkaHost topic="taxis" acks="0">mingz14:9092</KafkaHost>
+        <GeoEventHost producerPort="5565" consumerPort="5775">localhost</GeoEventHost>
+        <Simulation consumerTimeOutInSec="10">
+            <SourceFile>C:\Projects\SparkClass\Adam-Performance-Test\simulation\truck_1000.csv</SourceFile>
+            <TimeTest eventsPerSec="260000" totalTimeInSec="20" staggeringInterval="10" />
+        </Simulation>
+    </Fixture>
+	<Fixture name="280k" protocol="WEBSOCKET_SERVER" commandPort="5010" isLocal="true">
+        <KafkaHost topic="taxis" acks="0">mingz14:9092</KafkaHost>
+        <GeoEventHost producerPort="5565" consumerPort="5775">localhost</GeoEventHost>
+        <Simulation consumerTimeOutInSec="10">
+            <SourceFile>C:\Projects\SparkClass\Adam-Performance-Test\simulation\truck_1000.csv</SourceFile>
+            <TimeTest eventsPerSec="280000" totalTimeInSec="20" staggeringInterval="10" />
+        </Simulation>
+    </Fixture>
+	<Fixture name="300k" protocol="WEBSOCKET_SERVER" commandPort="5010" isLocal="true">
+        <KafkaHost topic="taxis" acks="0">mingz14:9092</KafkaHost>
+        <GeoEventHost producerPort="5565" consumerPort="5775">localhost</GeoEventHost>
+        <Simulation consumerTimeOutInSec="10">
+            <SourceFile>C:\Projects\SparkClass\Adam-Performance-Test\simulation\truck_1000.csv</SourceFile>
+            <TimeTest eventsPerSec="300000" totalTimeInSec="20" staggeringInterval="10" />
+        </Simulation>
+    </Fixture>
+</Fixtures>

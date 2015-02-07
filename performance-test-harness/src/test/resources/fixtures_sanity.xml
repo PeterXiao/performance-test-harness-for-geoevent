@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE Fixtures SYSTEM "Fixtures.dtd">
+<Fixtures>
+	<Report type="CSV" simpleColumnNames="true" maxNumberOfReportFiles="10">
+		<ReportFile>C:\Testing\performance-test-10.3.0\reports\rtrujillo\Tests\Sanity.csv</ReportFile>
+	</Report>
+	<Fixture name="basic" protocol="TCP" commandPort="5010" isLocal="true">
+		<GeoEventHost producerPort="5565" consumerPort="5570">rtrujillo</GeoEventHost>
+		<Simulation consumerTimeOutInSec="5">
+			<SourceFile>C:\Testing\performance-test-10.3.0\simulations\Flight.csv</SourceFile>
+			<RampTest minEvents="100" maxEvents="2000" eventsToAddPerTest="100" expectedResultCountPerTest="998"/>
+		</Simulation>
+		<Producers numOfConnections="1">
+			<Producer>rtrujillo</Producer>
+			<Producer>ricardot</Producer>
+			<Producer>esri.com</Producer>
+		</Producers>
+		<Consumers numOfConnections="1">
+			<Consumer>esri.com</Consumer>
+			<Consumer>ricardot</Consumer>
+			<Consumer>rtrujillo</Consumer>
+		</Consumers>
+	</Fixture>
+</Fixtures>

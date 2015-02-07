@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Fixtures>
+	<Report type="XLSX" simpleColumnNames="true">
+		<ReportFile>C:\temp\RabbitMQ-Baseline.xlsx</ReportFile>
+	</Report>
+	<Fixture name="rabbitmq" protocol="RABBIT_MQ" commandPort="5010" isLocal="true">
+		<GeoEventHost producerPort="5565" consumerPort="5665">rtrujillo</GeoEventHost>
+		<RabbitMQHost exchange="testExchange" queue="testQueue" routingKey = "vladp">amqp://admin:admin@vladp</RabbitMQHost>
+		<Simulation consumerTimeOutInSec="10">
+			<SourceFile>C:\Users\vlad2928\Desktop\simulations\Flight.csv</SourceFile>
+			<TimeTest eventsPerSec="10" totalTimeInSec="10" staggeringInterval="1" />
+		</Simulation>
+	</Fixture>
+</Fixtures>

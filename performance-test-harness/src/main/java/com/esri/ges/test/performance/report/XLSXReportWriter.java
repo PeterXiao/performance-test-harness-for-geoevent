@@ -1,0 +1,151 @@
+package com.esri.ges.test.performance.report;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
+import com.esri.ges.test.performance.statistics.FixtureStatistic;
+
+public class XLSXReportWriter extends AbstractFileRollOverReportWriter implements ReportWriter
+{
+
+	@Override
+	public void writeReport(String reportFile, List<String> testNames, List<String> columnNames, Map<String, List<FixtureStatistic>> stats) throws IOException
+	{
+		// rollover the file - keep backups
+		rollOver(reportFile);
+
+		Workbook workbook = null;
+		try
+		{
+			workbook = new XSSFWorkbook();
+
+			// header style
+			CellStyle headerStyle = workbook.createCellStyle();
+			Font font = workbook.createFont();
+			font.setBoldweight(Font.BOLDWEIGHT_BOLD);
+			headerStyle.setFont(font);
+
+			// copy the column names - add the test name as the first column
+			List<String> columnNamesCopy = new ArrayList<String>();
+			columnNamesCopy.add("Test Name");
+			columnNamesCopy.addAll(columnNames);
+			
+			// create the sheet
+			Sheet sheet = workbook.createSheet("Summary");
+			
+		// create the header row
+			int rowIndex = 0;
+			Row headers = sheet.createRow(rowIndex);
+			headers.setRowStyle(headerStyle);
+			int cellIndex = 0;
+			for (String columnName : columnNamesCopy)
+			{
+				Cell cell = headers.createCell(cellIndex);
+				cell.setCellValue(columnName);
+				cell.setCellStyle(headerStyle);
+				cellIndex++;
+			}	
+			for (String testName : testNames)
+			{
+				// get each test's fixture stats and sort them accordingly
+				List<FixtureStatistic> fixtureStats = stats.get(testName);
+				if( fixtureStats == null || fixtureStats.size() == 0)
+					continue;
+				Collections.sort(fixtureStats);
+				rowIndex++;
+				
+				for (FixtureStatistic fixtureStat : fixtureStats)
+				{
+					Row data = sheet.createRow(rowIndex);
+					cellIndex = 0;
+					
+					//write out the test name first
+					Cell cell = data.createCell(cellIndex);
+					cell.setCellValue(testName);
+					cellIndex++;
+					
+					for (String columnName : columnNames)
+					{
+						cell = data.createCell(cellIndex);
+						Object rawValue = fixtureStat.getStat(columnName);
+						if( rawValue == null )
+							cell.setCellValue("");
+						else
+						{
+							if( rawValue instanceof Integer )
+							{
+								cell.setCellValue((Integer)rawValue);
+							}
+							else if( rawValue instanceof Double )
+							{
+								cell.setCellValue((Double)rawValue);
+							}
+							else if( rawValue instanceof Long )
+							{
+								cell.setCellValue((Long)rawValue);
+							}
+							else if( rawValue instanceof Boolean )
+							{
+								cell.setCellValue((Boolean)rawValue);
+							}
+							else
+							{
+								cell.setCellValue(rawValue.toString());
+							}
+						}
+						// adjust column width to fit the content
+						sheet.autoSizeColumn(cellIndex);
+						cellIndex++;
+					}
+					//rowIndex++;
+				}
+			}
+			
+			//write out the total time
+			if( getTotalTestingTime() != -1 )
+			{
+				rowIndex = rowIndex+2;
+				Row data = sheet.createRow(rowIndex);
+				Cell cell = data.createCell(0);
+				cell.setCellValue("Total Testing Time:");
+				cell.setCellStyle(headerStyle);
+				cell = data.createCell(1);
+				cell.setCellValue(formatTime(getTotalTestingTime()));
+			}
+		}
+		finally
+		{
+			// write out the file
+			FileOutputStream out = null;
+			try
+			{
+				String fullPath = FilenameUtils.getFullPathNoEndSeparator(reportFile);
+				// create all non exists folders else you will hit FileNotFoundException for report file path
+				new File( fullPath ).mkdirs();
+				
+				out = new FileOutputStream(reportFile);
+				if (workbook != null)
+					workbook.write(out);
+			}
+			finally
+			{
+				IOUtils.closeQuietly(out);
+			}
+		}
+	}
+}

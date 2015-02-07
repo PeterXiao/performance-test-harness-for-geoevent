@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE Fixtures SYSTEM "Fixtures.dtd">
+<Fixtures>
+	<Report type="XLSX" simpleColumnNames="true">
+		<ReportFile>C:\Testing\performance-test-10.3.0\reports\rtrujillo\Tests\US_STATES.xlsx</ReportFile>
+	</Report>
+	<Fixture name="Baseline" protocol="TCP" commandPort="5010" isLocal="true">
+		<GeoEventHost producerPort="5565" consumerPort="5665">rtrujillo</GeoEventHost>
+		<Simulation>
+			<SourceFile>C:\Testing\performance-test-10.3.0\simulations\county_envelopes_3000_points.csv</SourceFile>
+			<StressTest iterations="3" minEvents="3000" />
+		</Simulation>
+	</Fixture>
+	<Fixture name="InsideAny" protocol="TCP" commandPort="5010" isLocal="true">
+		<GeoEventHost producerPort="5566" consumerPort="5666">rtrujillo</GeoEventHost>
+		<Simulation >
+			<SourceFile>C:\Testing\performance-test-10.3.0\simulations\county_envelopes_3000_points.csv</SourceFile>
+			<StressTest iterations="3" minEvents="3000" expectedResultCount="2951"/>
+		</Simulation>
+	</Fixture>
+	<Fixture name="OutsideAny" protocol="TCP" commandPort="5010" isLocal="true">
+		<GeoEventHost producerPort="5567" consumerPort="5667">rtrujillo</GeoEventHost>
+		<Simulation>
+			<SourceFile>C:\Testing\performance-test-10.3.0\simulations\county_envelopes_3000_points.csv</SourceFile>
+			<StressTest iterations="3" minEvents="3000" />
+		</Simulation>
+	</Fixture>
+	<Fixture name="EnterAny" protocol="TCP" commandPort="5010" isLocal="true">
+		<GeoEventHost producerPort="5568" consumerPort="5668">rtrujillo</GeoEventHost>
+		<Simulation>
+			<SourceFile>C:\Testing\performance-test-10.3.0\simulations\county_envelopes_3000_points.csv</SourceFile>
+			<StressTest iterations="3" minEvents="3000" expectedResultCount="2951"/>
+		</Simulation>
+	</Fixture>
+	<Fixture name="ExitAny" protocol="TCP" commandPort="5010" isLocal="true">
+		<GeoEventHost producerPort="5569" consumerPort="5669">rtrujillo</GeoEventHost>
+		<Simulation>
+			<SourceFile>C:\Testing\performance-test-10.3.0\simulations\county_envelopes_3000_points.csv</SourceFile>
+			<StressTest iterations="3" minEvents="3000" expectedResultCount="1"/>
+		</Simulation>
+	</Fixture>
+	<Fixture name="IntersectAny" protocol="TCP" commandPort="5010" isLocal="true">
+		<GeoEventHost producerPort="5570" consumerPort="5670">rtrujillo</GeoEventHost>
+		<Simulation>
+			<SourceFile>C:\Testing\performance-test-10.3.0\simulations\county_envelopes_3000_points.csv</SourceFile>
+			<StressTest iterations="3" minEvents="3000" expectedResultCount="2952"/>
+		</Simulation>
+	</Fixture>
+	<Fixture name="DisjointAny" protocol="TCP" commandPort="5010" isLocal="true">
+		<GeoEventHost producerPort="5571" consumerPort="5671">rtrujillo</GeoEventHost>
+		<Simulation>
+			<SourceFile>C:\Testing\performance-test-10.3.0\simulations\county_envelopes_3000_points.csv</SourceFile>
+			<StressTest iterations="3" minEvents="3000" expectedResultCount="3000"/>
+		</Simulation>
+	</Fixture>
+	<Fixture name="TouchesAny" protocol="TCP" commandPort="5010" isLocal="true">
+		<GeoEventHost producerPort="5572" consumerPort="5672">rtrujillo</GeoEventHost>
+		<Simulation>
+			<SourceFile>C:\Testing\performance-test-10.3.0\simulations\county_envelopes_3000_points.csv</SourceFile>
+			<StressTest iterations="3" minEvents="3000" expectedResultCount="1"/>
+		</Simulation>
+	</Fixture>
+	<Fixture name="WithinAny" protocol="TCP" commandPort="5010" isLocal="true">
+		<GeoEventHost producerPort="5575" consumerPort="5675">rtrujillo</GeoEventHost>
+		<Simulation>
+			<SourceFile>C:\Testing\performance-test-10.3.0\simulations\county_envelopes_3000_points.csv</SourceFile>
+			<StressTest iterations="3" minEvents="3000" expectedResultCount="2951"/>
+		</Simulation>
+	</Fixture>
+</Fixtures>

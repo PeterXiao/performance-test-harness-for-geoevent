@@ -1,0 +1,380 @@
+<?xml version="1.0" encoding="UTF-8"?><processors>
+<processor name="Projector" label="Projector" contact="geoevent@esri.com" version="10.3.0" domain="com.esri.ges.processor" lastModified="1409872004104">
+    <description>Projects a geometry as specified by the output spatial reference property.</description>
+    <propertyDefinitions>
+        <propertyDefinition propertyName="inputGeometryField" label="Geometry Field" description="Input Geometry Field.  Default to GEOMETRY tag." propertyType="GeoEventField_Geometry" defaultValue="GEOMETRY" mandatory="true" readOnly="false" displayOption="" dependsOn=""/>
+        <propertyDefinition propertyName="replaceGeometry" label="Replace Geometry" description="Override the input geometry field with the output geometry." propertyType="Boolean" defaultValue="true" mandatory="true" readOnly="false" displayOption="" dependsOn=""/>
+        <propertyDefinition propertyName="outputGeometryField" label="New Geometry Field Name" description="Output Geometry Field Name.  If the field does not exist in the GeoEvent Definition, a new field will be created." propertyType="String" mandatory="false" readOnly="false" displayOption="" dependsOn="replaceGeometry=false"/>
+        <propertyDefinition propertyName="outwkid" label="WKID" description="WKID of the Spatial Reference for the output geometry.  See all projected coordinate systems and their WKIDs &lt;a href=&quot;http://resources.arcgis.com/en/help/main/10.1/018z/pdf/projected_coordinate_systems.pdf&quot;&gt;here&lt;/a&gt;." propertyType="Integer" mandatory="false" readOnly="false" displayOption="" dependsOn=""/>
+    </propertyDefinitions>
+</processor>
+
+<processor name="Symmetric-Difference-Creator" label="Symmetric Difference Creator" contact="geoevent@esri.com" version="10.3.0" domain="com.esri.ges.processor" lastModified="1409872004104">
+    <description>Creates the symmetric difference of the geometry from the GeoEvent and the selected GeoFence.</description>
+    <propertyDefinitions>
+        <propertyDefinition propertyName="inputGeometryField" label="Geometry Field" description="Input Geometry Field.  Default to GEOMETRY tag." propertyType="GeoEventField_Geometry" defaultValue="GEOMETRY" mandatory="true" readOnly="false" displayOption="" dependsOn=""/>
+        <propertyDefinition propertyName="replaceGeometry" label="Replace Geometry" description="Override the input geometry field with the output geometry." propertyType="Boolean" defaultValue="true" mandatory="true" readOnly="false" displayOption="" dependsOn=""/>
+        <propertyDefinition propertyName="outputGeometryField" label="New Geometry Field Name" description="Output Geometry Field Name.  If the field does not exist in the GeoEvent Definition, a new field will be created." propertyType="String" mandatory="false" readOnly="false" displayOption="" dependsOn="replaceGeometry=false"/>
+        <propertyDefinition propertyName="geofence" label="GeoFence" description="Define a Geofence. (category/name)" propertyType="String" mandatory="true" readOnly="false" displayOption="" dependsOn=""/>
+    </propertyDefinitions>
+</processor>
+
+<processor name="FieldMapper" label="Field Mapper" contact="geoevent@esri.com" version="10.3.0" domain="com.esri.ges.processor" lastModified="1409871994787">
+    <description>Maps GeoEvents from an input GeoEvent Definition to an output GeoEvent Definition using the specified field mapping.</description>
+    <propertyDefinitions>
+        <propertyDefinition propertyName="inputGeoEventDefinition" label="Source GeoEvent Definition" description="Source GeoEvent Definition to accept as an input" propertyType="GeoEventDefinition" mandatory="true" readOnly="false" displayOption="" dependsOn=""/>
+        <propertyDefinition propertyName="inputFields" label="Source Fields" description="Comma-separated list of fields to use from the source GeoEvent" propertyType="String" mandatory="true" readOnly="false" displayOption="" dependsOn=""/>
+        <propertyDefinition propertyName="outputGeoEventDefinition" label="Target GeoEvent Definition" description="GeoEvent Definition that will be generated from the source GeoEvent Definition" propertyType="GeoEventDefinition" mandatory="true" readOnly="false" displayOption="" dependsOn=""/>
+        <propertyDefinition propertyName="outputFields" label="Target Fields" description="Comma-separated list of fields in the target GeoEvent Definition to populate (using the corresponding source fields)" propertyType="String" mandatory="true" readOnly="false" displayOption="" dependsOn=""/>
+    </propertyDefinitions>
+</processor>
+
+<processor name="IncidentDetector" label="Incident Detector" contact="geoevent@esri.com" version="10.3.0" domain="com.esri.ges.processor" lastModified="1409871998775">
+    <description>Detects, updates, and manages incidents that are defined by the presence of GeoEvents meeting specified conditions.</description>
+    <propertyDefinitions>
+        <propertyDefinition propertyName="incidentName" label="Incident Name" description="Incident Name" propertyType="String" mandatory="true" readOnly="false" displayOption="" dependsOn=""/>
+        <propertyDefinition propertyName="openIncidentCondition" label="Opening Condition" description="Opening Condition" propertyType="Condition" mandatory="true" readOnly="false" displayOption="" dependsOn=""/>
+        <propertyDefinition propertyName="closeIncidentCondition" label="Closing Condition" description="Closing Condition" propertyType="Condition" mandatory="false" readOnly="false" displayOption="" dependsOn=""/>
+        <propertyDefinition propertyName="alertType" label="Severity" description="Severity" propertyType="String" defaultValue="Notification" mandatory="true" readOnly="false" displayOption="" dependsOn="">
+            <allowedValues>
+                <value label="Notification">Notification</value>
+                <value label="Warning">Warning</value>
+                <value label="Urgent">Urgent</value>
+            </allowedValues>
+        </propertyDefinition>
+        <propertyDefinition propertyName="incidentType" label="Incident Type" description="Incident Type" propertyType="String" defaultValue="Cumulative" mandatory="true" readOnly="false" displayOption="" dependsOn="">
+            <allowedValues>
+                <value label="Cumulative">Cumulative</value>
+                <value label="Point in Time">PointInTime</value>
+            </allowedValues>
+        </propertyDefinition>
+        <propertyDefinition propertyName="geometryType" label="Geometry Type" description="Geometry Type" propertyType="String" defaultValue="Point" mandatory="true" readOnly="false" displayOption="" dependsOn="">
+            <allowedValues>
+                <value label="Point">Point</value>
+                <value label="MultiPoint">MultiPoint</value>
+                <value label="Polyline">Polyline</value>
+            </allowedValues>
+        </propertyDefinition>
+        <propertyDefinition propertyName="expiryTime" label="Expiry Time (seconds)" description="Expiry Time in seconds" propertyType="Long" defaultValue="300" mandatory="true" readOnly="false" displayOption="" dependsOn=""/>
+    </propertyDefinitions>
+    <geoEventDefinitions>
+        <geoEventDefinition guid="5b1fb685-6ba7-4a8f-9798-55540f5b79d1" name="incident" owner="com.esri.ges.processor/IncidentDetector/10.3.0" accessType="core">
+            <fieldDefinitions>
+                <fieldDefinition name="id" type="String" cardinality="One">
+                    <fieldDefinitions/>
+                </fieldDefinition>
+                <fieldDefinition name="name" type="String" cardinality="One">
+                    <fieldDefinitions/>
+                </fieldDefinition>
+                <fieldDefinition name="type" type="String" cardinality="One">
+                    <fieldDefinitions/>
+                </fieldDefinition>
+                <fieldDefinition name="status" type="String" cardinality="One">
+                    <fieldDefinitions/>
+                </fieldDefinition>
+                <fieldDefinition name="alertType" type="String" cardinality="One">
+                    <fieldDefinitions/>
+                </fieldDefinition>
+                <fieldDefinition name="openCondition" type="String" cardinality="One">
+                    <fieldDefinitions/>
+                </fieldDefinition>
+                <fieldDefinition name="closeCondition" type="String" cardinality="One">
+                    <fieldDefinitions/>
+                </fieldDefinition>
+                <fieldDefinition name="description" type="String" cardinality="One">
+                    <fieldDefinitions/>
+                </fieldDefinition>
+                <fieldDefinition name="timestamp" type="Date" cardinality="One">
+                    <fieldDefinitionTag>
+                        <name>TIME_START</name>
+                    </fieldDefinitionTag>
+                    <fieldDefinitions/>
+                </fieldDefinition>
+                <fieldDefinition name="definitionName" type="String" cardinality="One">
+                    <fieldDefinitions/>
+                </fieldDefinition>
+                <fieldDefinition name="definitionOwner" type="String" cardinality="One">
+                    <fieldDefinitions/>
+                </fieldDefinition>
+                <fieldDefinition name="trackId" type="String" cardinality="One">
+                    <fieldDefinitionTag>
+                        <name>TRACK_ID</name>
+                    </fieldDefinitionTag>
+                    <fieldDefinitions/>
+                </fieldDefinition>
+                <fieldDefinition name="geometry" type="Geometry" cardinality="One">
+                    <fieldDefinitionTag>
+                        <name>GEOMETRY</name>
+                    </fieldDefinitionTag>
+                    <fieldDefinitions/>
+                </fieldDefinition>
+                <fieldDefinition name="duration" type="Long" cardinality="One">
+                    <fieldDefinitions/>
+                </fieldDefinition>
+                <fieldDefinition name="dismissed" type="Boolean" cardinality="One">
+                    <fieldDefinitions/>
+                </fieldDefinition>
+                <fieldDefinition name="assignedTo" type="String" cardinality="One">
+                    <fieldDefinitions/>
+                </fieldDefinition>
+                <fieldDefinition name="note" type="String" cardinality="One">
+                    <fieldDefinitions/>
+                </fieldDefinition>
+            </fieldDefinitions>
+        </geoEventDefinition>
+    </geoEventDefinitions>
+</processor>
+
+<processor name="TrackGapDetector" label="Track Gap Detector" contact="geoevent@esri.com" version="10.3.0" domain="com.esri.ges.processor" lastModified="1409871995872">
+    <description>Detects absence of GeoEvents from a Track in a specified period of time.</description>
+    <propertyDefinitions>
+        <propertyDefinition propertyName="notificationMode" label="Gap Notification Mode" description="Gap Notification Mode" propertyType="String" defaultValue="OnChange" mandatory="true" readOnly="false" displayOption="" dependsOn="">
+            <allowedValues>
+                <value label="On Change">OnChange</value>
+                <value label="Continuous">Continuous</value>
+            </allowedValues>
+        </propertyDefinition>
+        <propertyDefinition propertyName="gapDuration" label="Gap Duration (seconds)" description="Gap Duration (seconds)" propertyType="Long" defaultValue="300" mandatory="true" readOnly="false" displayOption="" dependsOn=""/>
+        <propertyDefinition propertyName="detectionInterval" label="Gap Detection Interval (seconds)" description="Gap Detection Interval (seconds)" propertyType="Long" defaultValue="120" mandatory="true" readOnly="false" displayOption="" dependsOn=""/>
+        <propertyDefinition propertyName="geometryField" label="Geometry Field Name" description="Geometry Field Name" propertyType="String" defaultValue="GEOMETRY" mandatory="false" readOnly="false" displayOption="" dependsOn=""/>
+    </propertyDefinitions>
+    <geoEventDefinitions>
+        <geoEventDefinition guid="77fb4141-4bc8-4de0-84e3-0a5b74f0ef46" name="TrackGap" owner="com.esri.ges.processor/TrackGapDetector/10.3.0" accessType="core">
+            <fieldDefinitions>
+                <fieldDefinition name="trackId" type="String" cardinality="One">
+                    <fieldDefinitionTag>
+                        <name>TRACK_ID</name>
+                    </fieldDefinitionTag>
+                    <fieldDefinitions/>
+                </fieldDefinition>
+                <fieldDefinition name="gap" type="Boolean" cardinality="One">
+                    <fieldDefinitions/>
+                </fieldDefinition>
+                <fieldDefinition name="lastReceived" type="Date" cardinality="One">
+                    <fieldDefinitions/>
+                </fieldDefinition>
+                <fieldDefinition name="geometry" type="Geometry" cardinality="One">
+                    <fieldDefinitions/>
+                </fieldDefinition>
+            </fieldDefinitions>
+        </geoEventDefinition>
+    </geoEventDefinitions>
+</processor>
+
+<processor name="Difference-Creator" label="Difference Creator" contact="geoevent@esri.com" version="10.3.0" domain="com.esri.ges.processor" lastModified="1409872004104">
+    <description>Creates the difference of the geometry from the GeoEvent and the selected GeoFence.</description>
+    <propertyDefinitions>
+        <propertyDefinition propertyName="inputGeometryField" label="Geometry Field" description="Input Geometry Field.  Default to GEOMETRY tag." propertyType="GeoEventField_Geometry" defaultValue="GEOMETRY" mandatory="true" readOnly="false" displayOption="" dependsOn=""/>
+        <propertyDefinition propertyName="replaceGeometry" label="Replace Geometry" description="Override the input geometry field with the output geometry." propertyType="Boolean" defaultValue="true" mandatory="true" readOnly="false" displayOption="" dependsOn=""/>
+        <propertyDefinition propertyName="outputGeometryField" label="New Geometry Field Name" description="Output Geometry Field Name.  If the field does not exist in the GeoEvent Definition, a new field will be created." propertyType="String" mandatory="false" readOnly="false" displayOption="" dependsOn="replaceGeometry=false"/>
+        <propertyDefinition propertyName="geofence" label="GeoFence" description="Define a Geofence. (category/name)" propertyType="String" mandatory="true" readOnly="false" displayOption="" dependsOn=""/>
+    </propertyDefinitions>
+</processor>
+
+<processor name="FieldEnricher-File" label="Field Enricher (File)" contact="geoevent@esri.com" version="10.3.0" domain="com.esri.ges.processor" lastModified="1409871994077">
+    <description>Enriches GeoEvents with attributes contained in a text file by using common joining data values.</description>
+    <propertyDefinitions>
+        <propertyDefinition propertyName="dataStoreName" label="Registered Folder" description="Registered Folder" propertyType="FolderDataStore" mandatory="true" readOnly="false" displayOption="" dependsOn=""/>
+        <propertyDefinition propertyName="dataSourceName" label="File Name" description="File Name" propertyType="String" mandatory="true" readOnly="false" displayOption="" dependsOn=""/>
+        <propertyDefinition propertyName="dataJoinFieldName" label="File Join Field" description="File Join Field" propertyType="String" mandatory="true" readOnly="false" displayOption="" dependsOn=""/>
+        <propertyDefinition propertyName="fields" label="Enrichment Fields" description="Enrichment Fields" propertyType="String" mandatory="false" readOnly="false" displayOption="" dependsOn=""/>
+        <propertyDefinition propertyName="tags" label="Field Tags" description="Field Tags" propertyType="String" mandatory="false" readOnly="false" displayOption="" dependsOn=""/>
+        <propertyDefinition propertyName="eventJoinFieldName" label="GeoEvent Join Field" description="GeoEvent Join Field" propertyType="String" defaultValue="TRACK_ID" mandatory="true" readOnly="false" displayOption="" dependsOn=""/>
+        <propertyDefinition propertyName="eventDefinitionName" label="Resulting GeoEvent Definition Name" description="Resulting GeoEvent Definition Name" propertyType="String" mandatory="false" readOnly="false" displayOption="" dependsOn=""/>
+    </propertyDefinitions>
+</processor>
+
+<processor name="ConvexHull-Creator" label="Convex Hull Creator" contact="geoevent@esri.com" version="10.3.0" domain="com.esri.ges.processor" lastModified="1409872004104">
+    <description>Creates the convex hull. For a Point - returns the same point. For an Envelope - returns the same envelope. For a MultiPoint - If the point count is one, returns the same multipoint. If the point count is two, returns a polyline of the points. Otherwise computes and returns the convex hull polygon. For a Segment - returns a polyline consisting of the segment. For a Polyline - If consists of only one segment, returns the same polyline. Otherwise computes and returns the convex hull polygon. For a Polygon - If more than one path, or if the path is not already convex, computes and returns the convex hull polygon. Otherwise returns the same polygon.</description>
+    <propertyDefinitions>
+        <propertyDefinition propertyName="inputGeometryField" label="Geometry Field" description="Input Geometry Field.  Default to GEOMETRY tag." propertyType="GeoEventField_Geometry" defaultValue="GEOMETRY" mandatory="true" readOnly="false" displayOption="" dependsOn=""/>
+        <propertyDefinition propertyName="replaceGeometry" label="Replace Geometry" description="Override the input geometry field with the output geometry." propertyType="Boolean" defaultValue="true" mandatory="true" readOnly="false" displayOption="" dependsOn=""/>
+        <propertyDefinition propertyName="outputGeometryField" label="New Geometry Field Name" description="Output Geometry Field Name.  If the field does not exist in the GeoEvent Definition, a new field will be created." propertyType="String" mandatory="false" readOnly="false" displayOption="" dependsOn="replaceGeometry=false"/>
+    </propertyDefinitions>
+</processor>
+
+<processor name="NoOperation" label="No Operation" contact="geoevent@esri.com" version="10.3.0" domain="com.esri.ges.processor" lastModified="1409871999311">
+    <description>This processor doesn't modify the GeoEvent, and allows it to pass through.</description>
+</processor>
+
+<processor name="Union-Creator" label="Union Creator" contact="geoevent@esri.com" version="10.3.0" domain="com.esri.ges.processor" lastModified="1409872004104">
+    <description>Constructs a new geometry by unioning the geometry from the GeoEvent with the selected GeoFences. All inputs must be of the same type of geometries and share one spatial reference.</description>
+    <propertyDefinitions>
+        <propertyDefinition propertyName="inputGeometryField" label="Geometry Field" description="Input Geometry Field.  Default to GEOMETRY tag." propertyType="GeoEventField_Geometry" defaultValue="GEOMETRY" mandatory="true" readOnly="false" displayOption="" dependsOn=""/>
+        <propertyDefinition propertyName="replaceGeometry" label="Replace Geometry" description="Override the input geometry field with the output geometry." propertyType="Boolean" defaultValue="true" mandatory="true" readOnly="false" displayOption="" dependsOn=""/>
+        <propertyDefinition propertyName="outputGeometryField" label="New Geometry Field Name" description="Output Geometry Field Name.  If the field does not exist in the GeoEvent Definition, a new field will be created." propertyType="String" mandatory="false" readOnly="false" displayOption="" dependsOn="replaceGeometry=false"/>
+        <propertyDefinition propertyName="geofences" label="GeoFence(s)" description="Define Geofence(s). (category/name) - regular expressions allowed for both category and name." propertyType="String" mandatory="true" readOnly="false" displayOption="" dependsOn=""/>
+    </propertyDefinitions>
+</processor>
+
+<processor name="FieldCalculator" label="Field Calculator" contact="geoevent@esri.com" version="10.3.0" domain="com.esri.ges.processor" lastModified="1409871990991">
+    <description>Calculates new data values from existing data values in GeoEvents using a mathematical (or text manipulation) expression, and enriches the GeoEvents with the results.</description>
+    <propertyDefinitions>
+        <propertyDefinition propertyName="expression" label="Expression" description="Expression" propertyType="String" mandatory="true" readOnly="false" displayOption="" dependsOn=""/>
+        <propertyDefinition propertyName="resultDestination" label="Result Destination" description="Result Destination" propertyType="String" defaultValue="Existing Field" mandatory="true" readOnly="false" displayOption="" dependsOn="">
+            <allowedValues>
+                <value label="Existing Field">Existing Field</value>
+                <value label="New Field">New Field</value>
+            </allowedValues>
+        </propertyDefinition>
+        <propertyDefinition propertyName="existingFieldName" label="Existing Field Name" description="Existing Field Name" propertyType="String" mandatory="false" readOnly="false" displayOption="" dependsOn="resultDestination=Existing Field"/>
+        <propertyDefinition propertyName="newFieldName" label="New Field Name" description="New Field Name" propertyType="String" mandatory="false" readOnly="false" displayOption="" dependsOn="resultDestination=New Field"/>
+        <propertyDefinition propertyName="newFieldType" label="New Field Type" description="New Field Type" propertyType="String" mandatory="false" readOnly="false" displayOption="" dependsOn="resultDestination=New Field">
+            <allowedValues>
+                <value label="Boolean">Boolean</value>
+                <value label="Date">Date</value>
+                <value label="Double">Double</value>
+                <value label="Float">Float</value>
+                <value label="Geometry">Geometry</value>
+                <value label="Integer">Integer</value>
+                <value label="Long">Long</value>
+                <value label="Short">Short</value>
+                <value label="String">String</value>
+            </allowedValues>
+        </propertyDefinition>
+        <propertyDefinition propertyName="newFieldTag" label="New Field Tag" description="New Field Tag" propertyType="String" mandatory="false" readOnly="false" displayOption="" dependsOn="resultDestination=New Field"/>
+        <propertyDefinition propertyName="newGeoEventDefinitionName" label="Resulting GeoEvent Definition Name" description="Resulting GeoEvent Definition Name" propertyType="String" defaultValue="FieldCalculator" mandatory="false" readOnly="false" displayOption="" dependsOn="resultDestination=New Field"/>
+    </propertyDefinitions>
+</processor>
+
+<processor name="GeoTagger" label="GeoTagger" contact="geoevent@esri.com" version="10.3.0" domain="com.esri.ges.processor" lastModified="1409871992393">
+    <description>Tags each GeoEvent with a list of GeoFences that satisfy a specified spatial relationship (IN, OUT, ENTER, EXIT) for the given GeoEvent.</description>
+    <propertyDefinitions>
+        <propertyDefinition propertyName="geofence" label="GeoFence(s)" description="GeoFence(s)" propertyType="String" mandatory="true" readOnly="false" displayOption="" dependsOn=""/>
+        <propertyDefinition propertyName="spatialOperator" label="Spatial Operator" description="Spatial Operator" propertyType="String" mandatory="true" readOnly="false" displayOption="" dependsOn="">
+            <allowedValues>
+                <value label="Contains Any">CONTAINS_ANY</value>
+                <value label="Crosses Any">CROSSES_ANY</value>
+                <value label="Disjoint Any">DISJOINT_ANY</value>
+                <value label="Enter Any">ENTER_ANY</value>
+                <value label="Equals Any">EQUALS_ANY</value>
+                <value label="Exit Any">EXIT_ANY</value>
+                <value label="Inside Any">INSIDE_ANY</value>
+                <value label="Intersects Any">INTERSECTS_ANY</value>
+                <value label="Outside Any">OUTSIDE_ANY</value>
+                <value label="Overlaps Any">OVERLAPS_ANY</value>
+                <value label="Touches Any">TOUCHES_ANY</value>
+                <value label="Within Any">WITHIN_ANY</value>
+            </allowedValues>
+        </propertyDefinition>
+        <propertyDefinition propertyName="geometryFieldName" label="Geometry Field Name" description="Geometry Field Name" propertyType="String" defaultValue="GEOMETRY" mandatory="false" readOnly="false" displayOption="" dependsOn=""/>
+        <propertyDefinition propertyName="geotagFieldName" label="GeoTag Field Name" description="GeoTag Field Name" propertyType="String" defaultValue="GeoTags" mandatory="true" readOnly="false" displayOption="" dependsOn=""/>
+        <propertyDefinition propertyName="geotagFieldType" label="GeoTag Format" description="GeoTag Format" propertyType="String" defaultValue="DelimitedValue" mandatory="true" readOnly="false" displayOption="" dependsOn="">
+            <allowedValues>
+                <value label="Delimited Value">DelimitedValue</value>
+                <value label="Group">Group</value>
+                <value label="List">List</value>
+            </allowedValues>
+        </propertyDefinition>
+        <propertyDefinition propertyName="useCategory" label="&quot;Include GeoFence Category in GeoTag" description="&quot;Include GeoFence Category in GeoTag" propertyType="Boolean" defaultValue="true" mandatory="true" readOnly="false" displayOption="" dependsOn=""/>
+        <propertyDefinition propertyName="geotagEventDefinitionName" label="Resulting GeoEvent Definition Name" description="Resulting GeoEvent Definition Name" propertyType="String" defaultValue="GeoTagger" mandatory="false" readOnly="false" displayOption="" dependsOn=""/>
+    </propertyDefinitions>
+</processor>
+
+<processor name="FieldEnricher-FeatureService" label="Field Enricher (Feature Service)" contact="geoevent@esri.com" version="10.3.0" domain="com.esri.ges.processor" lastModified="1409871994077">
+    <description>Enriches GeoEvents with attributes contained in a Feature Layer (or Table in a Feature Service) by using common joining data values.</description>
+    <propertyDefinitions>
+        <propertyDefinition propertyName="dataStoreName" label="ArcGIS Server Connection" description="The name used when registering ArcGIS Server" propertyType="ArcGISConnection" mandatory="true" readOnly="false" displayOption="" dependsOn=""/>
+        <propertyDefinition propertyName="folder" label="Folder" description="Leave blank or use a forward slash (/) if the service is running at the root of the ArcGIS Server" propertyType="ArcGISFolder" mandatory="false" readOnly="false" displayOption="" dependsOn="dataStoreName"/>
+        <propertyDefinition propertyName="service" label="Service" description="Service" propertyType="ArcGISFeatureService" mandatory="true" readOnly="false" displayOption="" dependsOn="folder"/>
+        <propertyDefinition propertyName="layer" label="Layer" description="The layer within the feature service" propertyType="ArcGISLayer" mandatory="true" readOnly="false" displayOption="" dependsOn="service"/>
+        <propertyDefinition propertyName="dataJoinFieldName" label="Feature Layer Join Field" description="Feature Layer Join Field" propertyType="ArcGISField" mandatory="true" readOnly="false" displayOption="" dependsOn="layer"/>
+        <propertyDefinition propertyName="fields" label="Enrichment Fields" description="Enrichment Fields" propertyType="ArcGISLayerFieldNames" mandatory="false" readOnly="false" displayOption="" dependsOn="layer"/>
+        <propertyDefinition propertyName="tags" label="Field Tags" description="Field Tags" propertyType="String" mandatory="false" readOnly="false" displayOption="" dependsOn="fields"/>
+        <propertyDefinition propertyName="eventJoinFieldName" label="GeoEvent Join Field" description="GeoEvent Join Field" propertyType="String" defaultValue="TRACK_ID" mandatory="true" readOnly="false" displayOption="" dependsOn=""/>
+        <propertyDefinition propertyName="eventDefinitionName" label="Resulting GeoEvent Definition Name" description="Resulting GeoEvent Definition Name" propertyType="String" mandatory="false" readOnly="false" displayOption="" dependsOn=""/>
+        <propertyDefinition propertyName="cacheRefreshTimeInterval" label="Cache Refresh Time Interval (minutes)" description="The number of minutes to wait between each iteration of scanning the layer for features" propertyType="Integer" defaultValue="1" mandatory="false" readOnly="false" displayOption="" dependsOn=""/>
+        <propertyDefinition propertyName="maxCacheSize" label="Maximum Cache Size" description="Maximum Cache Size" propertyType="Integer" defaultValue="1000" mandatory="false" readOnly="false" displayOption="" dependsOn=""/>
+    </propertyDefinitions>
+</processor>
+
+<processor name="FieldCalculator-RegEx" label="Field Calculator (Regular Expression)" contact="geoevent@esri.com" version="10.3.0" domain="com.esri.ges.processor" lastModified="1409871991644">
+    <description>Appends a new field to GeoEvents that contains the results of a regular expression.</description>
+    <propertyDefinitions>
+        <propertyDefinition propertyName="targetFieldName" label="Field Name" description="Field Name" propertyType="String" mandatory="true" readOnly="false" displayOption="" dependsOn=""/>
+        <propertyDefinition propertyName="pattern" label="Pattern" description="Pattern" propertyType="String" mandatory="true" readOnly="false" displayOption="" dependsOn=""/>
+        <propertyDefinition propertyName="resultDestination" label="Result Destination" description="Result Destination" propertyType="String" defaultValue="Existing Field" mandatory="true" readOnly="false" displayOption="" dependsOn="">
+            <allowedValues>
+                <value label="Existing Field">Existing Field</value>
+                <value label="New Field">New Field</value>
+            </allowedValues>
+        </propertyDefinition>
+        <propertyDefinition propertyName="existingFieldName" label="Existing Field Name" description="Existing Field Name" propertyType="String" mandatory="false" readOnly="false" displayOption="" dependsOn="resultDestination=Existing Field"/>
+        <propertyDefinition propertyName="newFieldName" label="New Field Name" description="New Field Name" propertyType="String" mandatory="false" readOnly="false" displayOption="" dependsOn="resultDestination=New Field"/>
+        <propertyDefinition propertyName="newFieldType" label="New Field Type" description="New Field Type" propertyType="String" mandatory="false" readOnly="false" displayOption="" dependsOn="resultDestination=New Field">
+            <allowedValues>
+                <value label="String">String</value>
+                <value label="Date">Date</value>
+                <value label="Double">Double</value>
+                <value label="Integer">Integer</value>
+                <value label="Long">Long</value>
+                <value label="Short">Short</value>
+                <value label="Boolean">Boolean</value>
+            </allowedValues>
+        </propertyDefinition>
+        <propertyDefinition propertyName="newFieldTag" label="New Field Tag" description="New Field Tag" propertyType="String" mandatory="false" readOnly="false" displayOption="" dependsOn="resultDestination=New Field"/>
+        <propertyDefinition propertyName="newGeoEventDefinitionName" label="Resulting GeoEvent Definition Name" description="Resulting GeoEvent Definition Name" propertyType="String" defaultValue="FieldCalculator" mandatory="false" readOnly="false" displayOption="" dependsOn="resultDestination=New Field"/>
+    </propertyDefinitions>
+</processor>
+
+<processor name="Intersector" label="Intersector" contact="geoevent@esri.com" version="10.3.0" domain="com.esri.ges.processor" lastModified="1409872004104">
+    <description>Creates a geometry through intersection between the input geometry and a GeoFence.</description>
+    <propertyDefinitions>
+        <propertyDefinition propertyName="inputGeometryField" label="Geometry Field" description="Input Geometry Field.  Default to GEOMETRY tag." propertyType="GeoEventField_Geometry" defaultValue="GEOMETRY" mandatory="true" readOnly="false" displayOption="" dependsOn=""/>
+        <propertyDefinition propertyName="replaceGeometry" label="Replace Geometry" description="Override the input geometry field with the output geometry." propertyType="Boolean" defaultValue="true" mandatory="true" readOnly="false" displayOption="" dependsOn=""/>
+        <propertyDefinition propertyName="outputGeometryField" label="New Geometry Field Name" description="Output Geometry Field Name.  If the field does not exist in the GeoEvent Definition, a new field will be created." propertyType="String" mandatory="false" readOnly="false" displayOption="" dependsOn="replaceGeometry=false"/>
+        <propertyDefinition propertyName="geofence" label="GeoFence" description="Define a Geofence. (category/name)" propertyType="String" mandatory="true" readOnly="false" displayOption="" dependsOn=""/>
+    </propertyDefinitions>
+</processor>
+
+<processor name="Envelope-Creator" label="Envelope Creator" contact="geoevent@esri.com" version="10.3.0" domain="com.esri.ges.processor" lastModified="1409872004104">
+    <description>Calculates an envelope of the geometry using the specified method.</description>
+    <propertyDefinitions>
+        <propertyDefinition propertyName="inputGeometryField" label="Geometry Field" description="Input Geometry Field.  Default to GEOMETRY tag." propertyType="GeoEventField_Geometry" defaultValue="GEOMETRY" mandatory="true" readOnly="false" displayOption="" dependsOn=""/>
+        <propertyDefinition propertyName="replaceGeometry" label="Replace Geometry" description="Override the input geometry field with the output geometry." propertyType="Boolean" defaultValue="true" mandatory="true" readOnly="false" displayOption="" dependsOn=""/>
+        <propertyDefinition propertyName="outputGeometryField" label="New Geometry Field Name" description="Output Geometry Field Name.  If the field does not exist in the GeoEvent Definition, a new field will be created." propertyType="String" mandatory="false" readOnly="false" displayOption="" dependsOn="replaceGeometry=false"/>
+    </propertyDefinitions>
+</processor>
+
+<processor name="FieldReducer" label="Field Reducer" contact="geoevent@esri.com" version="10.3.0" domain="com.esri.ges.processor" lastModified="1409871995317">
+    <description>Reduces the size of GeoEvents by removing a set of specified fields from the GeoEvent Definition.</description>
+    <propertyDefinitions>
+        <propertyDefinition propertyName="fields" label="Fields to Remove" description="Fields to Remove" propertyType="String" mandatory="true" readOnly="false" displayOption="" dependsOn=""/>
+        <propertyDefinition propertyName="eventDefinitionName" label="Resulting GeoEvent Definition Name" description="Resulting GeoEvent Definition Name" propertyType="String" mandatory="false" readOnly="false" displayOption="" dependsOn=""/>
+    </propertyDefinitions>
+</processor>
+
+<processor name="Simplifier" label="Simplifier" contact="geoevent@esri.com" version="10.3.0" domain="com.esri.ges.processor" lastModified="1409872004104">
+    <description>Performs the simplify operation on the geometry.</description>
+    <propertyDefinitions>
+        <propertyDefinition propertyName="inputGeometryField" label="Geometry Field" description="Input Geometry Field.  Default to GEOMETRY tag." propertyType="GeoEventField_Geometry" defaultValue="GEOMETRY" mandatory="true" readOnly="false" displayOption="" dependsOn=""/>
+        <propertyDefinition propertyName="replaceGeometry" label="Replace Geometry" description="Override the input geometry field with the output geometry." propertyType="Boolean" defaultValue="true" mandatory="true" readOnly="false" displayOption="" dependsOn=""/>
+        <propertyDefinition propertyName="outputGeometryField" label="New Geometry Field Name" description="Output Geometry Field Name.  If the field does not exist in the GeoEvent Definition, a new field will be created." propertyType="String" mandatory="false" readOnly="false" displayOption="" dependsOn="replaceGeometry=false"/>
+    </propertyDefinitions>
+</processor>
+
+<processor name="Buffer-Creator" label="Buffer Creator" contact="geoevent@esri.com" version="10.3.0" domain="com.esri.ges.processor" lastModified="1409872004104">
+    <description>Calculates a buffer polygon of the geometry as specified by the distance input.</description>
+    <propertyDefinitions>
+        <propertyDefinition propertyName="inputGeometryField" label="Geometry Field" description="Input Geometry Field.  Default to GEOMETRY tag." propertyType="GeoEventField_Geometry" defaultValue="GEOMETRY" mandatory="true" readOnly="false" displayOption="" dependsOn=""/>
+        <propertyDefinition propertyName="replaceGeometry" label="Replace Geometry" description="Override the input geometry field with the output geometry." propertyType="Boolean" defaultValue="true" mandatory="true" readOnly="false" displayOption="" dependsOn=""/>
+        <propertyDefinition propertyName="outputGeometryField" label="New Geometry Field Name" description="Output Geometry Field Name.  If the field does not exist in the GeoEvent Definition, a new field will be created." propertyType="String" mandatory="false" readOnly="false" displayOption="" dependsOn="replaceGeometry=false"/>
+        <propertyDefinition propertyName="unit" label="Buffer Unit" description="Buffer Distance Unit.  See a list of linear units and their WKIDs &lt;a href=&quot;http://resources.arcgis.com/en/help/arcgis-rest-api/index.html#/Projected_coordinate_systems/02r3000000vt000000&gt;here&lt;/a&gt;." propertyType="String" defaultValue="Meter" mandatory="true" readOnly="false" displayOption="" dependsOn="">
+            <allowedValues>
+                <value label="Centimeter">Centimeter</value>
+                <value label="Decimeter">Decimeter</value>
+                <value label="Feet">Feet</value>
+                <value label="Inch">Inch</value>
+                <value label="Kilometer">Kilometer</value>
+                <value label="Meter">Meter</value>
+                <value label="Millimeter">Millimeter</value>
+                <value label="Nautical_Mile">Nautical_Mile</value>
+                <value label="Yard">Yard</value>
+            </allowedValues>
+        </propertyDefinition>
+        <propertyDefinition propertyName="bufferDistance" label="Buffer Distance" description="Buffer Distance.  It can be either a numeric number or a field name string." propertyType="String" mandatory="true" readOnly="false" displayOption="" dependsOn=""/>
+        <propertyDefinition propertyName="useSameProjection" label="Use Same Projection for Buffer" description="Use Same Projection for Buffer" propertyType="Boolean" defaultValue="true" mandatory="true" readOnly="false" displayOption="" dependsOn=""/>
+        <propertyDefinition propertyName="bufferwkid" label="Buffer WKID" description="WKID of the Spatial Reference that is used to calculate buffer" propertyType="Integer" mandatory="false" readOnly="false" displayOption="" dependsOn="useSameProjection=false"/>
+    </propertyDefinitions>
+</processor>
+</processors>
