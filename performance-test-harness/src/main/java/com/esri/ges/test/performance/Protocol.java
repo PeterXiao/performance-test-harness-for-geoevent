@@ -1,7 +1,10 @@
 package com.esri.ges.test.performance;
 
+import javax.xml.bind.annotation.XmlEnum;
+
 import org.apache.commons.lang3.StringUtils;
 
+@XmlEnum
 public enum Protocol 
 {
 	TCP, WEBSOCKETS, ACTIVE_MQ, RABBIT_MQ, STREAM_SERVICE, KAFKA, WEBSOCKET_SERVER, UNKNOWN;

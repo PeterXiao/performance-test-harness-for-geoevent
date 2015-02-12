@@ -1,7 +1,6 @@
 package com.esri.ges.test.performance.websocket.server;
 
 import java.io.File;
-import java.util.Properties;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.jetty.server.Handler;
@@ -17,6 +16,7 @@ import com.esri.ges.test.performance.DiagnosticsCollectorBase;
 import com.esri.ges.test.performance.Mode;
 import com.esri.ges.test.performance.RunningState;
 import com.esri.ges.test.performance.TestException;
+import com.esri.ges.test.performance.jaxb.Config;
 
 /* ------------------------------------------------------------ */
 public class WebsocketServerEverntProducer extends DiagnosticsCollectorBase
@@ -42,7 +42,7 @@ public class WebsocketServerEverntProducer extends DiagnosticsCollectorBase
 
 	public WebsocketServerEverntProducer()
 	{
-
+		super(Mode.PRODUCER);
 		server = new Server(8089);
 		ServletHandler servletHandler = new ServletHandler();
 		_webSocketServlet = new WebsocketOutboundServlet();
@@ -72,18 +72,14 @@ public class WebsocketServerEverntProducer extends DiagnosticsCollectorBase
 	}
 
 	@Override
-	public void init(Properties props) throws TestException
+	public void init(Config config) throws TestException
 	{
 		try
 		{
-			String path = props.containsKey("simulationFilePath") ? props.getProperty("simulationFilePath").trim() : "";
-			loadEvents(new File(path));
-
-			port = props.containsKey("port") ? Integer.parseInt(props.getProperty("port")) : 5565;
-			eventsPerSec = props.containsKey("eventsPerSec") ? Integer.parseInt(props.getProperty("eventsPerSec")) : -1;
-			staggeringInterval = props.containsKey("staggeringInterval") ? Integer.parseInt(props.getProperty("staggeringInterval")) : 10;
-			mode = Mode.PRODUCER;
-
+			loadEvents(new File(config.getPropertyValue("simulationFile", "")));
+			port = Integer.parseInt(config.getPropertyValue("port", "5565"));
+			eventsPerSec = Integer.parseInt(config.getPropertyValue("eventsPerSec", "-1"));
+			staggeringInterval = Integer.parseInt(config.getPropertyValue("staggeringInterval", "1"));
 		}
 		catch (Throwable e)
 		{

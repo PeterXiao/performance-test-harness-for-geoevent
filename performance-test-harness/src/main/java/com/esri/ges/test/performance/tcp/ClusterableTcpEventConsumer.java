@@ -1,6 +1,5 @@
 package com.esri.ges.test.performance.tcp;
 
-import java.util.Properties;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -8,6 +7,8 @@ import com.esri.ges.test.performance.DiagnosticsCollectorBase;
 import com.esri.ges.test.performance.Mode;
 import com.esri.ges.test.performance.RunningState;
 import com.esri.ges.test.performance.TestException;
+import com.esri.ges.test.performance.jaxb.Config;
+import com.esri.ges.test.performance.jaxb.ConsumerConfig;
 
 public class ClusterableTcpEventConsumer extends DiagnosticsCollectorBase implements MessageListener
 {
@@ -19,23 +20,22 @@ public class ClusterableTcpEventConsumer extends DiagnosticsCollectorBase implem
 			
 	public ClusterableTcpEventConsumer(int port)
 	{
+		super(Mode.CONSUMER);
 		this.port = port;
 	}
 	
 	@Override
-	public synchronized void init(Properties props) throws TestException
+	public synchronized void init(Config config) throws TestException
 	{
 		try
 		{
-			port = props.containsKey("port") ? Integer.parseInt(props.getProperty("port")) : port;
+			port = Integer.valueOf(config.getPropertyValue("port", String.valueOf(port)));
 			if( socketServer != null )
 			{
 				socketServer.setPort(port);
 			}
 			
-			long timeOutInSec = props.containsKey("timeOutInSec") ? Long.parseLong(props.getProperty("timeOutInSec")) : 10;
-			setTimeOutInSec(timeOutInSec);
-			mode = Mode.CONSUMER;
+			setTimeOutInSec(((ConsumerConfig)config).getTimeoutInSec());
 			
 			// init
 			eventIx = new AtomicInteger(0);

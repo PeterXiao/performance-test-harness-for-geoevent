@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.util.List;
-import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -16,11 +15,12 @@ import com.esri.ges.test.performance.DiagnosticsCollectorBase;
 import com.esri.ges.test.performance.Mode;
 import com.esri.ges.test.performance.RunningState;
 import com.esri.ges.test.performance.TestException;
+import com.esri.ges.test.performance.jaxb.Config;
 
 /* ------------------------------------------------------------ */
 public class StreamServiceEventProducer extends DiagnosticsCollectorBase
 {
-	private static final String STREAM_SERVICE = "/streamservice";
+	//private static final String STREAM_SERVICE = "/streamservice";
 	private static final String BROADCAST = "/broadcast";
 
 	private MyConnection[] connections;
@@ -32,6 +32,11 @@ public class StreamServiceEventProducer extends DiagnosticsCollectorBase
 	private String serviceName;
 	private StreamMetadata metaData;
 
+	public StreamServiceEventProducer()
+	{
+		super(Mode.PRODUCER);
+	}
+	
 	class MyConnection  implements WebSocket.OnTextMessage
 	{
 		WebSocket.Connection connection;
@@ -76,7 +81,7 @@ public class StreamServiceEventProducer extends DiagnosticsCollectorBase
 	}
 
 	@Override
-	public void init(Properties props) throws TestException
+	public void init(Config config) throws TestException
 	{
 		try
 		{
@@ -99,12 +104,11 @@ public class StreamServiceEventProducer extends DiagnosticsCollectorBase
 				client.setProtocol("input");
 			}
 
-			loadEvents(new File(props.containsKey("simulationFilePath") ? props.getProperty("simulationFilePath").trim() : ""));
-			host = props.containsKey("host") ? props.getProperty("host").trim() : "localhost";
-			port = props.containsKey("port") ? Integer.valueOf(props.getProperty("port")) : 6180;
-			serviceName = props.containsKey("serviceName") ? props.getProperty("serviceName").trim() : "vehicles";
-			connectionCount = props.containsKey("connectionCount") ? Integer.valueOf(props.getProperty("connectionCount")) : 1;
-			mode = Mode.PRODUCER;
+			loadEvents(new File(config.getPropertyValue("simulationFile", "")));
+			host = config.getPropertyValue("host", "localhost");
+			port = Integer.parseInt(config.getPropertyValue("port","6180"));
+			serviceName = config.getPropertyValue("serviceName", "vehicles");
+			connectionCount = Integer.parseInt(config.getPropertyValue("connectionCount","1"));
 			
 			String serviceMetadataUrl = "http://"+host+":"+port+"/arcgis/rest/services/"+serviceName+"/StreamServer?f=json";
 			metaData = new StreamMetadata( serviceMetadataUrl );

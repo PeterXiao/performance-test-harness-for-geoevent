@@ -3,11 +3,7 @@ package com.esri.ges.test.performance.tcp;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.SocketAddress;
-import java.util.ArrayList;
 import java.util.Deque;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
 public class SimpleSocketServer

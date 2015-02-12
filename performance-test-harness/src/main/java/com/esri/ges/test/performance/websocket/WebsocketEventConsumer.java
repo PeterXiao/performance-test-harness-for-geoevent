@@ -1,7 +1,6 @@
 package com.esri.ges.test.performance.websocket;
 
 import java.net.URI;
-import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -13,6 +12,7 @@ import com.esri.ges.test.performance.DiagnosticsCollectorBase;
 import com.esri.ges.test.performance.Mode;
 import com.esri.ges.test.performance.RunningState;
 import com.esri.ges.test.performance.TestException;
+import com.esri.ges.test.performance.jaxb.Config;
 
 public class WebsocketEventConsumer extends DiagnosticsCollectorBase
 {
@@ -29,6 +29,11 @@ public class WebsocketEventConsumer extends DiagnosticsCollectorBase
 	private int connectionCount;
 	private MyConnection[] connections;
 
+	public WebsocketEventConsumer()
+	{
+		super(Mode.CONSUMER);
+	}
+	
 	class MyConnection  implements WebSocket.OnTextMessage
 	{
 		WebSocket.Connection connection;
@@ -90,7 +95,7 @@ public class WebsocketEventConsumer extends DiagnosticsCollectorBase
 	}
 
 	@Override
-	public void init(Properties props) throws TestException
+	public void init(Config config) throws TestException
 	{
 		System.out.println("init:");
 		try
@@ -114,10 +119,9 @@ public class WebsocketEventConsumer extends DiagnosticsCollectorBase
 				client.setProtocol("output");
 			}
 
-			host = props.containsKey("host") ? props.getProperty("host").trim() : "localhost";
-			port = props.containsKey("port") ? Integer.valueOf(props.getProperty("port")) : 5570;
-			connectionCount = props.containsKey("connectionCount") ? Integer.valueOf(props.getProperty("connectionCount")) : 1;
-			mode = Mode.CONSUMER;
+			host = config.getPropertyValue("host", "localhost");
+			port = Integer.parseInt(config.getPropertyValue("port", "5570"));
+			connectionCount = Integer.parseInt(config.getPropertyValue("connectionCount", "1"));
 			
 			String url = "ws://"+host+":"+port+STREAM_SERVICE+OUTBOUND;
 			URI uri = new URI(url);

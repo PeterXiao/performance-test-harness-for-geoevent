@@ -1,7 +1,6 @@
 package com.esri.ges.test.performance.activemq;
 
 import java.io.File;
-import java.util.Properties;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.jms.Connection;
@@ -16,8 +15,10 @@ import org.apache.activemq.ActiveMQConnection;
 import org.apache.activemq.ActiveMQConnectionFactory;
 
 import com.esri.ges.test.performance.DiagnosticsCollectorBase;
+import com.esri.ges.test.performance.Mode;
 import com.esri.ges.test.performance.RunningState;
 import com.esri.ges.test.performance.TestException;
+import com.esri.ges.test.performance.jaxb.Config;
 
 public class ActiveMQEventProducer extends DiagnosticsCollectorBase
 {
@@ -25,13 +26,18 @@ public class ActiveMQEventProducer extends DiagnosticsCollectorBase
   protected Session session;
   protected MessageProducer producer;
   
+  public ActiveMQEventProducer()
+	{
+  	super(Mode.PRODUCER);
+	}
+  
   @Override
-  public void init(Properties props) throws TestException
+  public void init(Config config) throws TestException
   {
-    loadEvents(new File(props.containsKey("simulationFilePath") ? props.getProperty("simulationFilePath").trim() : ""));
-    String providerUrl = props.containsKey("providerUrl") ? props.getProperty("providerUrl").trim() : null;
-    String destinationType = props.containsKey("destinationType") ? props.getProperty("destinationType").trim() : null;
-    String destinationName = props.containsKey("destinationName") ? props.getProperty("destinationName").trim() : null;
+    loadEvents(new File(config.getPropertyValue("simulationFile", "")));
+    String providerUrl = config.getPropertyValue("providerUrl");
+    String destinationType = config.getPropertyValue("destinationType");
+    String destinationName = config.getPropertyValue("destinationName");
     if (providerUrl == null)
       throw new TestException("providerUrl property must be specified");
     if (destinationType == null)

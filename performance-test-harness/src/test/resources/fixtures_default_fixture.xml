@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <Fixtures>
-	<Report type="CSV" simpleColumnNames="true">
+	<Report type="CSV">
 		<ReportFile>reports\Multiple.csv</ReportFile>
 	</Report>
 	
 	<DefaultFixture>
+		
 		<!-- SHARED CONFIGURATION -->
-		<DefaultSharedConfig protocol="TCP">
+		<DefaultSharedConfig host="ricardot" protocol="TCP" isLocal="true">
 			<Properties>
 				<Property name="host">rtrujillo</Property>
 				<Property name="eventsPerSec">1000</Property>
@@ -14,24 +15,24 @@
 			</Properties>
 		</DefaultSharedConfig>
 		
-		<ProducerConfig protocol="TCP" commandPort="5010">
+		<ProducerConfig protocol="TCP" commandPort="5010" isLocal="true">
 			<Properties>
 				<Property name="simulationFile">C:\Testing\performance-test-10.3.0\simulations\county_envelopes_1000_points.csv</Property>
 				<Property name="host">rtrujillo</Property>
 				<Property name="port">5565</Property>
 			</Properties>
 			<Producers>
-				<Producer commandPort="5010">localhost</Producer>
+				<Producer port="5010">localhost</Producer>
 			</Producers>
 		</ProducerConfig>
 		
-		<ConsumerConfig protocol="TCP" commandPort="5020" timeoutInSec="5">
+		<ConsumerConfig protocol="TCP" commandPort="5020" isLocal="true" timeoutInSec="5">
 			<Properties>
 				<Property name="host">rtrujillo</Property>
 				<Property name="port">5565</Property>
 			</Properties>
 			<Consumers>
-				<Consumer commandPort="5020">localhost</Consumer>
+				<Consumer port="5020">localhost</Consumer>
 			</Consumers>
 		</ConsumerConfig>
 				
@@ -48,8 +49,9 @@
 				<Property name="simulationFile">C:\Testing\performance-test-10.3.0\simulations\Flight.csv</Property>
 			</Properties>
 		</ProducerConfig>
+		
 		<Simulation>
-			<StressTest iterations="100" minEvents="81" expectedResultCount="79"/>
+			<StressTest iterations="10" minEvents="81" expectedResultCount="79"/>
 		</Simulation>
 	</Fixture>
 	

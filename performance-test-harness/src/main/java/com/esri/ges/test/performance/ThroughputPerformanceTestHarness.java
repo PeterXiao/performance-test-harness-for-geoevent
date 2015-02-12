@@ -1,32 +1,21 @@
 package com.esri.ges.test.performance;
 
+import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import com.esri.ges.test.performance.activemq.ActiveMQEventConsumer;
-import com.esri.ges.test.performance.activemq.ActiveMQEventProducer;
+import com.esri.ges.test.performance.jaxb.ConsumerConfig;
 import com.esri.ges.test.performance.jaxb.Fixture;
-import com.esri.ges.test.performance.kafka.KafkaEventProducer;
-import com.esri.ges.test.performance.rabbitmq.RabbitMQEventConsumer;
-import com.esri.ges.test.performance.rabbitmq.RabbitMQEventProducer;
+import com.esri.ges.test.performance.jaxb.ProducerConfig;
+import com.esri.ges.test.performance.jaxb.Property;
+import com.esri.ges.test.performance.jaxb.RemoteHost;
+import com.esri.ges.test.performance.jaxb.Simulation;
 import com.esri.ges.test.performance.statistics.FixtureStatistic;
 import com.esri.ges.test.performance.statistics.FixturesStatistics;
 import com.esri.ges.test.performance.statistics.Statistics;
-import com.esri.ges.test.performance.streamservice.StreamServiceEventConsumer;
-import com.esri.ges.test.performance.streamservice.StreamServiceEventProducer;
-import com.esri.ges.test.performance.tcp.ClusterableTcpEventConsumer;
-import com.esri.ges.test.performance.tcp.TcpEventConsumer;
-import com.esri.ges.test.performance.tcp.TcpEventProducer;
-import com.esri.ges.test.performance.websocket.WebsocketEventConsumer;
-import com.esri.ges.test.performance.websocket.WebsocketEventProducer;
 
 /**
- * 
  * <b>NOTE:</b> This class is not Thread-safe
- * 
- * @author rica4208
- *
  */
 public class ThroughputPerformanceTestHarness implements TestHarness, RunningStateListener
 {
@@ -48,7 +37,7 @@ public class ThroughputPerformanceTestHarness implements TestHarness, RunningSta
 	private int										currentIteration	= 0;
 	private String								testName = "";
 	
-	public static Protocol				protocol							= Protocol.TCP;
+	public Protocol								protocol							= Protocol.TCP;
 	private AtomicBoolean					running								= new AtomicBoolean(false);
 	private Fixture fixture;
 	private String myNull;
@@ -65,8 +54,8 @@ public class ThroughputPerformanceTestHarness implements TestHarness, RunningSta
 		this.minEventsPerIteration = fixture.getSimulation().getMinEvents();
 		this.maxEventsPerIteration = fixture.getSimulation().getMaxEvents();
 		this.eventsPerIterationStep = fixture.getSimulation().getEventsToAddPerIteration();
-		this.producerConnections = (fixture.getProducers() != null ) ? fixture.getProducers().getNumOfConnections() : 1;
-		this.consumerConnections = (fixture.getConsumers() != null ) ? fixture.getConsumers().getNumOfConnections() : 1;
+		this.producerConnections = fixture.getProducerConfig().getNumOfConnections();
+		this.consumerConnections = fixture.getConsumerConfig().getNumOfConnections();
 		this.expectedResultCountPerIteration = fixture.getSimulation().getExpectedResultCount();
 		this.eventsPerIteration = this.minEventsPerIteration;
 		this.expectedResultCount = this.expectedResultCountPerIteration;
@@ -77,220 +66,41 @@ public class ThroughputPerformanceTestHarness implements TestHarness, RunningSta
 		System.out.println("-----------------------------------------------");
 		System.out.println(" Runnning Performance test \"" + testName + "\" ");
 		System.out.println("-----------------------------------------------");
-
-		Properties producerProperties = new Properties();
-		Properties consumerProperties = new Properties();
-
-		String simulationFilePath = fixture.getSimulation().getSourceFile();
-		String host = fixture.getGeoEventHost().getHostName();
-		int producerPort = fixture.getGeoEventHost().getProducerPort();
-		int consumerPort = fixture.getGeoEventHost().getConsumerPort();
-		
-		this.protocol = Protocol.fromValue(fixture.getProtocol());
-		switch (protocol)
-		{
-			case TCP:
-			{
-				eventProducer = new TcpEventProducer();
-				producerProperties = socketProducerProps(simulationFilePath, host, String.valueOf(producerPort), String.valueOf(producerConnections), String.valueOf(eventsPerSec), String.valueOf(staggeringInterval));
-				eventConsumer = new TcpEventConsumer();
-				consumerProperties = socketConsumerProps(host, String.valueOf(consumerPort), String.valueOf(consumerConnections), String.valueOf(fixture.getSimulation().getConsumerTimeOutInSec()));
-				break;
-			}
-			case WEBSOCKETS:
-			{
-				eventProducer = new WebsocketEventProducer();
-				producerProperties = socketProducerProps(simulationFilePath, host, String.valueOf(producerPort), String.valueOf(producerConnections), String.valueOf(eventsPerSec), String.valueOf(staggeringInterval));
-				eventConsumer = new WebsocketEventConsumer();
-				consumerProperties = socketConsumerProps(host, String.valueOf(consumerPort), String.valueOf(consumerConnections), String.valueOf(fixture.getSimulation().getConsumerTimeOutInSec()));
-				break;
-			}
-			case ACTIVE_MQ:
-			{
-				eventProducer = new ActiveMQEventProducer();
-				producerProperties = activeMQProducerProps(simulationFilePath, host);
-				eventConsumer = new ActiveMQEventConsumer();
-				consumerProperties = activeMQConsumerProps(host);
-				// eventConsumer = new TcpEventConsumer();
-				// consumerProperties = socketConsumerProps(host, consumerPort,
-				// String.valueOf(consumerConnections));
-				break;
-			}
-			case RABBIT_MQ:
-			{
-				String uri = fixture.getRabbitMQHost().getUri();
-				String exchange = fixture.getRabbitMQHost().getExchange();
-				String queue = fixture.getRabbitMQHost().getQueue();
-				String routingKey = fixture.getRabbitMQHost().getRoutingKey();
-				
-				eventProducer = new RabbitMQEventProducer();
-				producerProperties = rabbitMQProducerProps(simulationFilePath, uri, exchange, queue, routingKey, String.valueOf(producerConnections), String.valueOf(eventsPerSec), String.valueOf(staggeringInterval));
-				eventConsumer = new RabbitMQEventConsumer();
-				consumerProperties = rabbitMQConsumerProps(uri, exchange, queue, routingKey, String.valueOf(producerConnections), String.valueOf(eventsPerSec), String.valueOf(staggeringInterval));
-//				eventConsumer = new ClusterableTcpEventConsumer(consumerPort);
-//			  consumerProperties = socketConsumerProps(host, String.valueOf(consumerPort), String.valueOf(consumerConnections), String.valueOf(fixture.getSimulation().getConsumerTimeOutInSec()));
-				break;
-			}
-			case STREAM_SERVICE:
-			{
-				eventProducer = new StreamServiceEventProducer();
-				producerProperties = streamProducerProps(simulationFilePath, host, String.valueOf(producerPort), String.valueOf(producerConnections));
-				eventConsumer = new StreamServiceEventConsumer();
-				consumerProperties = streamConsumerProps(host, String.valueOf(consumerPort), String.valueOf(consumerConnections));
-				break;
-			}
-			case KAFKA:
-			{
-			  String brokerlist = fixture.getKafkaHost().getBrokerList();
-			  String topic = fixture.getKafkaHost().getTopic();
-			  String acks = fixture.getKafkaHost().getAcks();
-			  eventProducer = new KafkaEventProducer();
-			  producerProperties = kafkaProducerProps(simulationFilePath, brokerlist, topic, acks, String.valueOf(eventsPerSec), String.valueOf(staggeringInterval));
-			  eventConsumer = new ClusterableTcpEventConsumer(consumerPort);
-			  consumerProperties = socketConsumerProps(host, String.valueOf(consumerPort), String.valueOf(consumerConnections), String.valueOf(fixture.getSimulation().getConsumerTimeOutInSec()));
-			  break;
-			}
-			case WEBSOCKET_SERVER:
-      {
-        //eventProducer = new WebsocketServerEverntProducer();
-        producerProperties = socketProducerProps(simulationFilePath, host, String.valueOf(producerPort), String.valueOf(producerConnections), String.valueOf(eventsPerSec), String.valueOf(staggeringInterval));
-        eventConsumer = new ClusterableTcpEventConsumer(consumerPort);
-        consumerProperties = socketConsumerProps(host, String.valueOf(consumerPort), String.valueOf(consumerConnections), String.valueOf(fixture.getSimulation().getConsumerTimeOutInSec()));
-        break;
-      }
-			default:
-				break;
-		}
-
-		int producerCommandPort = fixture.isLocal() ? 5010 : fixture.getCommandPort();
-		int consumerCommandPort = fixture.isLocal() ? 5020 : fixture.getCommandPort();
-		String[] producers = null;
-		String[] consumers = null;
-		if( fixture.isLocal() )
-		{
-			producers = new String[]{"localhost"};
-			consumers = new String[]{"localhost"};
-		}
-		else if( fixture.getProducers() != null && fixture.getConsumers() != null )
-		{
-			producers = fixture.getProducers().getProducers().toArray(new String[fixture.getProducers().getProducers().size()]);
-			consumers = fixture.getConsumers().getConsumers().toArray(new String[fixture.getConsumers().getConsumers().size()]);
-		}
-		
-		producerCount = producers.length;
-		eventProducer = new RemoteDiagnosticsCollectorBaseClass(producers, producerCommandPort, fixture.isLocal());
-		eventConsumer = new RemoteDiagnosticsCollectorBaseClass(consumers, consumerCommandPort, fixture.isLocal());
 	
-		eventProducer.init(producerProperties);
+		ProducerConfig producerConfig = fixture.getProducerConfig();
+		ConsumerConfig consumerConfig = fixture.getConsumerConfig();
+		// apply any shared properties and settings that may not have been applied
+		if( fixture.getDefaultConfig() != null )
+		{
+			producerConfig.apply( fixture.getDefaultConfig() );
+			consumerConfig.apply( fixture.getDefaultConfig() );
+		}
+		
+		// add the test properties
+		producerConfig.getProperties().add(new Property("eventsPerSec",String.valueOf(eventsPerSec)));
+		producerConfig.getProperties().add(new Property("staggeringInterval",String.valueOf(staggeringInterval)));
+		
+		// get the list of producers
+		List<RemoteHost> producers = producerConfig.getProducers();
+		if( producers.isEmpty() )
+			producers.add( producerConfig.getDefaultRemoteHost() );
+		
+		// init the remote producer(s) proxy
+		eventProducer = new RemoteDiagnosticsCollectorBaseClass(producers);	
+		eventProducer.init(producerConfig);
 		eventProducer.setRunningStateListener(this);
 		eventProducer.validate();
 
-		eventConsumer.init(consumerProperties);
+		// get the list of consumers
+		List<RemoteHost> consumers = consumerConfig.getConsumers();
+		if( consumers.isEmpty() )
+			consumers.add( consumerConfig.getDefaultRemoteHost() );
+		
+		// init the remote consumer(s) proxy
+		eventConsumer = new RemoteDiagnosticsCollectorBaseClass(consumers);
+		eventConsumer.init(consumerConfig);
 		eventConsumer.setRunningStateListener(this);
 		eventConsumer.validate();
-	}
-	
-	private Properties activeMQProducerProps(String simulationFilePath, String host)
-	{
-		Properties props = new Properties();
-		props.put("simulationFilePath", simulationFilePath);
-		props.put("providerUrl", "tcp://adamm:61617");
-		props.put("destinationType", "Queue");
-		props.put("destinationName", "InputQueue");
-		return props;
-	}
-
-	private Properties activeMQConsumerProps(String host)
-	{
-		Properties props = new Properties();
-		props.put("providerUrl", "tcp://adamm:61617");
-		props.put("destinationType", "Queue");
-		props.put("destinationName", "OutputQueue");
-		return props;
-	}
-
-	private Properties rabbitMQProducerProps(String simulationFilePath, String uri, String exchangeName, String queueName, String routingKey, String connectionCount, String eventsPerSec, String staggeringInterval)
-	{
-		Properties producerProps = new Properties();
-		producerProps.put("simulationFilePath", simulationFilePath);
-		producerProps.put("uri", uri);
-		producerProps.put("exchangeName", exchangeName);
-		producerProps.put("queueName", queueName);
-		if( routingKey != null )
-			producerProps.put("routingKey", routingKey);
-		producerProps.put("connectionCount", connectionCount);
-		producerProps.put("eventsPerSec", eventsPerSec);
-		producerProps.put("staggeringInterval", staggeringInterval);
-		return producerProps;
-	}
-
-	private Properties rabbitMQConsumerProps(String uri, String exchangeName, String queueName, String routingKey, String connectionCount, String eventsPerSec, String staggeringInterval)
-	{
-		Properties consumerProps = new Properties();
-		consumerProps.put("uri", uri);
-		consumerProps.put("exchangeName", exchangeName);
-		consumerProps.put("queueName", queueName);
-		if( routingKey != null )
-			consumerProps.put("routingKey", routingKey);
-		consumerProps.put("connectionCount", connectionCount);
-		consumerProps.put("eventsPerSec", eventsPerSec);
-		consumerProps.put("staggeringInterval", staggeringInterval);
-		return consumerProps;
-	}
-
-	private Properties socketConsumerProps(String targetHost, String targetPort, String connectionCount, String timeOutInSec)
-	{
-		Properties consumerProps = new Properties();
-		consumerProps.put("host", targetHost);
-		consumerProps.put("port", targetPort);
-		consumerProps.put("connectionCount", connectionCount);
-		consumerProps.put("timeOutInSec", timeOutInSec);
-		return consumerProps;
-	}
-
-	private Properties socketProducerProps(String simulationFilePath, String targetHost, String targetPort, String connectionCount, String eventsPerSec, String staggeringInterval)
-	{
-		Properties producerProps = new Properties();
-		producerProps.put("simulationFilePath", simulationFilePath);
-		producerProps.put("host", targetHost);
-		producerProps.put("port", targetPort);
-		producerProps.put("connectionCount", connectionCount);
-		producerProps.put("eventsPerSec", eventsPerSec);
-		producerProps.put("staggeringInterval", staggeringInterval);
-		return producerProps;
-	}
-
-	private Properties streamConsumerProps(String targetHost, String targetPort, String connectionCount)
-	{
-		Properties consumerProps = new Properties();
-		consumerProps.put("host", targetHost);
-		consumerProps.put("port", targetPort);
-		consumerProps.put("connectionCount", connectionCount);
-		consumerProps.put("serviceName", "asdi");
-		return consumerProps;
-	}
-
-	private Properties streamProducerProps(String simulationFilePath, String targetHost, String targetPort, String connectionCount)
-	{
-		Properties producerProps = new Properties();
-		producerProps.put("simulationFilePath", simulationFilePath);
-		producerProps.put("host", targetHost);
-		producerProps.put("port", targetPort);
-		producerProps.put("connectionCount", connectionCount);
-		producerProps.put("serviceName", "asdi");
-		return producerProps;
-	}
-	
-	private Properties kafkaProducerProps(String simulationFilePath, String brokerList, String topic, String acks, String eventsPerSec, String staggeringInterval)
-	{
-	  Properties producerProps = new Properties();
-	  producerProps.put("simulationFilePath", simulationFilePath);
-	  producerProps.put("brokerlist", brokerList);
-	  producerProps.put("topic", topic);
-	  producerProps.put("requiredacks", acks);
-	  producerProps.put("eventsPerSec", eventsPerSec);
-    producerProps.put("staggeringInterval", staggeringInterval);
-	  return producerProps;
 	}
 	
 	@Override

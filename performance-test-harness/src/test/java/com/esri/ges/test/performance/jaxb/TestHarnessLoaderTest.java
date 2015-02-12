@@ -38,7 +38,7 @@ public class TestHarnessLoaderTest
 	}
 	
 	@Test
-	public void testPerformanceTestHarnessMode() throws InterruptedException
+	public void testPerformanceTestHarnessMode_TCP_SANITY() throws InterruptedException
 	{
 		// setup consumer
 		String args = "-m consumer -t tcp -p local";
@@ -50,7 +50,7 @@ public class TestHarnessLoaderTest
 		int numOfThreadsAtStartTime = Thread.activeCount();
 		
 		// run the test
-		args = "-f src/test/resources/fixtures_flights81.xml";
+		args = "-f src/test/resources/fixtures_simple_tcp.xml";
 		TestHarnessExecutor.main(args.split(" "));
 		
 		int numOfThreads = Thread.activeCount();

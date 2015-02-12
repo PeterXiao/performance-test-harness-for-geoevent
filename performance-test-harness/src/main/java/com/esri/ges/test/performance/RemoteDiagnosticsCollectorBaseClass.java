@@ -11,11 +11,16 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.io.IOUtils;
+
+import com.esri.ges.test.performance.jaxb.Config;
+import com.esri.ges.test.performance.jaxb.RemoteHost;
+import com.esri.ges.test.performance.utils.KryoUtils;
+import com.esri.ges.test.performance.utils.NetworkUtils;
 
 public class RemoteDiagnosticsCollectorBaseClass implements DiagnosticsCollector 
 {
@@ -180,14 +185,14 @@ public class RemoteDiagnosticsCollectorBaseClass implements DiagnosticsCollector
 		}
 	}
 
-	public RemoteDiagnosticsCollectorBaseClass(String[] hostnames, int commandPort, boolean isLocal)
+	public RemoteDiagnosticsCollectorBaseClass(List<RemoteHost> hosts)
 	{
-		for( String host : hostnames )
+		for( RemoteHost host : hosts )
 		{
 			try {
 				synchronized(clients)
 				{
-					clients.add(new Connection( host, commandPort, isLocal));
+					clients.add( new Connection( host.getHost(), host.getCommandPort(), NetworkUtils.isLocal(host.getHost()) ) );
 				}
 			} catch (UnknownHostException e) {
 				e.printStackTrace();
@@ -302,22 +307,15 @@ public class RemoteDiagnosticsCollectorBaseClass implements DiagnosticsCollector
 	}
 
 	@Override
-	public void init(Properties props) throws TestException 
+	public void init(Config config) throws TestException 
 	{
-		String command = "";
-		for( String name : props.stringPropertyNames() )
-		{
-			if( command.length() > 0 )
-				command += "__";
-			command += name;
-			command += "::";
-			command += props.getProperty(name);
-		}
+		String data = KryoUtils.toString(config, Config.class);
+		System.out.println( "Sending Data: " + data);
 		synchronized(clients)
 		{
 			for( Connection connection: clients )
 			{
-				connection.send("init:"+command);
+				connection.send("init:"+data);
 			}
 		}
 	}

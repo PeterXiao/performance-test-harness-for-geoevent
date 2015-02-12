@@ -3,16 +3,22 @@ package com.esri.ges.test.performance.jaxb;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 @XmlRootElement(name = "TimeTest")
 public class TimeTest extends AbstractTest
 {
-	private int eventsPerSec = 0;
-	private int totalTimeInSec = 0;
-	private int expectedResultCountPerSec = -1;
-	private int staggeringInterval = 10;
+	protected final int DEFAULT_EVENTS_PER_SEC = 0;
+	protected final int DEFAULT_TOTAL_TIME_IN_SEC = 0;
+	protected final int DEFAULT_EXPECTED_RESULT_COUNT_PER_SEC = -1;
+	protected final int DEFAULT_STAGGERING_INTERVAL = 10;
+	
+	private int eventsPerSec = DEFAULT_EVENTS_PER_SEC;
+	private int totalTimeInSec = DEFAULT_TOTAL_TIME_IN_SEC;
+	private int expectedResultCountPerSec = DEFAULT_EXPECTED_RESULT_COUNT_PER_SEC;
+	private int staggeringInterval = DEFAULT_STAGGERING_INTERVAL;
 	
 	public TimeTest()
 	{
@@ -57,6 +63,57 @@ public class TimeTest extends AbstractTest
 	public void setStaggeringInterval(int staggeringInterval)
 	{
 		this.staggeringInterval = staggeringInterval;
+	}
+	
+	@Override
+	public void apply(Test test)
+	{
+		if( test == null )
+			return;
+		
+		if( test instanceof TimeTest )
+		{
+			TimeTest timeTest = (TimeTest) test;
+			if( getEventsPerSec() == DEFAULT_EVENTS_PER_SEC )
+				setEventsPerSec( timeTest.getEventsPerSec() );
+			if( getExpectedResultCountPerSec() == DEFAULT_EXPECTED_RESULT_COUNT_PER_SEC )
+				setExpectedResultCountPerSec( timeTest.getExpectedResultCountPerSec() );
+			if( getStaggeringInterval() == DEFAULT_STAGGERING_INTERVAL )
+				setStaggeringInterval( timeTest.getStaggeringInterval() );
+			if( getTotalTimeInSec() == DEFAULT_TOTAL_TIME_IN_SEC )
+				setTotalTimeInSec( timeTest.getTotalTimeInSec() );
+		}
+	}
+	
+	@Override
+	public Test copy()
+	{
+		TimeTest copy = new TimeTest();
+		copy.setEventsPerSec(getEventsPerSec());
+		copy.setExpectedResultCountPerSec(getExpectedResultCountPerSec());
+		copy.setStaggeringInterval(getStaggeringInterval());
+		copy.setTotalTimeInSec(getTotalTimeInSec());
+		copy.setType(getType());
+		return copy;
+	}
+	
+	@Override
+	public boolean equals(Object obj)
+	{
+		if (obj == null || !(obj instanceof TimeTest))
+      return false;
+		
+		TimeTest test = (TimeTest) obj;
+    if (!ObjectUtils.equals(getEventsPerSec(), test.getEventsPerSec()))
+      return false;
+    if (!ObjectUtils.equals(getExpectedResultCountPerSec(), test.getExpectedResultCountPerSec()))
+      return false;
+    if (!ObjectUtils.equals(getStaggeringInterval(), test.getStaggeringInterval()))
+      return false;
+    if (!ObjectUtils.equals(getTotalTimeInSec(), test.getTotalTimeInSec()))
+      return false;
+    
+    return super.equals(obj);
 	}
 	
 	@Override

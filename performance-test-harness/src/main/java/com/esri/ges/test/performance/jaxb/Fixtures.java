@@ -14,6 +14,7 @@ public class Fixtures
 	private Report report;
 	private List<Fixture> fixtures;
 	private GeoEventConfiguration geoEventConfiguration;
+	private Fixture defaultFixture;
 	
 	@XmlElement(name = "Report")
 	public Report getReport()
@@ -43,6 +44,16 @@ public class Fixtures
 	public void setFixtures(List<Fixture> fixtures)
 	{
 		this.fixtures = fixtures;
+	}
+	
+	@XmlElement(name = "DefaultFixture")
+	public Fixture getDefaultFixture()
+	{
+		return defaultFixture;
+	}
+	public void setDefaultFixture(Fixture defaultFixture)
+	{
+		this.defaultFixture = defaultFixture;
 	}
 	
 	@Override

@@ -1,7 +1,10 @@
 package com.esri.ges.test.performance.report;
 
+import javax.xml.bind.annotation.XmlEnum;
+
 import org.apache.commons.lang3.StringUtils;
 
+@XmlEnum
 public enum ReportType
 {
 	CSV, XLSX, XML, UNKNOWN;

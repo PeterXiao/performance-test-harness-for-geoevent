@@ -139,10 +139,12 @@ public class TestHarnessExecutor
 			
 			startTime = System.currentTimeMillis();
 			//process all fixtures in sequence/series
+			final Fixture defaultFixture = fixtures.getDefaultFixture();
 			Queue<Fixture> processingQueue = new ConcurrentLinkedQueue<Fixture>(fixtures.getFixtures());
 			while( ! processingQueue.isEmpty() )
 			{
 				Fixture fixture = processingQueue.remove();
+				fixture.apply(defaultFixture);
 				testNames.add( fixture.getName() );
 				TestHarness testHarness = new ThroughputPerformanceTestHarness(fixture);
 				try
@@ -322,7 +324,7 @@ public class TestHarnessExecutor
 
 		// write out the report
 		ReportWriter reportWriter = null;
-		ReportType type = ReportType.fromValue(fixtures.getReport().getType());
+		ReportType type = fixtures.getReport().getType();
 		switch( type )
 		{
 			case XLSX:

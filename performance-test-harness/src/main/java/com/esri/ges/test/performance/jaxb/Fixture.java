@@ -4,22 +4,19 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 @XmlRootElement(name = "Fixture")
-public class Fixture
+public class Fixture implements Appliable<Fixture>
 {
 	private String name;
-	private String protocol;
-	private int commandPort;
-	private boolean isLocal;
-	private GeoEventHost geoEventHost;
+	private DefaultConfig defaultConfig;
+	private ProducerConfig producerConfig;
+	private ConsumerConfig consumerConfig;
 	private Simulation simulation;
-	private Producers producers;
-	private Consumers consumers;
-	private KafkaHost kafkaHost;
-	private RabbitMQHost rabbitMQHost;
 	
 	@XmlAttribute
 	public String getName()
@@ -29,66 +26,6 @@ public class Fixture
 	public void setName(String name)
 	{
 		this.name = name;
-	}
-	
-	@XmlAttribute
-	public String getProtocol()
-	{
-		return protocol;
-	}
-	public void setProtocol(String protocol)
-	{
-		this.protocol = protocol;
-	}
-	
-	@XmlAttribute(required=false)
-	public int getCommandPort()
-	{
-		return commandPort;
-	}
-	public void setCommandPort(int commandPort)
-	{
-		this.commandPort = commandPort;
-	}
-	
-	@XmlAttribute(name="isLocal", required=false)
-	public boolean isLocal()
-	{
-		return isLocal;
-	}
-	public void setLocal(boolean isLocal)
-	{
-		this.isLocal = isLocal;
-	}
-	
-	@XmlElement(name = "GeoEventHost")
-	public GeoEventHost getGeoEventHost()
-	{
-		return geoEventHost;
-	}
-	public void setGeoEventHost(GeoEventHost geoEventHost)
-	{
-		this.geoEventHost = geoEventHost;
-	}
-	
-	@XmlElement(name = "KafkaHost", required=false)
-	public KafkaHost getKafkaHost()
-	{
-	  return kafkaHost;
-	}
-	public void setKafkaHost(KafkaHost kafkaHost)
-	{
-	  this.kafkaHost = kafkaHost;
-	}
-	
-	@XmlElement(name = "RabbitMQHost", required=false)
-	public RabbitMQHost getRabbitMQHost()
-	{
-		return rabbitMQHost;
-	}
-	public void setRabbitMQHost(RabbitMQHost rabbitMQHost)
-	{
-		this.rabbitMQHost = rabbitMQHost;
 	}
 	
 	@XmlElement(name = "Simulation")
@@ -101,24 +38,93 @@ public class Fixture
 		this.simulation = simulation;
 	}
 	
-	@XmlElement(name = "Producers", required=false)
-	public Producers getProducers()
+	@XmlElement(name = "DefaultSharedConfig", required = false)
+	public DefaultConfig getDefaultConfig()
 	{
-		return producers;
+		return defaultConfig;
 	}
-	public void setProducers(Producers producers)
+	public void setDefaultConfig(DefaultConfig defaultConfig)
 	{
-		this.producers = producers;
+		this.defaultConfig = defaultConfig;
 	}
 	
-	@XmlElement(name = "Consumers", required=false)
-	public Consumers getConsumers()
+	@XmlElement(name = "ProducerConfig")
+	public ProducerConfig getProducerConfig()
 	{
-		return consumers;
+		return producerConfig;
 	}
-	public void setConsumers(Consumers consumers)
+	public void setProducerConfig(ProducerConfig producerConfig)
 	{
-		this.consumers = consumers;
+		this.producerConfig = producerConfig;
+	}
+	
+	@XmlElement(name = "ConsumerConfig")
+	public ConsumerConfig getConsumerConfig()
+	{
+		return consumerConfig;
+	}
+	public void setConsumerConfig(ConsumerConfig consumerConfig)
+	{
+		this.consumerConfig = consumerConfig;
+	}
+	
+	@Override
+	public void apply(Fixture fixture)
+	{
+		if( fixture == null )
+			return;
+		
+		if( StringUtils.isEmpty( getName() ) )
+			setName( fixture.getName() );
+		if( fixture.getConsumerConfig() != null )
+		{
+			if( getConsumerConfig() == null )
+				setConsumerConfig((ConsumerConfig)fixture.getConsumerConfig().copy());
+			else
+				getConsumerConfig().apply(fixture.getConsumerConfig());
+		}
+		if( fixture.getDefaultConfig() != null )
+		{
+			if( getDefaultConfig() == null )
+				setDefaultConfig((DefaultConfig)fixture.getDefaultConfig().copy());
+			else
+				getDefaultConfig().apply(fixture.getDefaultConfig());
+		}
+		if( fixture.getProducerConfig() != null )
+		{
+			if( getProducerConfig() == null )
+				setProducerConfig((ProducerConfig)fixture.getProducerConfig().copy());
+			else
+				getProducerConfig().apply(fixture.getProducerConfig());
+		}
+		if( fixture.getSimulation() != null )
+		{
+			if( getSimulation() == null )
+				setSimulation(fixture.getSimulation().copy());
+			else
+				getSimulation().apply(fixture.getSimulation());
+		}
+	}
+	
+	@Override
+	public boolean equals(Object obj)
+	{
+		if (obj == null || !(obj instanceof Fixture))
+      return false;
+		
+		Fixture fixture = (Fixture) obj;
+    if (!ObjectUtils.equals(getConsumerConfig(), fixture.getConsumerConfig()))
+      return false;
+    if (!ObjectUtils.equals(getDefaultConfig(), fixture.getDefaultConfig()))
+      return false;
+    if (!ObjectUtils.equals(getName(), fixture.getName()))
+      return false;
+    if (!ObjectUtils.equals(getProducerConfig(), fixture.getProducerConfig()))
+      return false;
+    if (!ObjectUtils.equals(getSimulation(), fixture.getSimulation()))
+      return false;
+    
+    return true;
 	}
 	
 	@Override

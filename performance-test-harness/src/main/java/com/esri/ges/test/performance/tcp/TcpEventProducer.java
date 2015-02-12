@@ -4,13 +4,13 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.util.Properties;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.esri.ges.test.performance.DiagnosticsCollectorBase;
 import com.esri.ges.test.performance.Mode;
 import com.esri.ges.test.performance.RunningState;
 import com.esri.ges.test.performance.TestException;
+import com.esri.ges.test.performance.jaxb.Config;
 
 public class TcpEventProducer extends DiagnosticsCollectorBase
 {
@@ -21,26 +21,30 @@ public class TcpEventProducer extends DiagnosticsCollectorBase
 	private int						eventsPerSec				= -1;
 	private int						staggeringInterval	= 10;
 
+	public TcpEventProducer()
+	{
+		super(Mode.PRODUCER);
+	}
+	
 	@Override
-	public synchronized void init(Properties props) throws TestException
+	public synchronized void init(Config config) throws TestException
 	{
 		try
 		{
-			String path = props.containsKey("simulationFilePath") ? props.getProperty("simulationFilePath").trim() : "";
+			String path = config.getPropertyValue("simulationFile", "");
 			loadEvents(new File(path));
 
-			host = props.containsKey("host") ? props.getProperty("host").trim() : "localhost";
+			host = config.getPropertyValue("host", "localhost");
 			// if we have list, then grab the first one
 			if (host.indexOf(",") != -1)
 			{
 				host = host.split(",")[0];
 			}
-			port = props.containsKey("port") ? Integer.parseInt(props.getProperty("port")) : 5565;
+			port = Integer.parseInt(config.getPropertyValue("port", "5565"));
 			socket = new Socket(host, port);
-			eventsPerSec = props.containsKey("eventsPerSec") ? Integer.parseInt(props.getProperty("eventsPerSec")) : -1;
-			staggeringInterval = props.containsKey("staggeringInterval") ? Integer.parseInt(props.getProperty("staggeringInterval")) : 10;
+			eventsPerSec = Integer.parseInt(config.getPropertyValue("eventsPerSec", "-1"));
+			staggeringInterval = Integer.parseInt(config.getPropertyValue("staggeringInterval", "1"));
 			os = socket.getOutputStream();
-			mode = Mode.PRODUCER;
 		}
 		catch (Throwable e)
 		{

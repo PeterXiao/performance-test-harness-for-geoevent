@@ -1,6 +1,5 @@
 package com.esri.ges.test.performance.activemq;
 
-import java.util.Properties;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.jms.Connection;
@@ -14,8 +13,10 @@ import org.apache.activemq.ActiveMQConnection;
 import org.apache.activemq.ActiveMQConnectionFactory;
 
 import com.esri.ges.test.performance.DiagnosticsCollectorBase;
+import com.esri.ges.test.performance.Mode;
 import com.esri.ges.test.performance.RunningState;
 import com.esri.ges.test.performance.TestException;
+import com.esri.ges.test.performance.jaxb.Config;
 
 public class ActiveMQEventConsumer extends DiagnosticsCollectorBase
 {
@@ -23,13 +24,18 @@ public class ActiveMQEventConsumer extends DiagnosticsCollectorBase
   protected Session         session;
   protected MessageConsumer consumer;
 
+  public ActiveMQEventConsumer()
+	{
+  	super(Mode.CONSUMER);
+	}
+  
   @Override
-  public void init(Properties props) throws TestException
+  public void init(Config config) throws TestException
   {
-    String providerUrl = props.containsKey("providerUrl") ? props.getProperty("providerUrl").trim() : null;
+    String providerUrl = config.getPropertyValue("providerUrl");
     System.out.println("---> providerUrl = "+providerUrl);
-    String destinationType = props.containsKey("destinationType") ? props.getProperty("destinationType").trim() : null;
-    String destinationName = props.containsKey("destinationName") ? props.getProperty("destinationName").trim() : null;
+    String destinationType = config.getPropertyValue("destinationType");
+    String destinationName = config.getPropertyValue("destinationName");
     if (providerUrl == null)
       throw new TestException("providerUrl property must be specified");
     if (destinationType == null)

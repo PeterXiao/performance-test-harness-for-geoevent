@@ -3,7 +3,6 @@ package com.esri.ges.test.performance.websocket;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
-import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -15,6 +14,7 @@ import com.esri.ges.test.performance.DiagnosticsCollectorBase;
 import com.esri.ges.test.performance.Mode;
 import com.esri.ges.test.performance.RunningState;
 import com.esri.ges.test.performance.TestException;
+import com.esri.ges.test.performance.jaxb.Config;
 
 /* ------------------------------------------------------------ */
 public class WebsocketEventProducer extends DiagnosticsCollectorBase
@@ -29,6 +29,11 @@ public class WebsocketEventProducer extends DiagnosticsCollectorBase
 	private WebSocketClient client;
 	private int connectionCount;
 
+	public WebsocketEventProducer()
+	{
+		super(Mode.PRODUCER);
+	}
+	
 	class MyConnection  implements WebSocket.OnTextMessage
 	{
 		WebSocket.Connection connection;
@@ -73,7 +78,7 @@ public class WebsocketEventProducer extends DiagnosticsCollectorBase
 	}
 
 	@Override
-	public void init(Properties props) throws TestException
+	public void init(Config config) throws TestException
 	{
 		try
 		{
@@ -96,11 +101,10 @@ public class WebsocketEventProducer extends DiagnosticsCollectorBase
 				client.setProtocol("input");
 			}
 
-			loadEvents(new File(props.containsKey("simulationFilePath") ? props.getProperty("simulationFilePath").trim() : ""));
-			host = props.containsKey("host") ? props.getProperty("host").trim() : "localhost";
-			port = props.containsKey("port") ? Integer.valueOf(props.getProperty("port")) : 5565;
-			connectionCount = props.containsKey("connectionCount") ? Integer.valueOf(props.getProperty("connectionCount")) : 1;
-			mode = Mode.PRODUCER;
+			loadEvents(new File(config.getPropertyValue("simulationFile", "")));
+			host = config.getPropertyValue("host", "localhost");
+			port = Integer.parseInt(config.getPropertyValue("port", "5570"));
+			connectionCount = Integer.parseInt(config.getPropertyValue("connectionCount", "1"));
 			
 			String url = "ws://"+host+":"+port+STREAM_SERVICE+INBOUND;
 			URI uri = new URI(url);

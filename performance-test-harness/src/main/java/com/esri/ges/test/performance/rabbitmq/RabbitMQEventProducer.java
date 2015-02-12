@@ -2,13 +2,13 @@ package com.esri.ges.test.performance.rabbitmq;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Properties;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.esri.ges.test.performance.DiagnosticsCollectorBase;
 import com.esri.ges.test.performance.Mode;
 import com.esri.ges.test.performance.RunningState;
 import com.esri.ges.test.performance.TestException;
+import com.esri.ges.test.performance.jaxb.Config;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
@@ -26,17 +26,22 @@ public class RabbitMQEventProducer extends DiagnosticsCollectorBase
 	private int eventsPerSec = -1;
 	private int staggeringInterval = 10;
 	  
-	@Override
-	public void init(Properties props) throws TestException
+	public RabbitMQEventProducer()
 	{
-		loadEvents(new File(props.containsKey("simulationFilePath") ? props.getProperty("simulationFilePath").trim() : ""));
-		uri = props.containsKey("uri") ? props.getProperty("uri").trim() : null;
-		exchangeName = props.containsKey("exchangeName") ? props.getProperty("exchangeName").trim() : null;
-		queueName = props.containsKey("queueName") ? props.getProperty("queueName").trim() : null;
-		routingKey = props.containsKey("routingKey") ? props.getProperty("routingKey").trim() : null;
-		eventsPerSec = props.containsKey("eventsPerSec") ? Integer.parseInt(props.getProperty("eventsPerSec")) : -1;
-		staggeringInterval = props.containsKey("staggeringInterval") ? Integer.parseInt(props.getProperty("staggeringInterval")) : 10;
-		
+		super(Mode.PRODUCER);
+	}
+	
+	@Override
+	public void init(Config config) throws TestException
+	{
+		loadEvents(new File( config.getPropertyValue("simulationFile", "")));
+		uri = config.getPropertyValue("uri");
+		exchangeName = config.getPropertyValue("exchangeName");
+		queueName = config.getPropertyValue("queueName");
+		routingKey = config.getPropertyValue("routingKey");
+		eventsPerSec = Integer.parseInt(config.getPropertyValue("eventsPerSec","-1"));
+    staggeringInterval = Integer.parseInt(config.getPropertyValue("staggeringInterval","1"));
+     
 		if (uri == null)
 			throw new TestException("RabbitMQ event producer ERROR: 'uri' property must be specified");
 		if (exchangeName == null)
@@ -52,7 +57,6 @@ public class RabbitMQEventProducer extends DiagnosticsCollectorBase
 			channel = connection.createChannel();
 			channel.queueDeclare(queueName, false, false, true, null);
 			channel.queueBind(queueName, exchangeName, routingKey);
-			mode = Mode.PRODUCER;
 		}
 		catch (Exception e)
 		{

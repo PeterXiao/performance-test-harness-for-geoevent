@@ -6,18 +6,24 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
+
+import com.esri.ges.test.performance.jaxb.Config;
+import com.esri.ges.test.performance.jaxb.ConsumerConfig;
+import com.esri.ges.test.performance.jaxb.ProducerConfig;
+import com.esri.ges.test.performance.utils.KryoUtils;
 
 public abstract class DiagnosticsCollectorBase implements DiagnosticsCollector, InterruptableRunnable
 {
@@ -33,8 +39,13 @@ public abstract class DiagnosticsCollectorBase implements DiagnosticsCollector, 
 	protected List<String> events = new ArrayList<String>();
 	private CommandInterpreter commandInterpreter;
 	protected AtomicLong successfulEvents = new AtomicLong();
-	protected Mode mode = Mode.UNKNOWN;
+	protected final Mode mode;
 	protected long timeOutInSec = 10;
+	
+	public DiagnosticsCollectorBase(Mode mode)
+	{
+		this.mode = mode;
+	}
 	
 	public int getNumberOfEvents()
 	{
@@ -213,7 +224,7 @@ public abstract class DiagnosticsCollectorBase implements DiagnosticsCollector, 
 					Socket commandSocket = s.accept();
 					try
 					{
-						commandSocket.setSoTimeout(100);
+						commandSocket.setSoTimeout(1000);
 						in = new BufferedReader( new InputStreamReader( commandSocket.getInputStream() ) );
 						out = new PrintWriter( commandSocket.getOutputStream() );
 						while(in != null)
@@ -255,20 +266,34 @@ public abstract class DiagnosticsCollectorBase implements DiagnosticsCollector, 
 									//System.out.println("Updating values to successtimestamp="+lastSuccessIncrement+", and lastCount="+lastSuccessCount);
 								}
 							}
+							
+							//we need to read multiple lines efficiently
+							StringWriter sw = new StringWriter();
 							String command = null;
 							try
 							{
-								command = in.readLine();
-							}catch(SocketTimeoutException ex)
-							{
-								//continue;
+								char[] buffer = new char[1024 * 4];
+								int n = 0;
+								while (-1 != (n = in.read(buffer))) {
+								    sw.write(buffer, 0, n);
+								}
 							}
-							if( command == null )
+							catch(SocketTimeoutException ex)
+							{
+								//ignore
+							}
+							finally
+							{
+								command = sw.toString();
+							}
+							
+							if( StringUtils.isEmpty(command))
 								continue;
+							
 							//System.out.println("Received command \"" + command + "\"");
 							synchronized(out)
 							{
-								if( command.equals("start") )
+								if( command.startsWith("start") )
 								{
 									try
 									{
@@ -279,12 +304,12 @@ public abstract class DiagnosticsCollectorBase implements DiagnosticsCollector, 
 										out.println(ERROR+ex.getMessage());
 									}
 								}
-								else if( command.equals("stop"))
+								else if( command.startsWith("stop"))
 								{
 									stop();
 									out.println(OK);
 								}
-								else if( command.equals("isRunning"))
+								else if( command.startsWith("isRunning"))
 								{
 									boolean b = isRunning();
 									if(b)
@@ -292,37 +317,35 @@ public abstract class DiagnosticsCollectorBase implements DiagnosticsCollector, 
 									else
 										out.println("FALSE");
 								}
-								else if( command.equals("getRunningState"))
+								else if( command.startsWith("getRunningState"))
 								{
 									RunningState st = getRunningState();
 									out.println(st.toString());
 								}
-								else if( command.equals("getStatusDetails"))
+								else if( command.startsWith("getStatusDetails"))
 								{
 									String details = getStatusDetails();
 									out.println(details);
 								}
 								else if( command.startsWith("init:"))
 								{
-									command = command.substring("init:".length());
-									String[] propertyStrings = command.split("__");
-									Properties props = new Properties();
-									for( String propertyString : propertyStrings )
-									{
-										String[] pair = propertyString.split("::");
-										if( pair.length == 2 )
-											props.setProperty(pair[0], pair[1]);
-									}
+									String dataStr = command.substring("init:".length());
+									System.out.println( "Incoming Data: " + dataStr);
+									Config config = null;
+									if( mode == Mode.CONSUMER)
+										config = KryoUtils.fromString(dataStr, ConsumerConfig.class);
+									else if( mode == Mode.PRODUCER)
+										config = KryoUtils.fromString(dataStr, ProducerConfig.class);
 									try
 									{
-										init(props);
+										init(config);
 										out.println(OK);
 									}catch(TestException ex)
 									{
 										out.println(ERROR+ex.getMessage());
 									}
 								}
-								else if( command.equals("validate"))
+								else if( command.startsWith("validate"))
 								{
 									try
 									{
@@ -333,7 +356,7 @@ public abstract class DiagnosticsCollectorBase implements DiagnosticsCollector, 
 										out.println(ERROR+ex.getMessage());
 									}
 								}
-								else if( command.equals("destroy"))
+								else if( command.startsWith("destroy"))
 								{
 									destroy();
 									out.println(OK);
@@ -348,17 +371,17 @@ public abstract class DiagnosticsCollectorBase implements DiagnosticsCollector, 
 									//continue to the top of the while loop
 									continue;
 								}
-								else if( command.equals("reset"))
+								else if( command.startsWith("reset"))
 								{
 									reset();
 									out.println(OK);
 								}
-								else if( command.equals("getNumberOfEvents"))
+								else if( command.startsWith("getNumberOfEvents"))
 								{
 									int num = getNumberOfEvents();
 									out.println(String.valueOf(num));
 								}
-								else if( command.equals("getSuccessfulEvents"))
+								else if( command.startsWith("getSuccessfulEvents"))
 								{
 									long num = getSuccessfulEvents();
 									out.println(String.valueOf(num));
@@ -367,7 +390,7 @@ public abstract class DiagnosticsCollectorBase implements DiagnosticsCollector, 
 								{
 									if( command.length() > "setNumberOfEvents:".length() )
 									{
-										String param = command.substring("setNumberOfEvents:".length());
+										String param = command.substring("setNumberOfEvents:".length()).trim();
 										setNumberOfEvents(Integer.parseInt(param));
 									}
 									out.println(OK);
@@ -376,7 +399,7 @@ public abstract class DiagnosticsCollectorBase implements DiagnosticsCollector, 
 								{
 									if( command.length() > "setNumberOfExpectedResults:".length() )
 									{
-										String param = command.substring("setNumberOfExpectedResults:".length());
+										String param = command.substring("setNumberOfExpectedResults:".length()).trim();
 										setNumberOfExpectedResults(Integer.parseInt(param));
 									}
 									out.println(OK);
@@ -385,12 +408,12 @@ public abstract class DiagnosticsCollectorBase implements DiagnosticsCollector, 
 								{
 									if( command.length() > "setTimeOutInSec:".length() )
 									{
-										String param = command.substring("setTimeOutInSec:".length());
+										String param = command.substring("setTimeOutInSec:".length()).trim();
 										setTimeOutInSec(Long.parseLong(param));
 									}
 									out.println(OK);
 								}
-								else if( command.equals("getTimeStamps"))
+								else if( command.startsWith("getTimeStamps"))
 								{
 									Map<Integer, Long[]> values = getTimeStamps();
 									StringBuilder b = new StringBuilder();

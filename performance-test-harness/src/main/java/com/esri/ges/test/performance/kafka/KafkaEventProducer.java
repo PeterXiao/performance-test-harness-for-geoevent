@@ -14,6 +14,7 @@ import com.esri.ges.test.performance.DiagnosticsCollectorBase;
 import com.esri.ges.test.performance.Mode;
 import com.esri.ges.test.performance.RunningState;
 import com.esri.ges.test.performance.TestException;
+import com.esri.ges.test.performance.jaxb.Config;
 
 public class KafkaEventProducer extends DiagnosticsCollectorBase
 {
@@ -25,18 +26,22 @@ public class KafkaEventProducer extends DiagnosticsCollectorBase
   private int eventsPerSec = -1;
   private int staggeringInterval = 10;
   
+  public KafkaEventProducer()
+	{
+  	super(Mode.PRODUCER);
+	}
   
   @Override
-  public synchronized void init(Properties props) throws TestException
+  public synchronized void init(Config config) throws TestException
   {
     try
     {
-      String path = props.containsKey("simulationFilePath") ? props.getProperty("simulationFilePath").trim() : "";
+      String path = config.getPropertyValue("simulationFile", "");
       loadEvents(new File(path));
       
-      brokerList = props.containsKey("brokerlist") ? props.getProperty("brokerlist").trim() : "localhost:9092";
-      topic = props.containsKey("topic") ? props.getProperty("topic").trim() : "default-topic";
-      acks = props.containsKey("requiredacks") ? props.getProperty("requiredacks").trim() : "1";
+      brokerList = config.getPropertyValue("brokerList", "localhost:9092");
+      topic = config.getPropertyValue("topic", "default-topic");
+      acks = config.getPropertyValue("requiredAcks", "1");
       
       Properties kprops = new Properties();
       
@@ -48,14 +53,12 @@ public class KafkaEventProducer extends DiagnosticsCollectorBase
       kprops.put("queue.buffering.max.ms", "1000");
       kprops.put("batch.num.messages", "2000");
        
-      ProducerConfig config = new ProducerConfig(kprops);
+      ProducerConfig producerConfig = new ProducerConfig(kprops);
       
-      producer = new Producer<String, String>(config);
+      producer = new Producer<String, String>(producerConfig);
       
-      eventsPerSec = props.containsKey("eventsPerSec") ? Integer.parseInt(props.getProperty("eventsPerSec")) : -1;
-      staggeringInterval = props.containsKey("staggeringInterval") ? Integer.parseInt(props.getProperty("staggeringInterval")) : 10;
-
-      mode = Mode.PRODUCER;
+      eventsPerSec = Integer.parseInt(config.getPropertyValue("eventsPerSec","-1"));
+      staggeringInterval = Integer.parseInt(config.getPropertyValue("staggeringInterval","1"));
     }
     catch (Throwable e)
     {

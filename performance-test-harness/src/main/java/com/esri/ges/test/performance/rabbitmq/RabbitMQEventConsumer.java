@@ -1,13 +1,13 @@
 package com.esri.ges.test.performance.rabbitmq;
 
 import java.io.IOException;
-import java.util.Properties;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.esri.ges.test.performance.DiagnosticsCollectorBase;
 import com.esri.ges.test.performance.Mode;
 import com.esri.ges.test.performance.RunningState;
 import com.esri.ges.test.performance.TestException;
+import com.esri.ges.test.performance.jaxb.Config;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
@@ -23,13 +23,18 @@ public class RabbitMQEventConsumer extends DiagnosticsCollectorBase
 	private String						queueName;
 	private String 						routingKey 					= null;
 
-	@Override
-	public void init(Properties props) throws TestException
+	public RabbitMQEventConsumer()
 	{
-		uri = props.containsKey("uri") ? props.getProperty("uri").trim() : null;
-		exchangeName = props.containsKey("exchangeName") ? props.getProperty("exchangeName").trim() : null;
-		queueName = props.containsKey("queueName") ? props.getProperty("queueName").trim() : null;
-		routingKey = props.containsKey("routingKey") ? props.getProperty("routingKey") : null;
+		super(Mode.CONSUMER);
+	}
+	
+	@Override
+	public void init(Config config) throws TestException
+	{
+		uri = config.getPropertyValue("uri");
+		exchangeName = config.getPropertyValue("exchangeName");
+		queueName = config.getPropertyValue("queueName");
+		routingKey = config.getPropertyValue("routingKey");
 	
 		if (uri == null)
 			throw new TestException("RabbitMQ event consumer ERROR: 'uri' property must be specified");
@@ -50,7 +55,6 @@ public class RabbitMQEventConsumer extends DiagnosticsCollectorBase
 			// channel.basicQos(1);
 			consumer = new QueueingConsumer(channel);
 			channel.basicConsume(queueName, true, consumer);
-			mode = Mode.CONSUMER;
 		}
 		catch (Exception e)
 		{

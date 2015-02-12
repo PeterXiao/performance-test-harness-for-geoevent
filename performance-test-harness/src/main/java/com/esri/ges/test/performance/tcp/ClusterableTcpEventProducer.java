@@ -6,7 +6,6 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -14,6 +13,7 @@ import com.esri.ges.test.performance.DiagnosticsCollectorBase;
 import com.esri.ges.test.performance.Mode;
 import com.esri.ges.test.performance.RunningState;
 import com.esri.ges.test.performance.TestException;
+import com.esri.ges.test.performance.jaxb.Config;
 
 public class ClusterableTcpEventProducer extends DiagnosticsCollectorBase
 {
@@ -29,6 +29,7 @@ public class ClusterableTcpEventProducer extends DiagnosticsCollectorBase
 
 	public ClusterableTcpEventProducer(int communicationPort)
 	{
+		super(Mode.PRODUCER);
 		port = communicationPort;
 		if (serverMode)
 		{
@@ -47,14 +48,14 @@ public class ClusterableTcpEventProducer extends DiagnosticsCollectorBase
 	}
 
 	@Override
-	public synchronized void init(Properties props) throws TestException
+	public synchronized void init(Config config) throws TestException
 	{
 		try
 		{
-			String path = props.containsKey("simulationFilePath") ? props.getProperty("simulationFilePath").trim() : "";
+			String path = config.getPropertyValue("simulationFile", "");
 			loadEvents(new File(path));
 
-			host = props.containsKey("host") ? props.getProperty("host").trim() : "localhost";
+			host = config.getPropertyValue("host", "localhost");
 			// do we have a list of hosts
 			if (host.indexOf(",") != -1)
 			{
@@ -65,10 +66,9 @@ public class ClusterableTcpEventProducer extends DiagnosticsCollectorBase
 				hosts = new String[] { host };
 			}
 
-			port = props.containsKey("port") ? Integer.parseInt(props.getProperty("port")) : 5565;
-			eventsPerSec = props.containsKey("eventsPerSec") ? Integer.parseInt(props.getProperty("eventsPerSec")) : -1;
-			staggeringInterval = props.containsKey("staggeringInterval") ? Integer.parseInt(props.getProperty("staggeringInterval")) : 10;
-			mode = Mode.PRODUCER;
+			port = Integer.parseInt(config.getPropertyValue("port", "5565"));
+			eventsPerSec = Integer.parseInt(config.getPropertyValue("eventsPerSec", "-1"));
+			staggeringInterval = Integer.parseInt(config.getPropertyValue("staggeringInterval", "1"));
 
 			// init the workers
 			initWorkers();

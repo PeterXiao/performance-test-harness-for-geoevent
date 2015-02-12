@@ -5,13 +5,14 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
-import java.util.Properties;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.esri.ges.test.performance.DiagnosticsCollectorBase;
 import com.esri.ges.test.performance.Mode;
 import com.esri.ges.test.performance.RunningState;
 import com.esri.ges.test.performance.TestException;
+import com.esri.ges.test.performance.jaxb.Config;
+import com.esri.ges.test.performance.jaxb.ConsumerConfig;
 
 public class TcpEventConsumer extends DiagnosticsCollectorBase
 {
@@ -20,24 +21,28 @@ public class TcpEventConsumer extends DiagnosticsCollectorBase
 	private Socket socket;
 	private BufferedReader is;
 	
+	public TcpEventConsumer()
+	{
+		super(Mode.CONSUMER);
+	}
+	
 	@Override
-	public synchronized void init(Properties props) throws TestException
+	public synchronized void init(Config config) throws TestException
 	{
 		try
 		{
-			host = props.containsKey("host") ? props.getProperty("host").trim() : "localhost";
+			host = config.getPropertyValue("host", "localhost");
 			//if we have list, then grab the first one
 			if( host.indexOf(",")  != -1 )
 			{
 				host = host.split(",")[0];
 			}
-			port = props.containsKey("port") ? Integer.parseInt(props.getProperty("port")) : 5570;
+			port = Integer.parseInt(config.getPropertyValue("port", "5570"));
 			socket = new Socket(host, port);
 			socket.setSoTimeout(100);
 			is = new BufferedReader( new InputStreamReader( socket.getInputStream() ) );
-			long timeOutInSec = props.containsKey("timeOutInSec") ? Long.parseLong(props.getProperty("timeOutInSec")) : 10;
-			setTimeOutInSec(timeOutInSec);
-			mode = Mode.CONSUMER;
+			
+			setTimeOutInSec(((ConsumerConfig)config).getTimeoutInSec());
 		}
 		catch (Throwable e)
 		{

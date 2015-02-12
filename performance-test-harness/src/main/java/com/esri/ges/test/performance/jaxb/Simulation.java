@@ -1,42 +1,18 @@
 package com.esri.ges.test.performance.jaxb;
 
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 @XmlRootElement(name = "Simulation")
-public class Simulation
+public class Simulation implements Appliable<Simulation>
 {
-	private final int DEFAULT_CONSUMER_TIMEOUT_IN_SEC = 10;
-
-	private int consumerTimeOutInSec = DEFAULT_CONSUMER_TIMEOUT_IN_SEC;
-	private String sourceFile;
 	private Test test;
-	
-	@XmlAttribute
-	public int getConsumerTimeOutInSec()
-	{
-		return consumerTimeOutInSec;
-	}
-	public void setConsumerTimeOutInSec(int consumerTimeOutInSec)
-	{
-		this.consumerTimeOutInSec = consumerTimeOutInSec;
-	}
-	
-	@XmlElement(name = "SourceFile")
-	public String getSourceFile()
-	{
-		return sourceFile;
-	}
-	public void setSourceFile(String sourceFile)
-	{
-		this.sourceFile = sourceFile;
-	}
 	
 	@XmlElements( { 
 		@XmlElement( name="RampTest", type = RampTest.class ),
@@ -156,6 +132,43 @@ public class Simulation
 			return ((TimeTest)getTest()).getStaggeringInterval();
 		}
 		return 10;
+	}
+	
+	@Override
+	public void apply(Simulation simulation)
+	{
+		if( simulation == null )
+			return;
+		
+		// apply the test
+		if( simulation.getTest() != null )
+		{
+			if( getTest() != null )
+			{
+				getTest().apply( simulation.getTest() );
+			}
+		}
+	}
+	
+	public Simulation copy()
+	{
+		Simulation copy = new Simulation();
+		if( getTest() != null )
+			copy.setTest(getTest().copy());
+		return copy;
+	}
+	
+	@Override
+	public boolean equals(Object obj)
+	{
+		if (obj == null || !(obj instanceof Simulation))
+      return false;
+		
+		Simulation simulation = (Simulation) obj;
+    if (!ObjectUtils.equals(getTest(), simulation.getTest()))
+      return false;
+    
+    return true;
 	}
 	
 	@Override

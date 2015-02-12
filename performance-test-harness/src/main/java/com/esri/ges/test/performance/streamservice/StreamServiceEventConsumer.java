@@ -2,7 +2,6 @@ package com.esri.ges.test.performance.streamservice;
 
 import java.net.URI;
 import java.util.List;
-import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -14,10 +13,11 @@ import com.esri.ges.test.performance.DiagnosticsCollectorBase;
 import com.esri.ges.test.performance.Mode;
 import com.esri.ges.test.performance.RunningState;
 import com.esri.ges.test.performance.TestException;
+import com.esri.ges.test.performance.jaxb.Config;
 
 public class StreamServiceEventConsumer extends DiagnosticsCollectorBase
 {
-	private static final String STREAM_SERVICE = "/streamservice";
+	//private static final String STREAM_SERVICE = "/streamservice";
 	private static final String SUBSCRIBE = "/subscribe";
 
 	private String host;
@@ -32,6 +32,11 @@ public class StreamServiceEventConsumer extends DiagnosticsCollectorBase
 	private StreamMetadata metaData;
 	private String serviceName;
 
+	public StreamServiceEventConsumer()
+	{
+		super(Mode.CONSUMER);
+	}
+	
 	class MyConnection  implements WebSocket.OnTextMessage
 	{
 		WebSocket.Connection connection;
@@ -93,7 +98,7 @@ public class StreamServiceEventConsumer extends DiagnosticsCollectorBase
 	}
 
 	@Override
-	public void init(Properties props) throws TestException
+	public void init(Config config) throws TestException
 	{
 		System.out.println("init:");
 		try
@@ -116,12 +121,11 @@ public class StreamServiceEventConsumer extends DiagnosticsCollectorBase
 				client.setMaxIdleTime(MAX_IDLE_TIME);
 				client.setProtocol("output");
 			}
-
-			host = props.containsKey("host") ? props.getProperty("host").trim() : "localhost";
-			port = props.containsKey("port") ? Integer.valueOf(props.getProperty("port")) : 6180;
-			serviceName = props.containsKey("serviceName") ? props.getProperty("serviceName").trim() : "vehicles";
-			connectionCount = props.containsKey("connectionCount") ? Integer.valueOf(props.getProperty("connectionCount")) : 1;
-			mode = Mode.CONSUMER;
+			
+			host = config.getPropertyValue("host", "localhost");
+			port = Integer.parseInt(config.getPropertyValue("port","6180"));
+			serviceName = config.getPropertyValue("serviceName", "vehicles");
+			connectionCount = Integer.parseInt(config.getPropertyValue("connectionCount","1"));
 			
 			String serviceMetadataUrl = "http://"+host+":"+port+"/arcgis/rest/services/"+serviceName+"/StreamServer?f=json";
 			metaData = new StreamMetadata( serviceMetadataUrl );

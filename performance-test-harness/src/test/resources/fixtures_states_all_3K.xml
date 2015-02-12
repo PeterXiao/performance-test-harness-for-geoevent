@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!DOCTYPE Fixtures SYSTEM "Fixtures.dtd">
 <Fixtures>
 	<Report type="XLSX" simpleColumnNames="true">
 		<ReportFile>C:\Testing\performance-test-10.3.0\reports\rtrujillo\US States\3K-Baseline.xlsx</ReportFile>

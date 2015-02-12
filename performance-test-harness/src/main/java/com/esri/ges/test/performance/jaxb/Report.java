@@ -4,24 +4,27 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+
+import com.esri.ges.test.performance.report.ReportType;
 
 @XmlRootElement(name = "Report")
 public class Report
 {
-	private String type;
+	private ReportType type;
 	private String reportFile;
 	private boolean simpleColumnNames = false;
 	private int maxNumberOfReportFiles = 10;
 	
 	@XmlAttribute
-	public String getType()
+	public ReportType getType()
 	{
 		return type;
 	}
 
-	public void setType(String type)
+	public void setType(ReportType type)
 	{
 		this.type = type;
 	}
@@ -56,6 +59,23 @@ public class Report
 	public void setMaxNumberOfReportFiles(int maxNumberOfReportFiles)
 	{
 		this.maxNumberOfReportFiles = maxNumberOfReportFiles;
+	}
+	
+	@Override
+	public boolean equals(Object obj)
+	{
+		if (obj == null || !(obj instanceof Report))
+      return false;
+		
+		Report report = (Report) obj;
+    if (!ObjectUtils.equals(getMaxNumberOfReportFiles(), report.getMaxNumberOfReportFiles()))
+      return false;
+    if (!ObjectUtils.equals(getReportFile(), report.getReportFile()))
+      return false;
+    if (!ObjectUtils.equals(getType(), report.getType()))
+      return false;
+    
+    return true;
 	}
 	
 	@Override

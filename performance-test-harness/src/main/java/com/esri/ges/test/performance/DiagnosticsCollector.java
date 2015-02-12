@@ -1,11 +1,12 @@
 package com.esri.ges.test.performance;
 
 import java.util.Map;
-import java.util.Properties;
+
+import com.esri.ges.test.performance.jaxb.Config;
 
 public interface DiagnosticsCollector extends RunnableComponent
 {
-  public void init(Properties props) throws TestException;
+  public void init(Config config) throws TestException;
   public void validate() throws TestException;
   public void destroy();
   public void reset();
