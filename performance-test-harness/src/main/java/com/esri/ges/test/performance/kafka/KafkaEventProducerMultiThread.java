@@ -10,7 +10,6 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import kafka.javaapi.producer.Producer;
 import kafka.producer.KeyedMessage;
@@ -27,6 +26,7 @@ import com.esri.ges.test.performance.jaxb.Config;
  * Currently the max number of threads and producers are set to 4.
  *
  */
+@Deprecated
 public class KafkaEventProducerMultiThread extends DiagnosticsCollectorBase
 {
   private String brokerList;
@@ -121,7 +121,7 @@ public class KafkaEventProducerMultiThread extends DiagnosticsCollectorBase
   }
 
   @Override
-  public void run(AtomicBoolean alive)
+  public void run()
   {
     if (numberOfEvents > 0)
     {

@@ -25,7 +25,7 @@ import com.esri.ges.test.performance.jaxb.ConsumerConfig;
 import com.esri.ges.test.performance.jaxb.ProducerConfig;
 import com.esri.ges.test.performance.utils.KryoUtils;
 
-public abstract class DiagnosticsCollectorBase implements DiagnosticsCollector, InterruptableRunnable
+public abstract class DiagnosticsCollectorBase implements DiagnosticsCollector, Runnable
 {
 	private static final String ERROR = "ERROR:";
 	private static final String STATE_LABEL = "STATE:";
@@ -79,30 +79,13 @@ public abstract class DiagnosticsCollectorBase implements DiagnosticsCollector, 
 	{
 		return timeStamps;
 	}
-	
-	class InterruptableThread extends Thread
-	{
-		AtomicBoolean running;
-		InterruptableRunnable worker;
-		
-		public InterruptableThread( AtomicBoolean running, InterruptableRunnable worker )
-		{
-			this.running = running;
-			this.worker = worker;
-		}
-		
-		public void run()
-		{
-			worker.run(running);
-		}
-	}
 
 	@Override
 	public void start() throws RunningException
 	{
 		running = new AtomicBoolean(true);
-		Thread t = new InterruptableThread(running,this);
-		t.start();
+		Thread thread = new Thread(this);
+		thread.start();
 	}
 
 	@Override
@@ -204,8 +187,6 @@ public abstract class DiagnosticsCollectorBase implements DiagnosticsCollector, 
 		int port;
 		private BufferedReader in;
 		private PrintWriter out;
-		private long lastSuccessCount = 0;
-		private long lastSuccessIncrement = 0;
 
 		public CommandInterpreter( int commandPort )
 		{
@@ -224,49 +205,11 @@ public abstract class DiagnosticsCollectorBase implements DiagnosticsCollector, 
 					Socket commandSocket = s.accept();
 					try
 					{
-						commandSocket.setSoTimeout(1000);
+						commandSocket.setSoTimeout(50);
 						in = new BufferedReader( new InputStreamReader( commandSocket.getInputStream() ) );
 						out = new PrintWriter( commandSocket.getOutputStream() );
 						while(in != null)
 						{
-							if( running.get() )
-							{
-								long currentValue = successfulEvents.get();
-								long now = System.currentTimeMillis();
-									
-								//System.out.println("Current count = " + currentValue + " last timestamp = " + lastSuccessIncrement + ", which is " + (now-lastSuccessIncrement)/1000 + " seconds.");
-								if( lastSuccessCount == currentValue )
-								{
-									if( lastSuccessIncrement == 0 )
-										lastSuccessIncrement = now;
-									if( now - lastSuccessIncrement > timeOutInSec*1000 && mode == Mode.CONSUMER)
-									{
-										System.out.println("Timeout reached.  Stopping test because data apparently stopped flowing.");
-										running.set(false);
-										Long[] timeStamp = { lastSuccessIncrement, lastSuccessIncrement };
-										synchronized (timeStamps)
-										{
-											timeStamps.put(timeStamps.size(), timeStamp);
-										}
-										lastSuccessIncrement = 0;
-										System.out.println("Checking the consumed a total of: " + successfulEvents.get() + " events.");
-										runningStateListener.onStateChange(RunningState.STOPPED);
-									}
-//									else
-//									{
-//										long seconds = (now - lastSuccessIncrement) / 1000;
-//										if( seconds > 0 )
-//											System.out.println("It's been " + seconds + " seconds since the last message.");
-//									}
-								}
-								else
-								{
-									lastSuccessIncrement = now;
-									lastSuccessCount = currentValue;
-									//System.out.println("Updating values to successtimestamp="+lastSuccessIncrement+", and lastCount="+lastSuccessCount);
-								}
-							}
-							
 							//we need to read multiple lines efficiently
 							StringWriter sw = new StringWriter();
 							String command = null;
@@ -330,7 +273,7 @@ public abstract class DiagnosticsCollectorBase implements DiagnosticsCollector, 
 								else if( command.startsWith("init:"))
 								{
 									String dataStr = command.substring("init:".length());
-									System.out.println( "Incoming Data: " + dataStr);
+									//System.out.println( "Incoming Data: " + dataStr);
 									Config config = null;
 									if( mode == Mode.CONSUMER)
 										config = KryoUtils.fromString(dataStr, ConsumerConfig.class);

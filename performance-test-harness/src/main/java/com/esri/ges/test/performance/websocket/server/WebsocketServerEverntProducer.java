@@ -1,7 +1,6 @@
 package com.esri.ges.test.performance.websocket.server;
 
 import java.io.File;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
@@ -97,7 +96,7 @@ public class WebsocketServerEverntProducer extends DiagnosticsCollectorBase
 	}
 
 	@Override
-	public void run(AtomicBoolean running)
+	public void run()
 	{
 		if (numberOfEvents > 0)
 		{

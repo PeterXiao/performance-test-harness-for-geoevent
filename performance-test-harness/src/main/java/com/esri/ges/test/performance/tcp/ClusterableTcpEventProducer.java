@@ -15,6 +15,10 @@ import com.esri.ges.test.performance.RunningState;
 import com.esri.ges.test.performance.TestException;
 import com.esri.ges.test.performance.jaxb.Config;
 
+/**
+ * TODO: We need to Generalize this Producer
+ *
+ */
 public class ClusterableTcpEventProducer extends DiagnosticsCollectorBase
 {
 	private String[]									hosts;
@@ -119,7 +123,7 @@ public class ClusterableTcpEventProducer extends DiagnosticsCollectorBase
 	}
 
 	@Override
-	public void run(AtomicBoolean running)
+	public void run()
 	{
 		if (numberOfEvents > 0)
 		{

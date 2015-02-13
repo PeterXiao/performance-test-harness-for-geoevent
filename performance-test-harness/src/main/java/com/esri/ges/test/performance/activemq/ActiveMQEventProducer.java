@@ -1,8 +1,5 @@
 package com.esri.ges.test.performance.activemq;
 
-import java.io.File;
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import javax.jms.Connection;
 import javax.jms.DeliveryMode;
 import javax.jms.Destination;
@@ -14,30 +11,25 @@ import javax.jms.Session;
 import org.apache.activemq.ActiveMQConnection;
 import org.apache.activemq.ActiveMQConnectionFactory;
 
-import com.esri.ges.test.performance.DiagnosticsCollectorBase;
-import com.esri.ges.test.performance.Mode;
-import com.esri.ges.test.performance.RunningState;
+import com.esri.ges.test.performance.ProducerBase;
 import com.esri.ges.test.performance.TestException;
 import com.esri.ges.test.performance.jaxb.Config;
 
-public class ActiveMQEventProducer extends DiagnosticsCollectorBase
+public class ActiveMQEventProducer extends ProducerBase
 {
   protected Connection connection;
   protected Session session;
   protected MessageProducer producer;
   
-  public ActiveMQEventProducer()
-	{
-  	super(Mode.PRODUCER);
-	}
-  
   @Override
   public void init(Config config) throws TestException
   {
-    loadEvents(new File(config.getPropertyValue("simulationFile", "")));
+  	super.init(config);
+  	
     String providerUrl = config.getPropertyValue("providerUrl");
     String destinationType = config.getPropertyValue("destinationType");
     String destinationName = config.getPropertyValue("destinationName");
+    
     if (providerUrl == null)
       throw new TestException("providerUrl property must be specified");
     if (destinationType == null)
@@ -46,6 +38,7 @@ public class ActiveMQEventProducer extends DiagnosticsCollectorBase
       throw new TestException("destinationType property must be 'Queue' or 'Topic'");
     if (destinationName == null)
       throw new TestException("destinationName property must be specified");
+    
     try
     {
       String userName = ActiveMQConnection.DEFAULT_USER;
@@ -68,6 +61,7 @@ public class ActiveMQEventProducer extends DiagnosticsCollectorBase
   @Override
   public void validate() throws TestException
   {
+  	super.validate();
     if (producer == null)
       throw new TestException("JMS Producer could not be created.");
     if (events.isEmpty())
@@ -75,47 +69,33 @@ public class ActiveMQEventProducer extends DiagnosticsCollectorBase
   }
 
   @Override
-  public void run( AtomicBoolean running )
-  {
-    if (numberOfEvents > 0)
-    {
-      if (runningStateListener != null)
-        runningStateListener.onStateChange(RunningState.STARTED);
-
-      int eventIx = 0;
-      Long[] timeStamp = new Long[2];
-      timeStamp[0] = System.currentTimeMillis();
-      long messageLifespan = 30 * 60 * 1000; // 30 minutes
-      for (int i=0; i < numberOfEvents; i++)
-      {
-        if (eventIx == events.size())
-          eventIx = 0;
-        try
-        {
-          producer.send(session.createTextMessage(events.get(eventIx++)), DeliveryMode.NON_PERSISTENT, Message.DEFAULT_PRIORITY, messageLifespan);
-          successfulEvents.incrementAndGet();
-        }
-        catch (JMSException e)
-        {
-          e.printStackTrace();
-        }
-        if (running.get() == false)
-          break;
-      }
-      System.out.println("Sent "+numberOfEvents+".  Done.");
-      timeStamp[1] = System.currentTimeMillis();
-      timeStamps.put(timeStamps.size(), timeStamp);
-      running.set(false);
-      if (runningStateListener != null)
-        runningStateListener.onStateChange(RunningState.STOPPED);
-    }    
-  }
+	public int sendEvents(int index, int numEventsToSend)
+	{
+  	long messageLifespan = 30 * 60 * 1000; // 30 minutes
+		int eventIndex = index;
+		for (int i = 0; i < numEventsToSend; i++)
+		{
+			if (eventIndex == events.size())
+				eventIndex = 0;
+			try
+			{
+				producer.send(session.createTextMessage(events.get(eventIndex++)), DeliveryMode.NON_PERSISTENT, Message.DEFAULT_PRIORITY, messageLifespan);
+				successfulEvents.incrementAndGet();
+				if (running.get() == false)
+					break;
+			}
+			catch (Exception error)
+			{
+				error.printStackTrace();
+			}
+		}
+		return eventIndex;
+	}
 
   @Override
   public void destroy()
   {
-    super.destroy();
-    events.clear();
+    super.destroy();    
     try { producer.close(); } catch(JMSException e) { ; } finally { producer = null; }
     try { session.close(); } catch(JMSException e) { ; } finally { session = null; }    
     try { connection.close(); } catch(JMSException e) { ; } finally { connection = null; }    

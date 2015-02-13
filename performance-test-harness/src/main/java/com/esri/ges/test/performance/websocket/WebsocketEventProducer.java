@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.jetty.websocket.WebSocket;
 import org.eclipse.jetty.websocket.WebSocketClient;
@@ -137,7 +136,7 @@ public class WebsocketEventProducer extends DiagnosticsCollectorBase
 
 
 	@Override
-	public void run( AtomicBoolean running)
+	public void run()
 	{
 		if (numberOfEvents > 0)
 		{

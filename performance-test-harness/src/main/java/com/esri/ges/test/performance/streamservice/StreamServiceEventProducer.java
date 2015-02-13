@@ -1,126 +1,67 @@
 package com.esri.ges.test.performance.streamservice;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.jetty.websocket.WebSocket;
 import org.eclipse.jetty.websocket.WebSocketClient;
 import org.eclipse.jetty.websocket.WebSocketClientFactory;
 
-import com.esri.ges.test.performance.DiagnosticsCollectorBase;
-import com.esri.ges.test.performance.Mode;
-import com.esri.ges.test.performance.RunningState;
+import com.esri.ges.test.performance.ProducerBase;
 import com.esri.ges.test.performance.TestException;
 import com.esri.ges.test.performance.jaxb.Config;
 
-/* ------------------------------------------------------------ */
-public class StreamServiceEventProducer extends DiagnosticsCollectorBase
+public class StreamServiceEventProducer extends ProducerBase
 {
-	//private static final String STREAM_SERVICE = "/streamservice";
-	private static final String BROADCAST = "/broadcast";
+	// private static final String STREAM_SERVICE = "/streamservice";
+	private static final String			BROADCAST	= "/broadcast";
 
-	private MyConnection[] connections;
-	private String host;
-	private int port;
-	private WebSocketClientFactory factory;
-	private WebSocketClient client;
-	private int connectionCount;
-	private String serviceName;
-	private StreamMetadata metaData;
-
-	public StreamServiceEventProducer()
-	{
-		super(Mode.PRODUCER);
-	}
-	
-	class MyConnection  implements WebSocket.OnTextMessage
-	{
-		WebSocket.Connection connection;
-		public void setConnection( WebSocket.Connection connection )
-		{
-			this.connection = connection;
-		}
-
-		public WebSocket.Connection getConnection()
-		{
-			return connection;
-		}
-
-		/* ------------------------------------------------------------ */
-		/** Callback on close of the WebSocket connection
-		 */
-		@Override
-		public void onClose(int closeCode, String message)
-		{
-			System.out.println("The connection was closed by the remote host.  (this should not happen)");
-			connection = null;
-		}
-
-		/* ------------------------------------------------------------ */
-		/** Callback on receiving a message
-		 */
-		@Override
-		public void onMessage(String data)
-		{
-
-		}
-
-		/* ------------------------------------------------------------ */
-		/** Callback on receiving a connection
-		 */
-		@Override
-		public void onOpen(Connection connection)
-		{
-			this.connection = connection;
-		}
-
-	}
+	private ConnectionHandler[]					connections;
+	private String									host;
+	private int											port;
+	private WebSocketClientFactory	factory;
+	private WebSocketClient					client;
+	private int											connectionCount;
+	private String									serviceName;
+	private StreamMetadata					metaData;
 
 	@Override
 	public void init(Config config) throws TestException
 	{
+		super.init(config);
 		try
 		{
-			//System.out.println("WebsocketEventProducer.init()");
-			if( factory == null )
+			if (factory == null)
 			{
-				//System.out.println("Factory is null . . .");
 				factory = new WebSocketClientFactory();
 				factory.start();
 			}
-			else
-			{
-				//System.out.println("Factory exists, reusing it. . . ");
-			}
 
-			if( client == null )
+			if (client == null)
 			{
 				client = factory.newWebSocketClient();
 				client.setMaxIdleTime(30000);
 				client.setProtocol("input");
 			}
 
-			loadEvents(new File(config.getPropertyValue("simulationFile", "")));
 			host = config.getPropertyValue("host", "localhost");
-			port = Integer.parseInt(config.getPropertyValue("port","6180"));
+			port = Integer.parseInt(config.getPropertyValue("port", "6180"));
 			serviceName = config.getPropertyValue("serviceName", "vehicles");
-			connectionCount = Integer.parseInt(config.getPropertyValue("connectionCount","1"));
-			
-			String serviceMetadataUrl = "http://"+host+":"+port+"/arcgis/rest/services/"+serviceName+"/StreamServer?f=json";
-			metaData = new StreamMetadata( serviceMetadataUrl );
+			connectionCount = Integer.parseInt(config.getPropertyValue("connectionCount", "1"));
+
+			String serviceMetadataUrl = "http://" + host + ":" + port + "/arcgis/rest/services/" + serviceName + "/StreamServer?f=json";
+			metaData = new StreamMetadata(serviceMetadataUrl);
 			List<String> wsUrls = metaData.gerUrls();
 
-			connections = new MyConnection[connectionCount];
-			for( int i = 0; i < connectionCount; i++ )
+			connections = new ConnectionHandler[connectionCount];
+			for (int i = 0; i < connectionCount; i++)
 			{
-				String wsUrl = wsUrls.get( i % wsUrls.size() ) + BROADCAST;
-				URI uri = new URI( wsUrl );
-				connections[i] = new MyConnection();
-				connections[i].setConnection( client.open( uri, connections[i], 10, TimeUnit.SECONDS) );
+				String wsUrl = wsUrls.get(i % wsUrls.size()) + BROADCAST;
+				URI uri = new URI(wsUrl);
+				connections[i] = new ConnectionHandler();
+				connections[i].setConnection(client.open(uri, connections[i], 10, TimeUnit.SECONDS));
 			}
 		}
 		catch (Throwable e)
@@ -133,77 +74,105 @@ public class StreamServiceEventProducer extends DiagnosticsCollectorBase
 	@Override
 	public void validate() throws TestException
 	{
-		for( MyConnection connection : connections )
+		super.validate();
+		for (ConnectionHandler connection : connections)
 		{
 			if (connection.getConnection() == null)
-				throw new TestException("Socket connection is not established. Please initialize "+StreamServiceEventProducer.class.getName()+" before it starts collecting diagnostics.");
+				throw new TestException("Socket connection is not established. Please initialize " + StreamServiceEventProducer.class.getName() + " before it starts collecting diagnostics.");
 		}
-		if (events.isEmpty())
-			throw new TestException( StreamServiceEventProducer.class.getName()+" is missing events to produce.");
 	}
 
-
 	@Override
-	public void run( AtomicBoolean running)
+	public int sendEvents(int index, int numEventsToSend)
 	{
-		if (numberOfEvents > 0)
+		int eventIndex = index;
+		for (int i = 0; i < numberOfEvents; i++)
 		{
-			if (runningStateListener != null)
-				runningStateListener.onStateChange(RunningState.STARTED);
-			int eventIx = 0;
-			Long[] timeStamp = new Long[2];
-			timeStamp[0] = System.currentTimeMillis();
-			System.out.println("Sending " + numberOfEvents + " events.");
-			for (int i=0; i < numberOfEvents; i++)
+			if (eventIndex == events.size())
+				eventIndex = 0;
+			try
 			{
-				if (eventIx == events.size())
-					eventIx = 0;
-				try
-				{
-					String message = events.get(eventIx++);
-					for( MyConnection conn : connections )
-						conn.getConnection().sendMessage(message);
-					long currentCount = successfulEvents.incrementAndGet();
-					if( currentCount % 100000 == 0 )
-						System.out.println("Sent " + currentCount + " messages.");
-					if (running.get() == false)
-						break;
-				}
-				catch (IOException e)
-				{
-					e.printStackTrace();
-				}
+				String message = events.get(eventIndex++);
+				for (ConnectionHandler conn : connections)
+					conn.getConnection().sendMessage(message);
+				successfulEvents.incrementAndGet();
+				if (running.get() == false)
+					break;
 			}
-			timeStamp[1] = System.currentTimeMillis();
-			timeStamps.put(timeStamps.size(), timeStamp);
-			running.set(false);
-			if (runningStateListener != null)
-				runningStateListener.onStateChange(RunningState.STOPPED);
+			catch (IOException e)
+			{
+				e.printStackTrace();
+			}
 		}
+		return eventIndex;
 	}
 
 	@Override
 	public void destroy()
 	{
 		super.destroy();
-		events.clear();
-		for( MyConnection conn : connections )
+		for (ConnectionHandler conn : connections)
 		{
-			if( conn.getConnection() != null )
+			if (conn.getConnection() != null)
 				conn.getConnection().close();
 		}
-		try {
-			//System.out.println("stopping the factory.");
-			factory.stop();
-		} catch (Exception e) 
+		try
 		{
-			e.printStackTrace();
+			factory.stop();
 		}
-		//System.out.println("Destroying the factory.");
+		catch (Exception ignored)
+		{
+		}
+		
 		factory.destroy();
-		//System.out.println("Setting the factory to null.");
 		factory = null;
 		client = null;
 		connections = null;
+	}
+	
+	class ConnectionHandler implements WebSocket.OnTextMessage
+	{
+		WebSocket.Connection	connection;
+
+		public void setConnection(WebSocket.Connection connection)
+		{
+			this.connection = connection;
+		}
+
+		public WebSocket.Connection getConnection()
+		{
+			return connection;
+		}
+
+		/* ------------------------------------------------------------ */
+		/**
+		 * Callback on close of the WebSocket connection
+		 */
+		@Override
+		public void onClose(int closeCode, String message)
+		{
+			System.out.println("The connection was closed by the remote host.  (this should not happen)");
+			connection = null;
+		}
+
+		/* ------------------------------------------------------------ */
+		/**
+		 * Callback on receiving a message
+		 */
+		@Override
+		public void onMessage(String data)
+		{
+
+		}
+
+		/* ------------------------------------------------------------ */
+		/**
+		 * Callback on receiving a connection
+		 */
+		@Override
+		public void onOpen(Connection connection)
+		{
+			this.connection = connection;
+		}
 	}
 }

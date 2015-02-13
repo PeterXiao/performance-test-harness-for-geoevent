@@ -2,7 +2,6 @@ package com.esri.ges.test.performance.websocket;
 
 import java.net.URI;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.jetty.websocket.WebSocket;
 import org.eclipse.jetty.websocket.WebSocketClient;
@@ -153,7 +152,7 @@ public class WebsocketEventConsumer extends DiagnosticsCollectorBase
 	}
 
 	@Override
-	public void run( AtomicBoolean running )
+	public void run()
 	{
 		if (numberOfEvents > 0)
 		{

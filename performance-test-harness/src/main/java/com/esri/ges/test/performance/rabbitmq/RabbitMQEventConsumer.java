@@ -1,11 +1,8 @@
 package com.esri.ges.test.performance.rabbitmq;
 
 import java.io.IOException;
-import java.util.concurrent.atomic.AtomicBoolean;
 
-import com.esri.ges.test.performance.DiagnosticsCollectorBase;
-import com.esri.ges.test.performance.Mode;
-import com.esri.ges.test.performance.RunningState;
+import com.esri.ges.test.performance.ConsumerBase;
 import com.esri.ges.test.performance.TestException;
 import com.esri.ges.test.performance.jaxb.Config;
 import com.rabbitmq.client.Channel;
@@ -13,7 +10,7 @@ import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.QueueingConsumer;
 
-public class RabbitMQEventConsumer extends DiagnosticsCollectorBase
+public class RabbitMQEventConsumer extends ConsumerBase
 {
 	private Connection				connection					= null;
 	private Channel						channel							= null;
@@ -23,14 +20,11 @@ public class RabbitMQEventConsumer extends DiagnosticsCollectorBase
 	private String						queueName;
 	private String 						routingKey 					= null;
 
-	public RabbitMQEventConsumer()
-	{
-		super(Mode.CONSUMER);
-	}
-	
 	@Override
 	public void init(Config config) throws TestException
 	{
+		super.init(config);
+		
 		uri = config.getPropertyValue("uri");
 		exchangeName = config.getPropertyValue("exchangeName");
 		queueName = config.getPropertyValue("queueName");
@@ -69,72 +63,27 @@ public class RabbitMQEventConsumer extends DiagnosticsCollectorBase
 			throw new TestException("RabbitMQ event consumer could not be created.");
 	}
 
+	
 	@Override
-	public void run(AtomicBoolean alive)
+	public String pullMessage()
 	{
-		System.out.println("------> Running RabbitMQ event consumer");
-		int expectedResultCount = numberOfEvents;
-		if (expectedResultCount > 0)
+		String message = null;
+		try
 		{
-			if (runningStateListener != null)
-				runningStateListener.onStateChange(RunningState.STARTED);
-			try
-			{
-				int eventIx = 0;
-				Long[] timeStamp = null;
-				while (running.get())
-				{
-					try
-					{
-						byte[] bytes = consumer.nextDelivery().getBody();
-//						System.out.println("Consuming GeoEvent(" + successfulEvents + ", " + bytes.length + " bytes)...");
-						// channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
-					}
-					catch (Exception ex)
-					{
-						continue;
-					}
-					if (eventIx == 0)
-					{
-						timeStamp = new Long[2];
-						timeStamp[0] = System.currentTimeMillis();
-					}
-					eventIx++;
-					successfulEvents.incrementAndGet();
-					if (eventIx == expectedResultCount)
-					{
-						timeStamp[1] = System.currentTimeMillis();
-						synchronized(timeStamps)
-						{
-							timeStamps.put(timeStamps.size(), timeStamp);
-						}
-						running.set(false);
-					}
-				}
-				long totalTime = 0;
-				if(timeStamp != null && timeStamp[0] != null && timeStamp[1] != null )
-				{ 
-					totalTime = (timeStamp[1] - timeStamp[0]) / 1000L;
-					System.out.println("Consumed a total of: " + successfulEvents.get() + " events in " + totalTime + " secs (rate=" + ((double)successfulEvents.get() / (double)totalTime) + " e/s).");
-				}
-				else if( successfulEvents.get() > 0 )
-					System.out.println("Consumed a total of: " + successfulEvents.get() + " events.");
-			}
-			catch (Exception e)
-			{
-				running.set(false);
-				e.printStackTrace();
-			}
-			if (runningStateListener != null)
-				runningStateListener.onStateChange(RunningState.STOPPED);
+			byte[] bytes = consumer.nextDelivery().getBody();
+			message = new String(bytes);
 		}
+		catch (Exception ignored)
+		{
+		}
+		return message;
 	}
 
 	@Override
 	public void destroy()
 	{
 		super.destroy();
-		events.clear();
+		
 		try
 		{
 			consumer.getChannel().basicCancel(consumer.getConsumerTag());
@@ -143,14 +92,15 @@ public class RabbitMQEventConsumer extends DiagnosticsCollectorBase
 		{
 			e.printStackTrace();
 		}
+		
 		try
 		{
 			Thread.sleep(1000);
 		}
-		catch (InterruptedException e2)
+		catch (InterruptedException ignored)
 		{
-			e2.printStackTrace();
 		}
+		
 		try
 		{
 			channel.close();
@@ -159,6 +109,7 @@ public class RabbitMQEventConsumer extends DiagnosticsCollectorBase
 		{
 			e1.printStackTrace();
 		}
+		
 		try
 		{
 			connection.close(1000);
@@ -167,6 +118,7 @@ public class RabbitMQEventConsumer extends DiagnosticsCollectorBase
 		{
 			e.printStackTrace();
 		}
+		
 		consumer = null;
 		channel = null;
 		connection = null;

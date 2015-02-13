@@ -310,7 +310,7 @@ public class RemoteDiagnosticsCollectorBaseClass implements DiagnosticsCollector
 	public void init(Config config) throws TestException 
 	{
 		String data = KryoUtils.toString(config, Config.class);
-		System.out.println( "Sending Data: " + data);
+		//System.out.println( "Sending Data: " + data);
 		synchronized(clients)
 		{
 			for( Connection connection: clients )

@@ -9,7 +9,6 @@ import com.esri.ges.test.performance.jaxb.Fixture;
 import com.esri.ges.test.performance.jaxb.ProducerConfig;
 import com.esri.ges.test.performance.jaxb.Property;
 import com.esri.ges.test.performance.jaxb.RemoteHost;
-import com.esri.ges.test.performance.jaxb.Simulation;
 import com.esri.ges.test.performance.statistics.FixtureStatistic;
 import com.esri.ges.test.performance.statistics.FixturesStatistics;
 import com.esri.ges.test.performance.statistics.Statistics;
@@ -214,7 +213,7 @@ public class ThroughputPerformanceTestHarness implements TestHarness, RunningSta
 
 	private void createStatistics(long totalEvents, long successes, Map<Integer, Long[]> producerDiagnostics, Map<Integer, Long[]> consumerDiagnostics, int expectedResultCount)
 	{
-		System.out.println("Trying to create the report statistics ...");
+		System.out.print("Trying to create the report statistics ...");
 		int size = producerDiagnostics.size();
 		
 		// check if we have a sync issue / bad events / did not receive the final event(s) on consumer side
@@ -312,6 +311,7 @@ public class ThroughputPerformanceTestHarness implements TestHarness, RunningSta
 			{
 				e.printStackTrace();
 			}
+			System.out.println( " Done" );
 		}
 		else
 			System.out.println("Failed to create the statistics, sizes(producer=" + size + ", consumer=" + consumerDiagnostics.size() +") do not match!");

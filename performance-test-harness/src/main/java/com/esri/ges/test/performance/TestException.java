@@ -8,4 +8,14 @@ public class TestException extends Exception
   {
     super(message);
   }
+  
+  public TestException(String message, Throwable error)
+  {
+    super(message, error);
+  }
+  
+  public TestException(Throwable error)
+  {
+    super(error);
+  }
 }
