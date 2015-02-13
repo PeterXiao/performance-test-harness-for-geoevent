@@ -1,4 +1,4 @@
-package com.esri.ges.test.performance.report;
+package com.esri.geoevent.test.performance.report;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -18,7 +18,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-import com.esri.ges.test.performance.statistics.FixtureStatistic;
+import com.esri.geoevent.test.performance.statistics.FixtureStatistic;
 
 public class XLSXReportWriter extends AbstractFileRollOverReportWriter implements ReportWriter
 {

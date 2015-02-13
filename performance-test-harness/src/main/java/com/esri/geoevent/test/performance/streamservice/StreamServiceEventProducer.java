@@ -1,4 +1,4 @@
-package com.esri.ges.test.performance.streamservice;
+package com.esri.geoevent.test.performance.streamservice;
 
 import java.io.IOException;
 import java.net.URI;
@@ -9,9 +9,9 @@ import org.eclipse.jetty.websocket.WebSocket;
 import org.eclipse.jetty.websocket.WebSocketClient;
 import org.eclipse.jetty.websocket.WebSocketClientFactory;
 
-import com.esri.ges.test.performance.ProducerBase;
-import com.esri.ges.test.performance.TestException;
-import com.esri.ges.test.performance.jaxb.Config;
+import com.esri.geoevent.test.performance.ProducerBase;
+import com.esri.geoevent.test.performance.TestException;
+import com.esri.geoevent.test.performance.jaxb.Config;
 
 public class StreamServiceEventProducer extends ProducerBase
 {

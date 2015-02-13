@@ -1,4 +1,4 @@
-package com.esri.ges.test.performance.kafka;
+package com.esri.geoevent.test.performance.kafka;
 
 
 import java.io.File;
@@ -15,11 +15,11 @@ import kafka.javaapi.producer.Producer;
 import kafka.producer.KeyedMessage;
 import kafka.producer.ProducerConfig;
 
-import com.esri.ges.test.performance.DiagnosticsCollectorBase;
-import com.esri.ges.test.performance.Mode;
-import com.esri.ges.test.performance.RunningState;
-import com.esri.ges.test.performance.TestException;
-import com.esri.ges.test.performance.jaxb.Config;
+import com.esri.geoevent.test.performance.DiagnosticsCollectorBase;
+import com.esri.geoevent.test.performance.Mode;
+import com.esri.geoevent.test.performance.RunningState;
+import com.esri.geoevent.test.performance.TestException;
+import com.esri.geoevent.test.performance.jaxb.Config;
 
 /**
  * This class creates multiple threads to process incoming data and uses multiple Kafka producer to send message to kafka.

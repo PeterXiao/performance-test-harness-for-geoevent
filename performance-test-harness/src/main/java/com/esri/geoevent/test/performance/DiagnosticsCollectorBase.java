@@ -1,4 +1,4 @@
-package com.esri.ges.test.performance;
+package com.esri.geoevent.test.performance;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -20,10 +20,10 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import com.esri.ges.test.performance.jaxb.Config;
-import com.esri.ges.test.performance.jaxb.ConsumerConfig;
-import com.esri.ges.test.performance.jaxb.ProducerConfig;
-import com.esri.ges.test.performance.utils.KryoUtils;
+import com.esri.geoevent.test.performance.jaxb.Config;
+import com.esri.geoevent.test.performance.jaxb.ConsumerConfig;
+import com.esri.geoevent.test.performance.jaxb.ProducerConfig;
+import com.esri.geoevent.test.performance.utils.KryoUtils;
 
 public abstract class DiagnosticsCollectorBase implements DiagnosticsCollector, Runnable
 {

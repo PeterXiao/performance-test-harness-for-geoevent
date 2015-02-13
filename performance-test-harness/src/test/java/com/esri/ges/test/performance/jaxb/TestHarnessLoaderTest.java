@@ -14,7 +14,7 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.junit.Test;
 
-import com.esri.ges.test.performance.TestHarnessExecutor;
+import com.esri.geoevent.test.performance.TestHarnessExecutor;
 
 public class TestHarnessLoaderTest
 {

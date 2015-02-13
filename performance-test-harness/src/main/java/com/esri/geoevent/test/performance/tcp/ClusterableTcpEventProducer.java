@@ -1,4 +1,4 @@
-package com.esri.ges.test.performance.tcp;
+package com.esri.geoevent.test.performance.tcp;
 
 import java.io.File;
 import java.io.IOException;
@@ -9,11 +9,11 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
-import com.esri.ges.test.performance.DiagnosticsCollectorBase;
-import com.esri.ges.test.performance.Mode;
-import com.esri.ges.test.performance.RunningState;
-import com.esri.ges.test.performance.TestException;
-import com.esri.ges.test.performance.jaxb.Config;
+import com.esri.geoevent.test.performance.DiagnosticsCollectorBase;
+import com.esri.geoevent.test.performance.Mode;
+import com.esri.geoevent.test.performance.RunningState;
+import com.esri.geoevent.test.performance.TestException;
+import com.esri.geoevent.test.performance.jaxb.Config;
 
 /**
  * TODO: We need to Generalize this Producer

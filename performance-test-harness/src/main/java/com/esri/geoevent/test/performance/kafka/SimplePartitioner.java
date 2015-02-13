@@ -1,4 +1,4 @@
-package com.esri.ges.test.performance.kafka;
+package com.esri.geoevent.test.performance.kafka;
 
 import kafka.producer.Partitioner;
 import kafka.utils.VerifiableProperties;

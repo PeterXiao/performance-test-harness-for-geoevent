@@ -1,4 +1,4 @@
-package com.esri.ges.test.performance.websocket;
+package com.esri.geoevent.test.performance.websocket;
 
 import java.io.File;
 import java.io.IOException;
@@ -9,11 +9,11 @@ import org.eclipse.jetty.websocket.WebSocket;
 import org.eclipse.jetty.websocket.WebSocketClient;
 import org.eclipse.jetty.websocket.WebSocketClientFactory;
 
-import com.esri.ges.test.performance.DiagnosticsCollectorBase;
-import com.esri.ges.test.performance.Mode;
-import com.esri.ges.test.performance.RunningState;
-import com.esri.ges.test.performance.TestException;
-import com.esri.ges.test.performance.jaxb.Config;
+import com.esri.geoevent.test.performance.DiagnosticsCollectorBase;
+import com.esri.geoevent.test.performance.Mode;
+import com.esri.geoevent.test.performance.RunningState;
+import com.esri.geoevent.test.performance.TestException;
+import com.esri.geoevent.test.performance.jaxb.Config;
 
 /* ------------------------------------------------------------ */
 public class WebsocketEventProducer extends DiagnosticsCollectorBase

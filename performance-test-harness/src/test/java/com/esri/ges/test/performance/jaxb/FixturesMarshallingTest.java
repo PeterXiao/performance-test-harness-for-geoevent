@@ -13,9 +13,13 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.esri.ges.test.performance.Protocol;
-import com.esri.ges.test.performance.report.ReportType;
-import com.esri.ges.test.performance.utils.KryoUtils;
+import com.esri.geoevent.test.performance.Protocol;
+import com.esri.geoevent.test.performance.jaxb.Config;
+import com.esri.geoevent.test.performance.jaxb.ConsumerConfig;
+import com.esri.geoevent.test.performance.jaxb.Fixture;
+import com.esri.geoevent.test.performance.jaxb.Fixtures;
+import com.esri.geoevent.test.performance.report.ReportType;
+import com.esri.geoevent.test.performance.utils.KryoUtils;
 
 public class FixturesMarshallingTest
 {

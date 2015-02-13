@@ -1,4 +1,4 @@
-package com.esri.ges.test.performance.tcp;
+package com.esri.geoevent.test.performance.tcp;
 
 import java.io.IOException;
 import java.net.ServerSocket;

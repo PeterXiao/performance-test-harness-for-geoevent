@@ -1,4 +1,4 @@
-package com.esri.ges.test.performance;
+package com.esri.geoevent.test.performance;
 
 import java.io.IOException;
 import java.net.DatagramPacket;

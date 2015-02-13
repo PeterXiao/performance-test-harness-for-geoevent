@@ -1,10 +1,10 @@
-package com.esri.ges.test.performance.rabbitmq;
+package com.esri.geoevent.test.performance.rabbitmq;
 
 import java.io.IOException;
 
-import com.esri.ges.test.performance.ConsumerBase;
-import com.esri.ges.test.performance.TestException;
-import com.esri.ges.test.performance.jaxb.Config;
+import com.esri.geoevent.test.performance.ConsumerBase;
+import com.esri.geoevent.test.performance.TestException;
+import com.esri.geoevent.test.performance.jaxb.Config;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;

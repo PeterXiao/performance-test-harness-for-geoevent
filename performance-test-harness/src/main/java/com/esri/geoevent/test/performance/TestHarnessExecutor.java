@@ -1,4 +1,4 @@
-package com.esri.ges.test.performance;
+package com.esri.geoevent.test.performance;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -24,28 +24,28 @@ import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 
-import com.esri.ges.test.performance.activemq.ActiveMQEventConsumer;
-import com.esri.ges.test.performance.activemq.ActiveMQEventProducer;
-import com.esri.ges.test.performance.jaxb.Fixture;
-import com.esri.ges.test.performance.jaxb.Fixtures;
-import com.esri.ges.test.performance.jaxb.GeoEventConfiguration;
-import com.esri.ges.test.performance.kafka.KafkaEventProducer;
-import com.esri.ges.test.performance.rabbitmq.RabbitMQEventConsumer;
-import com.esri.ges.test.performance.rabbitmq.RabbitMQEventProducer;
-import com.esri.ges.test.performance.report.CSVReportWriter;
-import com.esri.ges.test.performance.report.ReportType;
-import com.esri.ges.test.performance.report.ReportWriter;
-import com.esri.ges.test.performance.report.XLSXReportWriter;
-import com.esri.ges.test.performance.statistics.FixturesStatistics;
-import com.esri.ges.test.performance.streamservice.StreamServiceEventConsumer;
-import com.esri.ges.test.performance.streamservice.StreamServiceEventProducer;
-import com.esri.ges.test.performance.tcp.ClusterableTcpEventConsumer;
-import com.esri.ges.test.performance.tcp.ClusterableTcpEventProducer;
-import com.esri.ges.test.performance.tcp.TcpEventConsumer;
-import com.esri.ges.test.performance.tcp.TcpEventProducer;
-import com.esri.ges.test.performance.websocket.WebsocketEventConsumer;
-import com.esri.ges.test.performance.websocket.WebsocketEventProducer;
-import com.esri.ges.test.performance.websocket.server.WebsocketServerEverntProducer;
+import com.esri.geoevent.test.performance.activemq.ActiveMQEventConsumer;
+import com.esri.geoevent.test.performance.activemq.ActiveMQEventProducer;
+import com.esri.geoevent.test.performance.jaxb.Fixture;
+import com.esri.geoevent.test.performance.jaxb.Fixtures;
+import com.esri.geoevent.test.performance.jaxb.GeoEventConfiguration;
+import com.esri.geoevent.test.performance.kafka.KafkaEventProducer;
+import com.esri.geoevent.test.performance.rabbitmq.RabbitMQEventConsumer;
+import com.esri.geoevent.test.performance.rabbitmq.RabbitMQEventProducer;
+import com.esri.geoevent.test.performance.report.CSVReportWriter;
+import com.esri.geoevent.test.performance.report.ReportType;
+import com.esri.geoevent.test.performance.report.ReportWriter;
+import com.esri.geoevent.test.performance.report.XLSXReportWriter;
+import com.esri.geoevent.test.performance.statistics.FixturesStatistics;
+import com.esri.geoevent.test.performance.streamservice.StreamServiceEventConsumer;
+import com.esri.geoevent.test.performance.streamservice.StreamServiceEventProducer;
+import com.esri.geoevent.test.performance.tcp.ClusterableTcpEventConsumer;
+import com.esri.geoevent.test.performance.tcp.ClusterableTcpEventProducer;
+import com.esri.geoevent.test.performance.tcp.TcpEventConsumer;
+import com.esri.geoevent.test.performance.tcp.TcpEventProducer;
+import com.esri.geoevent.test.performance.websocket.WebsocketEventConsumer;
+import com.esri.geoevent.test.performance.websocket.WebsocketEventProducer;
+import com.esri.geoevent.test.performance.websocket.server.WebsocketServerEverntProducer;
 
 public class TestHarnessExecutor
 {

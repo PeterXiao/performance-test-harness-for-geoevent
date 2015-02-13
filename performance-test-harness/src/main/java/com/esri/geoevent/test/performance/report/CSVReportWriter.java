@@ -1,4 +1,4 @@
-package com.esri.ges.test.performance.report;
+package com.esri.geoevent.test.performance.report;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -11,7 +11,7 @@ import org.apache.commons.io.IOUtils;
 
 import au.com.bytecode.opencsv.CSVWriter;
 
-import com.esri.ges.test.performance.statistics.FixtureStatistic;
+import com.esri.geoevent.test.performance.statistics.FixtureStatistic;
 
 public class CSVReportWriter extends AbstractFileRollOverReportWriter implements ReportWriter
 {

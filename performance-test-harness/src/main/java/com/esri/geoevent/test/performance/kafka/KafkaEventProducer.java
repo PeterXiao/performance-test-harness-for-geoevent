@@ -1,4 +1,4 @@
-package com.esri.ges.test.performance.kafka;
+package com.esri.geoevent.test.performance.kafka;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,9 +8,9 @@ import kafka.javaapi.producer.Producer;
 import kafka.producer.KeyedMessage;
 import kafka.producer.ProducerConfig;
 
-import com.esri.ges.test.performance.ProducerBase;
-import com.esri.ges.test.performance.TestException;
-import com.esri.ges.test.performance.jaxb.Config;
+import com.esri.geoevent.test.performance.ProducerBase;
+import com.esri.geoevent.test.performance.TestException;
+import com.esri.geoevent.test.performance.jaxb.Config;
 
 public class KafkaEventProducer extends ProducerBase
 {

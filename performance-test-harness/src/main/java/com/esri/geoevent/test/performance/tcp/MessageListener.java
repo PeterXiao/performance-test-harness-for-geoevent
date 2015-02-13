@@ -1,4 +1,4 @@
-package com.esri.ges.test.performance.tcp;
+package com.esri.geoevent.test.performance.tcp;
 
 public interface MessageListener
 {

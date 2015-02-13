@@ -1,17 +1,17 @@
-package com.esri.ges.test.performance;
+package com.esri.geoevent.test.performance;
 
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import com.esri.ges.test.performance.jaxb.ConsumerConfig;
-import com.esri.ges.test.performance.jaxb.Fixture;
-import com.esri.ges.test.performance.jaxb.ProducerConfig;
-import com.esri.ges.test.performance.jaxb.Property;
-import com.esri.ges.test.performance.jaxb.RemoteHost;
-import com.esri.ges.test.performance.statistics.FixtureStatistic;
-import com.esri.ges.test.performance.statistics.FixturesStatistics;
-import com.esri.ges.test.performance.statistics.Statistics;
+import com.esri.geoevent.test.performance.jaxb.ConsumerConfig;
+import com.esri.geoevent.test.performance.jaxb.Fixture;
+import com.esri.geoevent.test.performance.jaxb.ProducerConfig;
+import com.esri.geoevent.test.performance.jaxb.Property;
+import com.esri.geoevent.test.performance.jaxb.RemoteHost;
+import com.esri.geoevent.test.performance.statistics.FixtureStatistic;
+import com.esri.geoevent.test.performance.statistics.FixturesStatistics;
+import com.esri.geoevent.test.performance.statistics.Statistics;
 
 /**
  * <b>NOTE:</b> This class is not Thread-safe

@@ -1,4 +1,4 @@
-package com.esri.ges.test.performance.streamservice;
+package com.esri.geoevent.test.performance.streamservice;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;

@@ -1,4 +1,4 @@
-package com.esri.ges.test.performance.tcp;
+package com.esri.geoevent.test.performance.tcp;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -17,9 +17,9 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.esri.ges.test.performance.RunnableComponent;
-import com.esri.ges.test.performance.RunningState;
-import com.esri.ges.test.performance.RunningStateListener;
+import com.esri.geoevent.test.performance.RunnableComponent;
+import com.esri.geoevent.test.performance.RunningState;
+import com.esri.geoevent.test.performance.RunningStateListener;
 
 public class TcpSocketServer implements RunnableComponent, Runnable
 {

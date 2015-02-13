@@ -1,4 +1,4 @@
-package com.esri.ges.test.performance.websocket.server;
+package com.esri.geoevent.test.performance.websocket.server;
 
 import java.io.IOException;
 

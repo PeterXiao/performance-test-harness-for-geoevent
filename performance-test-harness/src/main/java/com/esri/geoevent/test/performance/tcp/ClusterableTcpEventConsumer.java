@@ -1,8 +1,8 @@
-package com.esri.ges.test.performance.tcp;
+package com.esri.geoevent.test.performance.tcp;
 
-import com.esri.ges.test.performance.ConsumerBase;
-import com.esri.ges.test.performance.TestException;
-import com.esri.ges.test.performance.jaxb.Config;
+import com.esri.geoevent.test.performance.ConsumerBase;
+import com.esri.geoevent.test.performance.TestException;
+import com.esri.geoevent.test.performance.jaxb.Config;
 
 public class ClusterableTcpEventConsumer extends ConsumerBase implements MessageListener
 {

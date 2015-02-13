@@ -1,9 +1,9 @@
-package com.esri.ges.test.performance;
+package com.esri.geoevent.test.performance;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.esri.ges.test.performance.jaxb.Config;
-import com.esri.ges.test.performance.jaxb.ConsumerConfig;
+import com.esri.geoevent.test.performance.jaxb.Config;
+import com.esri.geoevent.test.performance.jaxb.ConsumerConfig;
 
 public abstract class ConsumerBase extends DiagnosticsCollectorBase implements Consumer
 {

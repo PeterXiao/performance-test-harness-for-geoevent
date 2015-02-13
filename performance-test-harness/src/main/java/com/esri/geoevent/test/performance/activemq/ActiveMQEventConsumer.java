@@ -1,4 +1,4 @@
-package com.esri.ges.test.performance.activemq;
+package com.esri.geoevent.test.performance.activemq;
 
 import javax.jms.Connection;
 import javax.jms.Destination;
@@ -10,9 +10,9 @@ import javax.jms.TextMessage;
 import org.apache.activemq.ActiveMQConnection;
 import org.apache.activemq.ActiveMQConnectionFactory;
 
-import com.esri.ges.test.performance.ConsumerBase;
-import com.esri.ges.test.performance.TestException;
-import com.esri.ges.test.performance.jaxb.Config;
+import com.esri.geoevent.test.performance.ConsumerBase;
+import com.esri.geoevent.test.performance.TestException;
+import com.esri.geoevent.test.performance.jaxb.Config;
 
 public class ActiveMQEventConsumer extends ConsumerBase
 {

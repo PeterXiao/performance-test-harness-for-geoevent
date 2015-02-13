@@ -1,4 +1,4 @@
-package com.esri.ges.test.performance;
+package com.esri.geoevent.test.performance;
 
 import java.io.File;
 import java.io.IOException;

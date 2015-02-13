@@ -1,4 +1,4 @@
-package com.esri.ges.test.performance;
+package com.esri.geoevent.test.performance;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -17,10 +17,10 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.io.IOUtils;
 
-import com.esri.ges.test.performance.jaxb.Config;
-import com.esri.ges.test.performance.jaxb.RemoteHost;
-import com.esri.ges.test.performance.utils.KryoUtils;
-import com.esri.ges.test.performance.utils.NetworkUtils;
+import com.esri.geoevent.test.performance.jaxb.Config;
+import com.esri.geoevent.test.performance.jaxb.RemoteHost;
+import com.esri.geoevent.test.performance.utils.KryoUtils;
+import com.esri.geoevent.test.performance.utils.NetworkUtils;
 
 public class RemoteDiagnosticsCollectorBaseClass implements DiagnosticsCollector 
 {
