@@ -18,8 +18,8 @@ import com.esri.geoevent.test.performance.statistics.Statistics;
  */
 public class ThroughputPerformanceTestHarness implements TestHarness, RunningStateListener
 {
-	private DiagnosticsCollector	eventProducer;
-	private DiagnosticsCollector	eventConsumer;
+	private PerformanceCollector	eventProducer;
+	private PerformanceCollector	eventConsumer;
 
 	private int										numberOfIterations;
 	private int										eventsPerIteration;
@@ -85,7 +85,7 @@ public class ThroughputPerformanceTestHarness implements TestHarness, RunningSta
 			producers.add( producerConfig.getDefaultRemoteHost() );
 		
 		// init the remote producer(s) proxy
-		eventProducer = new RemoteDiagnosticsCollectorBaseClass(producers);	
+		eventProducer = new RemotePerformanceCollectorBase(producers);	
 		eventProducer.init(producerConfig);
 		eventProducer.setRunningStateListener(this);
 		eventProducer.validate();
@@ -96,7 +96,7 @@ public class ThroughputPerformanceTestHarness implements TestHarness, RunningSta
 			consumers.add( consumerConfig.getDefaultRemoteHost() );
 		
 		// init the remote consumer(s) proxy
-		eventConsumer = new RemoteDiagnosticsCollectorBaseClass(consumers);
+		eventConsumer = new RemotePerformanceCollectorBase(consumers);
 		eventConsumer.init(consumerConfig);
 		eventConsumer.setRunningStateListener(this);
 		eventConsumer.validate();

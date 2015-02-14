@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
-import com.esri.geoevent.test.performance.DiagnosticsCollectorBase;
+import com.esri.geoevent.test.performance.PerformanceCollectorBase;
 import com.esri.geoevent.test.performance.Mode;
 import com.esri.geoevent.test.performance.RunningState;
 import com.esri.geoevent.test.performance.TestException;
@@ -19,7 +19,7 @@ import com.esri.geoevent.test.performance.jaxb.Config;
  * TODO: We need to Generalize this Producer
  *
  */
-public class ClusterableTcpEventProducer extends DiagnosticsCollectorBase
+public class ClusterableTcpEventProducer extends PerformanceCollectorBase
 {
 	private String[]									hosts;
 	private String										host;

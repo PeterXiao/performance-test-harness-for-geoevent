@@ -21,6 +21,9 @@ public class CSVReportWriter extends AbstractFileRollOverReportWriter implements
 		CSVWriter reportWriter = null;
 		try
 		{
+			//create the parent directories - if needed
+			createParentDirectoriesIfNeeded( reportFile );
+			
 			//rollover the file - keep backups
 			rollOver( reportFile );
 			

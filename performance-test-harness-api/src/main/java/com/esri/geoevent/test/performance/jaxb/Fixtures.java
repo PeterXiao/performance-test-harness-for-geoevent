@@ -12,9 +12,9 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 public class Fixtures
 {
 	private Report report;
-	private List<Fixture> fixtures;
-	private GeoEventConfiguration geoEventConfiguration;
 	private Fixture defaultFixture;
+	private List<Fixture> fixtures;
+	private ProvisionerConfig provisionerConfig;
 	
 	@XmlElement(name = "Report")
 	public Report getReport()
@@ -24,16 +24,6 @@ public class Fixtures
 	public void setReport(Report report)
 	{
 		this.report = report;
-	}
-	
-	@XmlElement(name = "GeoEventConfiguration")
-	public GeoEventConfiguration getGeoEventConfiguration()
-	{
-		return geoEventConfiguration;
-	}
-	public void setGeoEventConfiguration(GeoEventConfiguration geoEventConfiguration)
-	{
-		this.geoEventConfiguration = geoEventConfiguration;
 	}
 
 	@XmlElement(name = "Fixture")
@@ -54,6 +44,16 @@ public class Fixtures
 	public void setDefaultFixture(Fixture defaultFixture)
 	{
 		this.defaultFixture = defaultFixture;
+	}
+	
+	@XmlElement(name = "ProvisionerConfig")
+	public ProvisionerConfig getProvisionerConfig()
+	{
+		return provisionerConfig;
+	}
+	public void setProvisionerConfig(ProvisionerConfig provisionerConfig)
+	{
+		this.provisionerConfig = provisionerConfig;
 	}
 	
 	@Override

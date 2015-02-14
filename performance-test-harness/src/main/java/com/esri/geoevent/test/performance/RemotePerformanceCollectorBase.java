@@ -22,7 +22,7 @@ import com.esri.geoevent.test.performance.jaxb.RemoteHost;
 import com.esri.geoevent.test.performance.utils.KryoUtils;
 import com.esri.geoevent.test.performance.utils.NetworkUtils;
 
-public class RemoteDiagnosticsCollectorBaseClass implements DiagnosticsCollector 
+public class RemotePerformanceCollectorBase implements PerformanceCollector 
 {
 	private static final String ERROR = "ERROR:";
 	protected static final String STATE_LABEL = "STATE:";
@@ -185,7 +185,7 @@ public class RemoteDiagnosticsCollectorBaseClass implements DiagnosticsCollector
 		}
 	}
 
-	public RemoteDiagnosticsCollectorBaseClass(List<RemoteHost> hosts)
+	public RemotePerformanceCollectorBase(List<RemoteHost> hosts)
 	{
 		for( RemoteHost host : hosts )
 		{

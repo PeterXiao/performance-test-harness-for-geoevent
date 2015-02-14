@@ -15,7 +15,7 @@ import kafka.javaapi.producer.Producer;
 import kafka.producer.KeyedMessage;
 import kafka.producer.ProducerConfig;
 
-import com.esri.geoevent.test.performance.DiagnosticsCollectorBase;
+import com.esri.geoevent.test.performance.PerformanceCollectorBase;
 import com.esri.geoevent.test.performance.Mode;
 import com.esri.geoevent.test.performance.RunningState;
 import com.esri.geoevent.test.performance.TestException;
@@ -27,7 +27,7 @@ import com.esri.geoevent.test.performance.jaxb.Config;
  *
  */
 @Deprecated
-public class KafkaEventProducerMultiThread extends DiagnosticsCollectorBase
+public class KafkaEventProducerMultiThread extends PerformanceCollectorBase
 {
   private String brokerList;
   private String topic;

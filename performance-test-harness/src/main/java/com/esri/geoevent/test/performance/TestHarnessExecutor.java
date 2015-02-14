@@ -28,8 +28,12 @@ import com.esri.geoevent.test.performance.activemq.ActiveMQEventConsumer;
 import com.esri.geoevent.test.performance.activemq.ActiveMQEventProducer;
 import com.esri.geoevent.test.performance.jaxb.Fixture;
 import com.esri.geoevent.test.performance.jaxb.Fixtures;
-import com.esri.geoevent.test.performance.jaxb.GeoEventConfiguration;
+import com.esri.geoevent.test.performance.jaxb.ProvisionerConfig;
 import com.esri.geoevent.test.performance.kafka.KafkaEventProducer;
+import com.esri.geoevent.test.performance.provision.DefaultProvisionerFactory;
+import com.esri.geoevent.test.performance.provision.ProvisionException;
+import com.esri.geoevent.test.performance.provision.Provisioner;
+import com.esri.geoevent.test.performance.provision.ProvisionerFactory;
 import com.esri.geoevent.test.performance.rabbitmq.RabbitMQEventConsumer;
 import com.esri.geoevent.test.performance.rabbitmq.RabbitMQEventProducer;
 import com.esri.geoevent.test.performance.report.CSVReportWriter;
@@ -125,19 +129,28 @@ public class TestHarnessExecutor
 				}
 			});
 			
-			// Configure the GeoEvent Processor with the configuration specified in the fixture description
-			GeoEventConfiguration geoEventConfiguration = fixtures.getGeoEventConfiguration();
-			if( geoEventConfiguration != null )
+			// Check the master fixtures configuration to see if we need to provision all of the test
+			ProvisionerFactory provisionerFactory = new DefaultProvisionerFactory();
+			try
 			{
-  			ClusterConfigurator configurator = new ClusterConfigurator( geoEventConfiguration.getConfigurationFile() );
-  			configurator.setHostname(geoEventConfiguration.getHostname());
-  			configurator.setUserName(geoEventConfiguration.getUsername());
-  			configurator.setPassword(geoEventConfiguration.getPassword());
-  			configurator.applyConfiguration();
+				ProvisionerConfig masterProvisionerConfig = fixtures.getProvisionerConfig();
+				if( masterProvisionerConfig != null )
+				{
+					Provisioner provisioner = provisionerFactory.createProvisioner(masterProvisionerConfig);
+					if( provisioner != null )
+						provisioner.provision();
+				}
+			} 
+			catch( ProvisionException error )
+			{
+				System.err.println( "Failed to provision the performance test harness. Cannot continue existing now.");
+				error.printStackTrace();
+				return;
 			}
-
 			
+			// start
 			startTime = System.currentTimeMillis();
+			
 			//process all fixtures in sequence/series
 			final Fixture defaultFixture = fixtures.getDefaultFixture();
 			Queue<Fixture> processingQueue = new ConcurrentLinkedQueue<Fixture>(fixtures.getFixtures());
@@ -145,6 +158,22 @@ public class TestHarnessExecutor
 			{
 				Fixture fixture = processingQueue.remove();
 				fixture.apply(defaultFixture);
+				try
+				{
+					ProvisionerConfig fixtureProvisionerConfig = fixture.getProvisionerConfig();
+					if( fixtureProvisionerConfig != null )
+					{
+						Provisioner provisioner = provisionerFactory.createProvisioner(fixtureProvisionerConfig);
+						if( provisioner != null )
+							provisioner.provision();
+					}
+				} catch( Exception error )
+				{
+					System.err.println( "Failed to provision the fixture \"" + fixture.getName() + "\". Cannot continue with this fixture. Skipping this test.");
+					error.printStackTrace();
+					continue;
+				}
+				
 				testNames.add( fixture.getName() );
 				TestHarness testHarness = new ThroughputPerformanceTestHarness(fixture);
 				try
@@ -156,6 +185,7 @@ public class TestHarnessExecutor
 				{
 					error.printStackTrace();
 				}
+				
 				// check if we are running and sleep accordingly
 				while( testHarness.isRunning() )
 				{
@@ -231,7 +261,7 @@ public class TestHarnessExecutor
 			// activate
 			if (mode == Mode.PRODUCER)
 			{
-				DiagnosticsCollector producer = null;
+				PerformanceCollector producer = null;
 				switch (protocol)
 				{
 					case TCP:
@@ -276,7 +306,7 @@ public class TestHarnessExecutor
 			}
 			else if (mode == Mode.CONSUMER)
 			{
-				DiagnosticsCollector consumer = null;
+				PerformanceCollector consumer = null;
 				switch (protocol)
 				{
 					case TCP:

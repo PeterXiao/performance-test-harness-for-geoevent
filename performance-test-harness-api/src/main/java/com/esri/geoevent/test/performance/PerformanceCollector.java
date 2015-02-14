@@ -4,7 +4,7 @@ import java.util.Map;
 
 import com.esri.geoevent.test.performance.jaxb.Config;
 
-public interface DiagnosticsCollector extends RunnableComponent
+public interface PerformanceCollector extends RunnableComponent
 {
   public void init(Config config) throws TestException;
   public void validate() throws TestException;

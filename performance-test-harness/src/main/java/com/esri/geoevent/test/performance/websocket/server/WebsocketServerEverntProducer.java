@@ -11,14 +11,14 @@ import org.eclipse.jetty.servlet.ServletHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.resource.Resource;
 
-import com.esri.geoevent.test.performance.DiagnosticsCollectorBase;
+import com.esri.geoevent.test.performance.PerformanceCollectorBase;
 import com.esri.geoevent.test.performance.Mode;
 import com.esri.geoevent.test.performance.RunningState;
 import com.esri.geoevent.test.performance.TestException;
 import com.esri.geoevent.test.performance.jaxb.Config;
 
 /* ------------------------------------------------------------ */
-public class WebsocketServerEverntProducer extends DiagnosticsCollectorBase
+public class WebsocketServerEverntProducer extends PerformanceCollectorBase
 {
 	private static final String				STREAM_SERVICE				= "/streamservice";
 	private static final String				INBOUND								= "/inbound";

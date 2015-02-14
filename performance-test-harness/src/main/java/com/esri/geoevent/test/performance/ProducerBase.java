@@ -4,7 +4,7 @@ import java.io.File;
 
 import com.esri.geoevent.test.performance.jaxb.Config;
 
-public abstract class ProducerBase extends DiagnosticsCollectorBase implements Producer
+public abstract class ProducerBase extends PerformanceCollectorBase implements Producer
 {
 	private int						eventsPerSec				= -1;
 	private int						staggeringInterval	= 10;

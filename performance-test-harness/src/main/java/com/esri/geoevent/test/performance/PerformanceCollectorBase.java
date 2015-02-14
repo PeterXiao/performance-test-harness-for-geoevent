@@ -25,7 +25,7 @@ import com.esri.geoevent.test.performance.jaxb.ConsumerConfig;
 import com.esri.geoevent.test.performance.jaxb.ProducerConfig;
 import com.esri.geoevent.test.performance.utils.KryoUtils;
 
-public abstract class DiagnosticsCollectorBase implements DiagnosticsCollector, Runnable
+public abstract class PerformanceCollectorBase implements PerformanceCollector, Runnable
 {
 	private static final String ERROR = "ERROR:";
 	private static final String STATE_LABEL = "STATE:";
@@ -42,7 +42,7 @@ public abstract class DiagnosticsCollectorBase implements DiagnosticsCollector, 
 	protected final Mode mode;
 	protected long timeOutInSec = 10;
 	
-	public DiagnosticsCollectorBase(Mode mode)
+	public PerformanceCollectorBase(Mode mode)
 	{
 		this.mode = mode;
 	}

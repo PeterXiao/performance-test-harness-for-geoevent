@@ -5,7 +5,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import com.esri.geoevent.test.performance.jaxb.Config;
 import com.esri.geoevent.test.performance.jaxb.ConsumerConfig;
 
-public abstract class ConsumerBase extends DiagnosticsCollectorBase implements Consumer
+public abstract class ConsumerBase extends PerformanceCollectorBase implements Consumer
 {
 	private AtomicInteger eventIx = new AtomicInteger(0);
 	private int expectedResultCount = 0;

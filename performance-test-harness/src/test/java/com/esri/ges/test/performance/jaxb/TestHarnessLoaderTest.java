@@ -62,6 +62,78 @@ public class TestHarnessLoaderTest
 	}
 	
 	@Test
+	public void testPerformanceTestHarnessMode_PROVISIONING_TCP() throws InterruptedException
+	{
+		// setup consumer
+		String args = "-m consumer -t tcp -p local";
+		TestHarnessExecutor.main(args.split(" "));
+		
+		// setup producer
+		args = "-m producer -t tcp -p local";
+		TestHarnessExecutor.main(args.split(" "));
+		int numOfThreadsAtStartTime = Thread.activeCount();
+		
+		// run the test
+		args = "-f src/test/resources/fixtures_provisioning_tcp.xml";
+		TestHarnessExecutor.main(args.split(" "));
+		
+		int numOfThreads = Thread.activeCount();
+		while( numOfThreads > numOfThreadsAtStartTime )
+		{
+			Thread.sleep(100);
+			numOfThreads = Thread.activeCount();
+		}
+	}
+	
+	@Test
+	public void testPerformanceTestHarnessMode_PROVISIONING_PER_FIXTURE_TCP() throws InterruptedException
+	{
+		// setup consumer
+		String args = "-m consumer -t tcp -p local";
+		TestHarnessExecutor.main(args.split(" "));
+		
+		// setup producer
+		args = "-m producer -t tcp -p local";
+		TestHarnessExecutor.main(args.split(" "));
+		int numOfThreadsAtStartTime = Thread.activeCount();
+		
+		// run the test
+		args = "-f src/test/resources/fixtures_provisioning_per_fixture_tcp.xml";
+		TestHarnessExecutor.main(args.split(" "));
+		
+		int numOfThreads = Thread.activeCount();
+		while( numOfThreads > numOfThreadsAtStartTime )
+		{
+			Thread.sleep(100);
+			numOfThreads = Thread.activeCount();
+		}
+	}
+	
+	@Test
+	public void testPerformanceTestHarnessMode_RABBITMQ() throws InterruptedException
+	{	  
+	  // setup consumer
+	  String args = "-m consumer -t rabbit_mq -p local";
+	  TestHarnessExecutor.main(args.split(" "));
+	  
+	  // setup producer
+	  args = "-m producer -t rabbit_mq -p local";
+	  TestHarnessExecutor.main(args.split(" "));
+	  int numOfThreadsAtStartTime = Thread.activeCount();
+	  
+	  // run the test
+	  args = "-f src/test/resources/fixtures_rabbitmq.xml";
+	  TestHarnessExecutor.main(args.split(" "));
+	  
+	  int numOfThreads = Thread.activeCount();
+	  while( numOfThreads > numOfThreadsAtStartTime )
+	  {
+	    Thread.sleep(100);
+	    numOfThreads = Thread.activeCount();
+	  }
+	}
+	
+	@Test
 	public void testPerformanceTestHarnessMode_KAFKA() throws InterruptedException
 	{
 	  String args;
@@ -112,80 +184,6 @@ public class TestHarnessLoaderTest
 //      numOfThreads = Thread.activeCount();
 //    }
   }
-	
-	@Test
-	public void testPerformanceTestHarnessMode_RABBITMQ() throws InterruptedException
-	{
-	  String args;
-	  
-	  // setup consumer
-	  args = "-m consumer -t tcp -p local -cp 5666 -c yes";
-	  TestHarnessExecutor.main(args.split(" "));
-	  
-	  // setup producer
-	  args = "-m producer -t rabbit_mq -p local";
-	  TestHarnessExecutor.main(args.split(" "));
-	  int numOfThreadsAtStartTime = Thread.activeCount();
-	  
-	  // run the test
-	  args = "-f src/test/resources/fixtures_rabbitmq.xml";
-	  TestHarnessExecutor.main(args.split(" "));
-	  
-	  int numOfThreads = Thread.activeCount();
-	  while( numOfThreads > numOfThreadsAtStartTime )
-	  {
-	    Thread.sleep(100);
-	    numOfThreads = Thread.activeCount();
-	  }
-	}
-	@Test
-	public void testPerformanceTestHarnessMode_COUNTY_POINTS1000() throws InterruptedException
-	{
-		// setup consumer
-//		String args = "-m consumer -t tcp -p local";
-//		TestHarnessLoader.main(args.split(" "));
-//		
-//		// setup producer
-//		args = "-m producer -t tcp -p local";
-//		TestHarnessLoader.main(args.split(" "));
-		int numOfThreadsAtStartTime = Thread.activeCount();
-		
-		// run the test
-		String args = "-f src/test/resources/fixtures_county_points1000.xml";
-		TestHarnessExecutor.main(args.split(" "));
-		
-		int numOfThreads = Thread.activeCount();
-		while( numOfThreads > numOfThreadsAtStartTime )
-		{
-			Thread.sleep(100);
-			numOfThreads = Thread.activeCount();
-		}
-	}
-	
-	@Test
-	public void testPerformanceTestHarnessMode_MULTIPLE() throws InterruptedException
-	{
-		// setup consumer
-		String args = "-m consumer -t tcp -p local";
-		TestHarnessExecutor.main(args.split(" "));
-		
-		// setup producer
-		args = "-m producer -t tcp -p local";
-		TestHarnessExecutor.main(args.split(" "));
-		int numOfThreadsAtStartTime = Thread.activeCount();
-		
-		// run the test
-		//args = "-f src/test/resources/fixtures_states_all_3K.xml";
-		args = "-f src/test/resources/fixtures_timed_run.xml";
-		TestHarnessExecutor.main(args.split(" "));
-		
-		int numOfThreads = Thread.activeCount();
-		while( numOfThreads > numOfThreadsAtStartTime )
-		{
-			Thread.sleep(100);
-			numOfThreads = Thread.activeCount();
-		}
-	}
 	
 	@Test
 	public void testPerformanceTestHarnessMode_CLUSTERED() throws InterruptedException

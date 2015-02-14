@@ -26,6 +26,9 @@ public class XLSXReportWriter extends AbstractFileRollOverReportWriter implement
 	@Override
 	public void writeReport(String reportFile, List<String> testNames, List<String> columnNames, Map<String, List<FixtureStatistic>> stats) throws IOException
 	{
+		//create the parent directories - if needed
+		createParentDirectoriesIfNeeded( reportFile );
+		
 		// rollover the file - keep backups
 		rollOver(reportFile);
 

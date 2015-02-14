@@ -17,6 +17,7 @@ public class Fixture implements Appliable<Fixture>
 	private ProducerConfig producerConfig;
 	private ConsumerConfig consumerConfig;
 	private Simulation simulation;
+	private ProvisionerConfig provisionerConfig;
 	
 	@XmlAttribute
 	public String getName()
@@ -68,6 +69,16 @@ public class Fixture implements Appliable<Fixture>
 		this.consumerConfig = consumerConfig;
 	}
 	
+	@XmlElement(name = "ProvisionerConfig", required = false)
+	public ProvisionerConfig getProvisionerConfig()
+	{
+		return provisionerConfig;
+	}
+	public void setProvisionerConfig(ProvisionerConfig provisionerConfig)
+	{
+		this.provisionerConfig = provisionerConfig;
+	}
+	
 	@Override
 	public void apply(Fixture fixture)
 	{
@@ -104,6 +115,13 @@ public class Fixture implements Appliable<Fixture>
 			else
 				getSimulation().apply(fixture.getSimulation());
 		}
+		if( fixture.getProvisionerConfig() != null )
+		{
+			if( getProvisionerConfig() == null )
+				setProvisionerConfig((ProvisionerConfig)fixture.getProvisionerConfig().copy());
+			else
+				getProvisionerConfig().apply(fixture.getProvisionerConfig());
+		}
 	}
 	
 	@Override
@@ -122,6 +140,8 @@ public class Fixture implements Appliable<Fixture>
     if (!ObjectUtils.equals(getProducerConfig(), fixture.getProducerConfig()))
       return false;
     if (!ObjectUtils.equals(getSimulation(), fixture.getSimulation()))
+      return false;
+    if (!ObjectUtils.equals(getProvisionerConfig(), fixture.getProvisionerConfig()))
       return false;
     
     return true;

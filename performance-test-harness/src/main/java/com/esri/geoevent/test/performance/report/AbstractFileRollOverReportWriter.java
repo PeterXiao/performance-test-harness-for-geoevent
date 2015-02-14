@@ -1,10 +1,12 @@
 package com.esri.geoevent.test.performance.report;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 
 public abstract class AbstractFileRollOverReportWriter
@@ -53,6 +55,13 @@ public abstract class AbstractFileRollOverReportWriter
 		}
 	}
 
+	protected void createParentDirectoriesIfNeeded(String fileName) throws IOException
+	{
+		final File file = new File(fileName);
+		final File parent = file.getParentFile();
+		FileUtils.forceMkdir(parent);
+	}
+	
 	protected String formatTime(final long timeInMillisec)
 	{
 		final long hr = TimeUnit.MILLISECONDS.toHours(timeInMillisec);

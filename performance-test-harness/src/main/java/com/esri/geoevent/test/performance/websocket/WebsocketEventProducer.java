@@ -9,14 +9,14 @@ import org.eclipse.jetty.websocket.WebSocket;
 import org.eclipse.jetty.websocket.WebSocketClient;
 import org.eclipse.jetty.websocket.WebSocketClientFactory;
 
-import com.esri.geoevent.test.performance.DiagnosticsCollectorBase;
+import com.esri.geoevent.test.performance.PerformanceCollectorBase;
 import com.esri.geoevent.test.performance.Mode;
 import com.esri.geoevent.test.performance.RunningState;
 import com.esri.geoevent.test.performance.TestException;
 import com.esri.geoevent.test.performance.jaxb.Config;
 
 /* ------------------------------------------------------------ */
-public class WebsocketEventProducer extends DiagnosticsCollectorBase
+public class WebsocketEventProducer extends PerformanceCollectorBase
 {
 	private static final String STREAM_SERVICE = "/streamservice";
 	private static final String INBOUND = "/inbound";
