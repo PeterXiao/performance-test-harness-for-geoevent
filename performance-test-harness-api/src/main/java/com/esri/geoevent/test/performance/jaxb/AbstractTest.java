@@ -1,6 +1,5 @@
 package com.esri.geoevent.test.performance.jaxb;
 
-import javax.xml.bind.annotation.XmlEnum;
 import javax.xml.bind.annotation.XmlTransient;
 
 import org.apache.commons.lang3.ObjectUtils;
@@ -31,11 +30,4 @@ public abstract class AbstractTest implements Test
     
     return true;
 	}
-	
-	@XmlEnum
-	enum TestType
-	{
-		RAMP, STRESS, TIME, UNKNOWN;
-	}
-	
 }

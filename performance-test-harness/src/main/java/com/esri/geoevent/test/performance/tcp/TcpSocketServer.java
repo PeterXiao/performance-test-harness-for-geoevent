@@ -19,6 +19,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import com.esri.geoevent.test.performance.RunnableComponent;
 import com.esri.geoevent.test.performance.RunningState;
+import com.esri.geoevent.test.performance.RunningStateType;
 import com.esri.geoevent.test.performance.RunningStateListener;
 
 public class TcpSocketServer implements RunnableComponent, Runnable
@@ -37,7 +38,7 @@ public class TcpSocketServer implements RunnableComponent, Runnable
 	private int port = 5775;
 	private String handshake = "";
 
-	private RunningState runningState = RunningState.STOPPED;
+	private RunningStateType runningState = RunningStateType.STOPPED;
 	private String stateSemaphore = "stateSemaphore";
 	private RunningStateListener runningStateListener = null;
 	private String errorMessage;
@@ -57,7 +58,7 @@ public class TcpSocketServer implements RunnableComponent, Runnable
 			this.port = port;
 
 			//reinitialize if started
-			if( getRunningState() == RunningState.STARTED )
+			if( getRunningState() == RunningStateType.STARTED )
 			{
 				stop();
 				start();
@@ -128,7 +129,7 @@ public class TcpSocketServer implements RunnableComponent, Runnable
 		default:
 			;
 		}
-		setRunningState(RunningState.STARTING);
+		setRunningState(RunningStateType.STARTING);
 		thread = new Thread(null, this, "Tcp Socket Server");
 		thread.start();
 	}
@@ -141,7 +142,7 @@ public class TcpSocketServer implements RunnableComponent, Runnable
 		{
 		case STARTING:
 		case STARTED:
-			setRunningState(RunningState.STOPPING);
+			setRunningState(RunningStateType.STOPPING);
 		default:
 			;
 		}
@@ -150,11 +151,11 @@ public class TcpSocketServer implements RunnableComponent, Runnable
 	@Override
 	public synchronized boolean isRunning()
 	{
-		return (getRunningState() == RunningState.STARTED);
+		return (getRunningState() == RunningStateType.STARTED);
 	}
 
 	@Override
-	public RunningState getRunningState()
+	public RunningStateType getRunningState()
 	{
 		synchronized (stateSemaphore)
 		{
@@ -162,14 +163,14 @@ public class TcpSocketServer implements RunnableComponent, Runnable
 		}
 	}
 
-	protected void setRunningState(RunningState newState)
+	protected void setRunningState(RunningStateType newState)
 	{
 		synchronized (stateSemaphore)
 		{
 			this.runningState = newState;
 		}
 		if (runningStateListener != null)
-			runningStateListener.onStateChange(newState);
+			runningStateListener.onStateChange(new RunningState(newState));
 	}
 
 	@Override
@@ -183,7 +184,6 @@ public class TcpSocketServer implements RunnableComponent, Runnable
 		this.errorMessage = errorMessage;
 	}
 
-	@Override
 	public String getStatusDetails()
 	{
 		return errorMessage;
@@ -201,8 +201,8 @@ public class TcpSocketServer implements RunnableComponent, Runnable
 		{
 			errorMessage = null;
 			init();
-			if (getRunningState() == RunningState.STARTING)
-				setRunningState(RunningState.STARTED);
+			if (getRunningState() == RunningStateType.STARTING)
+				setRunningState(RunningStateType.STARTED);
 			while (isRunning())
 			{
 				try
@@ -215,13 +215,13 @@ public class TcpSocketServer implements RunnableComponent, Runnable
 				}
 			}
 			cleanup();
-			if (getRunningState() == RunningState.STOPPING)
-				setRunningState(RunningState.STOPPED);
+			if (getRunningState() == RunningStateType.STOPPING)
+				setRunningState(RunningStateType.STOPPED);
 		}
 		catch (Exception ex)
 		{
 			ex.printStackTrace();
-			setRunningState(RunningState.ERROR);
+			setRunningState(RunningStateType.ERROR);
 		}
 		reset();
 	}

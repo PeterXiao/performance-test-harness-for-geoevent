@@ -66,7 +66,7 @@ public class Simulation implements Appliable<Simulation>
 			case TIME:
 				return ((TimeTest)getTest()).getEventsPerSec() * ((TimeTest)getTest()).getTotalTimeInSec();
 			case STRESS:
-				return ((StressTest)getTest()).getMinEvents();
+				return ((StressTest)getTest()).getNumOfEvents();
 			default:
 				return 1;
 		}
@@ -82,7 +82,7 @@ public class Simulation implements Appliable<Simulation>
 			case TIME:
 				return ((TimeTest)getTest()).getEventsPerSec() * ((TimeTest)getTest()).getTotalTimeInSec();
 			case STRESS:
-				return ((StressTest)getTest()).getMinEvents();
+				return ((StressTest)getTest()).getNumOfEvents();
 			default:
 				return 1;
 		}
@@ -118,7 +118,7 @@ public class Simulation implements Appliable<Simulation>
 			case TIME:
 				return ((TimeTest)getTest()).getEventsPerSec();
 			case STRESS:
-				return ((StressTest)getTest()).getMinEvents();
+				return ((StressTest)getTest()).getNumOfEvents();
 			default:
 				return 1;
 		}
@@ -131,7 +131,7 @@ public class Simulation implements Appliable<Simulation>
 		{
 			return ((TimeTest)getTest()).getStaggeringInterval();
 		}
-		return 10;
+		return 1;
 	}
 	
 	@Override

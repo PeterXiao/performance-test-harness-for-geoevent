@@ -12,6 +12,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import com.esri.geoevent.test.performance.PerformanceCollectorBase;
 import com.esri.geoevent.test.performance.Mode;
 import com.esri.geoevent.test.performance.RunningState;
+import com.esri.geoevent.test.performance.RunningStateType;
 import com.esri.geoevent.test.performance.TestException;
 import com.esri.geoevent.test.performance.jaxb.Config;
 
@@ -128,7 +129,7 @@ public class ClusterableTcpEventProducer extends PerformanceCollectorBase
 		if (numberOfEvents > 0)
 		{
 			if (runningStateListener != null)
-				runningStateListener.onStateChange(RunningState.STARTED);
+				runningStateListener.onStateChange(new RunningState(RunningStateType.STARTED));
 
 			localTimeStamp = new Long[2];
 
@@ -187,7 +188,7 @@ public class ClusterableTcpEventProducer extends PerformanceCollectorBase
 			long totalTime = (localTimeStamp[1] - localTimeStamp[0]) / 1000;
 			System.out.println("Produced a total of: " + successfulEvents.get() + " events in " + totalTime + " secs (rate=" + ((double) numberOfEvents / (double) totalTime) + " e/s).");
 			if (runningStateListener != null)
-				runningStateListener.onStateChange(RunningState.STOPPED);
+				runningStateListener.onStateChange(new RunningState(RunningStateType.STOPPED));
 		}
 	}
 

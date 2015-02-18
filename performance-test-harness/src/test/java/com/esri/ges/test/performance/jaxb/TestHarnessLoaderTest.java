@@ -62,6 +62,54 @@ public class TestHarnessLoaderTest
 	}
 	
 	@Test
+	public void testPerformanceTestHarnessMode_TCP_RAMP_UP() throws InterruptedException
+	{
+		// setup consumer
+		String args = "-m consumer -t tcp -p local";
+		TestHarnessExecutor.main(args.split(" "));
+		
+		// setup producer
+		args = "-m producer -t tcp -p local";
+		TestHarnessExecutor.main(args.split(" "));
+		int numOfThreadsAtStartTime = Thread.activeCount();
+		
+		// run the test
+		args = "-f src/test/resources/fixtures_ramp_tcp.xml";
+		TestHarnessExecutor.main(args.split(" "));
+		
+		int numOfThreads = Thread.activeCount();
+		while( numOfThreads > numOfThreadsAtStartTime )
+		{
+			Thread.sleep(100);
+			numOfThreads = Thread.activeCount();
+		}
+	}
+	
+	@Test
+	public void testPerformanceTestHarnessMode_TCP_STRESS() throws InterruptedException
+	{
+		// setup consumer
+		String args = "-m consumer -t tcp -p local";
+		TestHarnessExecutor.main(args.split(" "));
+		
+		// setup producer
+		args = "-m producer -t tcp -p local";
+		TestHarnessExecutor.main(args.split(" "));
+		int numOfThreadsAtStartTime = Thread.activeCount();
+		
+		// run the test
+		args = "-f src/test/resources/fixtures_stress_tcp.xml";
+		TestHarnessExecutor.main(args.split(" "));
+		
+		int numOfThreads = Thread.activeCount();
+		while( numOfThreads > numOfThreadsAtStartTime )
+		{
+			Thread.sleep(100);
+			numOfThreads = Thread.activeCount();
+		}
+	}
+	
+	@Test
 	public void testPerformanceTestHarnessMode_PROVISIONING_TCP() throws InterruptedException
 	{
 		// setup consumer

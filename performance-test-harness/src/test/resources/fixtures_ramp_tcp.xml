@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Fixtures>
+	
+	<Report type="CSV" simpleColumnNames="true">
+		<ReportFile>target/reports/ramp_test_tcp.csv</ReportFile>
+	</Report>
+	
+	<DefaultFixture>
+		<!-- SHARED CONFIGURATION -->
+		<DefaultSharedConfig protocol="TCP">
+			<Properties>
+				<Property name="host">ricardot</Property>
+			</Properties>
+		</DefaultSharedConfig>
+		<ProducerConfig commandPort="5010">
+			<Properties>
+				<Property name="simulationFile">src/test/resources/simulations/county_envelopes_1000_points.csv</Property>
+				<Property name="port">5565</Property>
+			</Properties>
+		</ProducerConfig>
+		<ConsumerConfig commandPort="5020" timeoutInSec="5">
+			<Properties>
+				<Property name="port">5575</Property>
+			</Properties>
+		</ConsumerConfig>
+				
+		<Simulation>
+			<RampTest minEvents="100" maxEvents="300" eventsToAddPerTest="100" />
+		</Simulation>
+	</DefaultFixture>
+	
+	<Fixture name="100 to 300 by 100 Ramp Up" />
+	
+	<Fixture name="200 to 600 by 200 Ramp Up">
+		<Simulation>
+			<RampTest minEvents="200" maxEvents="600" eventsToAddPerTest="200" />
+		</Simulation>
+	</Fixture>
+	
+</Fixtures>

@@ -2,7 +2,7 @@ package com.esri.geoevent.test.performance;
 
 import org.apache.commons.lang3.StringUtils;
 
-public enum ActionType
+public enum RequestType
 {
 	INIT, 
 	VALIDATE, 
@@ -12,7 +12,6 @@ public enum ActionType
 	DESTROY, 
 	IS_RUNNING, 
 	GET_RUNNING_STATE, 
-	GET_STATUS_DETAILS, 
 	GET_TIMESTAMPS,
 	GET_NUMBER_OF_EVENTS, 
 	SET_NUMBER_OF_EVENTS, 
@@ -20,7 +19,7 @@ public enum ActionType
 	GET_SUCCESSFUL_EVENTS,
 	UNKNOWN;
 	
-	public static ActionType fromValue(String valueStr)
+	public static RequestType fromValue(String valueStr)
 	{
 		if( StringUtils.isBlank(valueStr) )
 			return UNKNOWN;
@@ -42,8 +41,6 @@ public enum ActionType
 			return IS_RUNNING;
 		else if( GET_RUNNING_STATE.toString().equalsIgnoreCase(valueStr))
 			return GET_RUNNING_STATE;
-		else if( GET_STATUS_DETAILS.toString().equalsIgnoreCase(valueStr))
-			return GET_STATUS_DETAILS;
 		else if( GET_TIMESTAMPS.toString().equalsIgnoreCase(valueStr))
 			return GET_TIMESTAMPS;
 		else if( GET_NUMBER_OF_EVENTS.toString().equalsIgnoreCase(valueStr))

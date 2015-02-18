@@ -6,7 +6,6 @@ public interface RunnableComponent
 	public void stop();
 	public boolean isRunning();
 
-	public RunningState getRunningState();
-	public String getStatusDetails();
+	public RunningStateType getRunningState();
 	public void setRunningStateListener(RunningStateListener listener);
 }

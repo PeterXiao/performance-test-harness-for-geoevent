@@ -27,30 +27,28 @@ import com.esri.geoevent.test.performance.utils.KryoUtils;
 
 public abstract class PerformanceCollectorBase implements PerformanceCollector, Runnable
 {
-	private static final String ERROR = "ERROR:";
-	private static final String STATE_LABEL = "STATE:";
-	private static final String OK = "OK";
+	private static final String 		REQUEST_SEPERATOR = "::::";
 
-	protected int numberOfEvents;
-	protected int numberOfExpectedResults;
-	protected Map<Integer, Long[]> timeStamps = new ConcurrentHashMap<Integer, Long[]>();
-	protected AtomicBoolean running = new AtomicBoolean(false);
-	protected RunningStateListener runningStateListener;
-	protected List<String> events = new ArrayList<String>();
-	private CommandInterpreter commandInterpreter;
-	protected AtomicLong successfulEvents = new AtomicLong();
-	protected final Mode mode;
-	protected long timeOutInSec = 10;
-	
+	protected int										numberOfEvents;
+	protected int										numberOfExpectedResults;
+	protected Map<Integer, Long[]>	timeStamps				= new ConcurrentHashMap<Integer, Long[]>();
+	protected AtomicBoolean					running						= new AtomicBoolean(false);
+	protected RunningStateListener	runningStateListener;
+	protected List<String>					events						= new ArrayList<String>();
+	private CommandInterpreter			commandInterpreter;
+	protected AtomicLong						successfulEvents	= new AtomicLong();
+	protected final Mode						mode;
+
 	public PerformanceCollectorBase(Mode mode)
 	{
 		this.mode = mode;
 	}
-	
+
 	public int getNumberOfEvents()
 	{
 		return numberOfEvents;
 	}
+
 	public void setNumberOfEvents(int numberOfEvents)
 	{
 		this.numberOfEvents = numberOfEvents;
@@ -60,21 +58,17 @@ public abstract class PerformanceCollectorBase implements PerformanceCollector, 
 	{
 		return numberOfExpectedResults;
 	}
+
 	public void setNumberOfExpectedResults(int numberOfExpectedResults)
 	{
 		this.numberOfExpectedResults = numberOfExpectedResults;
 	}
-	
+
 	public long getSuccessfulEvents()
 	{
 		return successfulEvents.get();
 	}
 
-	public void setTimeOutInSec(long timeOutInSec)
-	{
-		this.timeOutInSec = timeOutInSec;
-	}
-	
 	public synchronized Map<Integer, Long[]> getTimeStamps()
 	{
 		return timeStamps;
@@ -117,15 +111,9 @@ public abstract class PerformanceCollectorBase implements PerformanceCollector, 
 	}
 
 	@Override
-	public RunningState getRunningState()
+	public RunningStateType getRunningState()
 	{
-		return running.get() ? RunningState.STARTED : RunningState.STOPPED;
-	}
-
-	@Override
-	public String getStatusDetails()
-	{
-		return null;
+		return running.get() ? RunningStateType.STARTED : RunningStateType.STOPPED;
 	}
 
 	@Override
@@ -138,7 +126,7 @@ public abstract class PerformanceCollectorBase implements PerformanceCollector, 
 	{
 		if (!events.isEmpty())
 			events.clear();
-		
+
 		BufferedReader input = null;
 		try
 		{
@@ -167,28 +155,28 @@ public abstract class PerformanceCollectorBase implements PerformanceCollector, 
 			}
 		}
 	}
-	
+
 	public void listenOnCommandPort(int commandPort, boolean isLocal)
 	{
-		//System.out.println("Listening on port " + commandPort);
-		commandInterpreter = new CommandInterpreter( commandPort );
+		// System.out.println("Listening on port " + commandPort);
+		commandInterpreter = new CommandInterpreter(commandPort);
 		setRunningStateListener(commandInterpreter);
-		Thread t = new Thread(commandInterpreter);
-		t.start();
+		Thread thread = new Thread(commandInterpreter);
+		thread.start();
 		if (!isLocal)
 		{
-			t = new Thread(new ClockSync());
-			t.start();
+			thread = new Thread(new ClockSync());
+			thread.start();
 		}
 	}
 
 	private class CommandInterpreter implements Runnable, RunningStateListener
 	{
-		int port;
-		private BufferedReader in;
-		private PrintWriter out;
+		int											port;
+		private BufferedReader	in;
+		private PrintWriter			out;
 
-		public CommandInterpreter( int commandPort )
+		public CommandInterpreter(int commandPort)
 		{
 			this.port = commandPort;
 		}
@@ -236,146 +224,200 @@ public abstract class PerformanceCollectorBase implements PerformanceCollector, 
 							//System.out.println("Received command \"" + command + "\"");
 							synchronized(out)
 							{
-								if( command.startsWith("start") )
+								String requestStr = command;
+								String additionalDataStr = null;
+								if( command.contains(REQUEST_SEPERATOR) )
 								{
-									try
-									{
-										start();
-										out.println(OK);
-									}catch(RunningException ex)
-									{
-										out.println(ERROR+ex.getMessage());
-									}
-								}
-								else if( command.startsWith("stop"))
-								{
-									stop();
-									out.println(OK);
-								}
-								else if( command.startsWith("isRunning"))
-								{
-									boolean b = isRunning();
-									if(b)
-										out.println("TRUE");
-									else
-										out.println("FALSE");
-								}
-								else if( command.startsWith("getRunningState"))
-								{
-									RunningState st = getRunningState();
-									out.println(st.toString());
-								}
-								else if( command.startsWith("getStatusDetails"))
-								{
-									String details = getStatusDetails();
-									out.println(details);
-								}
-								else if( command.startsWith("init:"))
-								{
-									String dataStr = command.substring("init:".length());
-									//System.out.println( "Incoming Data: " + dataStr);
-									Config config = null;
-									if( mode == Mode.CONSUMER)
-										config = KryoUtils.fromString(dataStr, ConsumerConfig.class);
-									else if( mode == Mode.PRODUCER)
-										config = KryoUtils.fromString(dataStr, ProducerConfig.class);
-									try
-									{
-										init(config);
-										out.println(OK);
-									}catch(TestException ex)
-									{
-										out.println(ERROR+ex.getMessage());
-									}
-								}
-								else if( command.startsWith("validate"))
-								{
-									try
-									{
-										validate();
-										out.println(OK);
-									}catch(TestException ex)
-									{
-										out.println(ERROR+ex.getMessage());
-									}
-								}
-								else if( command.startsWith("destroy"))
-								{
-									destroy();
-									out.println(OK);
-									out.flush();
+									String[] requestSplitter = command.split(REQUEST_SEPERATOR);
+									if( requestSplitter == null || requestSplitter.length < 2 )
+										continue;
 									
-									//close the input and output stream
-									IOUtils.closeQuietly(in);
-									in = null;
-									IOUtils.closeQuietly(out);
-									out= null;
-									
-									//continue to the top of the while loop
+									requestStr = requestSplitter[0];
+									additionalDataStr = requestSplitter[1];
+								}
+								
+								// parse out the request object
+								Request request = KryoUtils.fromString(requestStr, Request.class);
+								if( request == null )
+								{
+									System.err.println( "Failed to parse out the Request object!" );
 									continue;
 								}
-								else if( command.startsWith("reset"))
+								
+								// request action switch
+								Response response = null;
+								switch( request.getType() )
 								{
-									reset();
-									out.println(OK);
+									case INIT:
+										
+										response = new Response(ResponseType.OK);
+										try
+										{
+											// parse out the init data
+											if( additionalDataStr == null )
+											{
+												String errorMsg = "Failed to parse out the Additional Data for INIT!";
+												response = new Response(ResponseType.ERROR, errorMsg);
+												System.err.println( errorMsg );
+												respond(response);
+												continue;
+											}
+											Config config = null;
+											if( mode == Mode.CONSUMER)
+												config = KryoUtils.fromString(additionalDataStr, ConsumerConfig.class);
+											else if( mode == Mode.PRODUCER)
+												config = KryoUtils.fromString(additionalDataStr, ProducerConfig.class);
+											
+											init(config);
+										}
+										catch(Exception ex)
+										{
+											response = new Response(ResponseType.ERROR, ex.getMessage());
+										}
+										finally
+										{
+											respond(response);
+										}
+										break;
+									
+									case START:
+										response = new Response(ResponseType.OK);
+										try
+										{
+											start();
+										}
+										catch(Exception ex)
+										{
+											response = new Response(ResponseType.ERROR, ex.getMessage());
+										}
+										finally
+										{
+											respond(response);
+										}
+										break;
+										
+									case STOP:
+										response = new Response(ResponseType.OK);
+										try
+										{
+											stop();
+										}
+										catch(Exception ex)
+										{
+											response = new Response(ResponseType.ERROR, ex.getMessage());
+										}
+										finally
+										{
+											respond(response);
+										}
+										break;
+										
+									case IS_RUNNING:
+										response = new Response(ResponseType.OK);
+										if(isRunning())
+											response.setData( "true" );
+										else
+											response.setData( "false" );
+										respond(response);
+										break;
+									
+									case GET_RUNNING_STATE:
+										RunningStateType st = getRunningState();
+										response = new Response(ResponseType.OK, st.toString());
+										respond(response);
+										break;
+										
+									case VALIDATE:
+										response = new Response(ResponseType.OK);
+										try
+										{
+											validate();
+										}
+										catch(Exception ex)
+										{
+											response = new Response(ResponseType.ERROR, ex.getMessage());
+										}
+										finally
+										{
+											respond(response);
+										}
+										break;
+									
+									case DESTROY:
+										destroy();
+										
+										response = new Response(ResponseType.OK);
+										respond(response);
+										
+										//close the input and output stream
+										IOUtils.closeQuietly(in);
+										in = null;
+										IOUtils.closeQuietly(out);
+										out= null;
+										
+										//continue to the top of the while loop
+										continue;
+										
+									case RESET:
+										reset();
+										response = new Response(ResponseType.OK);
+										respond(response);
+										break;
+									
+									case GET_NUMBER_OF_EVENTS:
+										response = new Response(ResponseType.OK, String.valueOf(getNumberOfEvents()));
+										respond(response);
+										break;
+										
+									case GET_SUCCESSFUL_EVENTS:
+										response = new Response(ResponseType.OK, String.valueOf(getSuccessfulEvents()));
+										respond(response);
+										break;
+										
+									case SET_NUMBER_OF_EVENTS:
+										setNumberOfEvents(Integer.parseInt(request.getData()));
+										response = new Response(ResponseType.OK);
+										respond(response);
+										break;
+										
+									case SET_NUMBER_OF_EXPECTED_RESULTS:
+										setNumberOfExpectedResults(Integer.parseInt(request.getData()));
+										response = new Response(ResponseType.OK);
+										respond(response);
+										break;
+									
+									case GET_TIMESTAMPS:
+										// TODO: We need a better way to send this across the wire
+										// build the time stamps string 
+										Map<Integer, Long[]> values = getTimeStamps();
+										StringBuilder stringBuilder = new StringBuilder();
+										for( Integer key : values.keySet() )
+										{
+											stringBuilder.append("__"+key);
+											Long[] valueArray = values.get(key);
+											for( Long l : valueArray )
+												stringBuilder.append("::"+l);
+										}
+										
+										String timeStampsStr = null;
+										if(stringBuilder.length()>2)
+											timeStampsStr = stringBuilder.substring(2);
+										
+										response = new Response(ResponseType.OK, timeStampsStr);
+										respond(response);
+										break;
+										
+									case UNKNOWN:
+										String erroMsg = "Could not recognize the current Request type \"" + RequestType.UNKNOWN + "\". Discarding the current request: " + command;
+										response = new Response(ResponseType.ERROR, erroMsg);
+										System.err.println(erroMsg);
+										respond(response);
+										continue;
 								}
-								else if( command.startsWith("getNumberOfEvents"))
-								{
-									int num = getNumberOfEvents();
-									out.println(String.valueOf(num));
-								}
-								else if( command.startsWith("getSuccessfulEvents"))
-								{
-									long num = getSuccessfulEvents();
-									out.println(String.valueOf(num));
-								}
-								else if( command.startsWith("setNumberOfEvents"))
-								{
-									if( command.length() > "setNumberOfEvents:".length() )
-									{
-										String param = command.substring("setNumberOfEvents:".length()).trim();
-										setNumberOfEvents(Integer.parseInt(param));
-									}
-									out.println(OK);
-								}
-								else if( command.startsWith("setNumberOfExpectedResults"))
-								{
-									if( command.length() > "setNumberOfExpectedResults:".length() )
-									{
-										String param = command.substring("setNumberOfExpectedResults:".length()).trim();
-										setNumberOfExpectedResults(Integer.parseInt(param));
-									}
-									out.println(OK);
-								}
-								else if( command.startsWith("setTimeOutInSec"))
-								{
-									if( command.length() > "setTimeOutInSec:".length() )
-									{
-										String param = command.substring("setTimeOutInSec:".length()).trim();
-										setTimeOutInSec(Long.parseLong(param));
-									}
-									out.println(OK);
-								}
-								else if( command.startsWith("getTimeStamps"))
-								{
-									Map<Integer, Long[]> values = getTimeStamps();
-									StringBuilder b = new StringBuilder();
-									for( Integer key : values.keySet() )
-									{
-										b.append("__"+key);
-										Long[] valueArray = values.get(key);
-										for( Long l : valueArray )
-											b.append("::"+l);
-									}
-									if(b.length()>2)
-										out.println(b.substring(2));
-									else
-										out.println();
-								}
-								out.flush();
 							}
 						}
-					}catch(IOException ex)
+					}
+					catch(IOException ex)
 					{
 						if( ex.getMessage().equals("Connection reset") )
 						{
@@ -395,16 +437,22 @@ public abstract class PerformanceCollectorBase implements PerformanceCollector, 
 		@Override
 		public void onStateChange(RunningState newState)
 		{
+			if (out != null)
+			{
+				Response response = new Response(ResponseType.STATE_CHANGED, newState.getType().toString());
+				respond(response);
+			}
+		}
+		
+		private void respond(Response response)
+		{
 			if( out != null )
 			{
 				synchronized (out)
 				{
-					//System.out.println("Sending state change command: " + STATE_LABEL+newState);
-					if( out != null && newState != null)
-					{
-						out.println(STATE_LABEL+newState);
-						out.flush();
-					}
+					String responseStr = KryoUtils.toString(response, Response.class);
+					out.println(responseStr);
+					out.flush();
 				}
 			}
 		}

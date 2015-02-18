@@ -4,21 +4,21 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-public class Request
-{
-	private RequestType type;
+public class Response
+{	
+	private ResponseType type;
 	private String data;
-
-	public Request()
+	
+	public Response()
 	{
 	}
 	
-	public Request(RequestType type)
+	public Response(ResponseType type)
 	{
 		this.type = type;
 	}
 	
-	public Request(RequestType type, String data)
+	public Response(ResponseType type, String data)
 	{
 		this.type = type;
 		this.data = data;
@@ -34,12 +34,12 @@ public class Request
 		this.data = data;
 	}
 	
-	public RequestType getType()
+	public ResponseType getType()
 	{
 		return type;
 	}
 	
-	public void setType(RequestType type)
+	public void setType(ResponseType type)
 	{
 		this.type = type;
 	}
@@ -47,13 +47,13 @@ public class Request
 	@Override
 	public boolean equals(Object obj)
 	{
-		if (obj == null || !(obj instanceof Request))
+		if (obj == null || !(obj instanceof Response))
       return false;
 		
-		Request request = (Request) obj;
-    if (!ObjectUtils.equals(getType(), request.getType()))
+		Response response = (Response) obj;
+    if (!ObjectUtils.equals(getType(), response.getType()))
       return false;
-    if (!ObjectUtils.equals(getData(), request.getData()))
+    if (!ObjectUtils.equals(getData(), response.getData()))
       return false;
     
 		return super.equals(obj);

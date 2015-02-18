@@ -11,11 +11,11 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 public class StressTest extends AbstractTest 
 {
 	protected final int DEFAULT_ITERATIONS = 1;
-	protected final int DEFAULT_MIN_EVENTS = 0;
+	protected final int DEFAULT_NUM_OF_EVENTS = 0;
 	protected final int DEFAULT_EXPECTED_RESULT_COUNT = -1;
 	
 	private int iterations = DEFAULT_ITERATIONS;
-	private int minEvents = DEFAULT_MIN_EVENTS;
+	private int numOfEvents = DEFAULT_NUM_OF_EVENTS;
 	private int expectedResultCount = DEFAULT_EXPECTED_RESULT_COUNT;
 	
 	public StressTest()
@@ -34,13 +34,13 @@ public class StressTest extends AbstractTest
 	}
 	
 	@XmlAttribute
-	public int getMinEvents()
+	public int getNumOfEvents()
 	{
-		return minEvents;
+		return numOfEvents;
 	}
-	public void setMinEvents(int minEvents)
+	public void setNumOfEvents(int minEvents)
 	{
-		this.minEvents = minEvents;
+		this.numOfEvents = minEvents;
 	}
 	
 	@XmlAttribute
@@ -66,8 +66,8 @@ public class StressTest extends AbstractTest
 				setExpectedResultCount( stressTest.getExpectedResultCount() );
 			if( getIterations() == DEFAULT_ITERATIONS )
 				setIterations( stressTest.getIterations() );
-			if( getMinEvents() == DEFAULT_MIN_EVENTS )
-				setMinEvents( stressTest.getMinEvents() );
+			if( getNumOfEvents() == DEFAULT_NUM_OF_EVENTS )
+				setNumOfEvents( stressTest.getNumOfEvents() );
 		}
 	}
 	
@@ -77,7 +77,7 @@ public class StressTest extends AbstractTest
 		StressTest copy = new StressTest();
 		copy.setExpectedResultCount(getExpectedResultCount());
 		copy.setIterations(getIterations());
-		copy.setMinEvents(getMinEvents());
+		copy.setNumOfEvents(getNumOfEvents());
 		copy.setType(getType());
 		return copy;
 	}
@@ -93,7 +93,7 @@ public class StressTest extends AbstractTest
       return false;
     if (!ObjectUtils.equals(getIterations(), test.getIterations()))
       return false;
-    if (!ObjectUtils.equals(getMinEvents(), test.getMinEvents()))
+    if (!ObjectUtils.equals(getNumOfEvents(), test.getNumOfEvents()))
       return false;
     
     return super.equals(obj);

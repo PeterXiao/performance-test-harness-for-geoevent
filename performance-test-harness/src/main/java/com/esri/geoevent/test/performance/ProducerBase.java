@@ -3,12 +3,14 @@ package com.esri.geoevent.test.performance;
 import java.io.File;
 
 import com.esri.geoevent.test.performance.jaxb.Config;
+import com.esri.geoevent.test.performance.jaxb.TestType;
 
 public abstract class ProducerBase extends PerformanceCollectorBase implements Producer
 {
-	private int						eventsPerSec				= -1;
-	private int						staggeringInterval	= 10;
-	
+	private int				eventsPerSec				= -1;
+	private int				staggeringInterval	= 10;
+	private TestType	testType						= TestType.UNKNOWN;
+
 	public ProducerBase()
 	{
 		super(Mode.PRODUCER);
@@ -23,6 +25,7 @@ public abstract class ProducerBase extends PerformanceCollectorBase implements P
 			loadEvents(new File(path));
 			eventsPerSec = Integer.parseInt(config.getPropertyValue("eventsPerSec", "-1"));
 			staggeringInterval = Integer.parseInt(config.getPropertyValue("staggeringInterval", "1"));
+			testType = TestType.fromValue(config.getPropertyValue("testType"));
 		}
 		catch( Exception error )
 		{
@@ -30,21 +33,22 @@ public abstract class ProducerBase extends PerformanceCollectorBase implements P
 			throw new TestException(error.getMessage());
 		}
 	}
-	
+
 	@Override
 	public void validate() throws TestException
 	{
 		if (events.isEmpty())
 			throw new TestException("TcpEventProducer is missing events to produce.");
 	}
-	
+
 	@Override
 	public void run()
 	{
 		if (numberOfEvents > 0)
 		{
 			if (runningStateListener != null)
-				runningStateListener.onStateChange(RunningState.STARTED);
+				runningStateListener.onStateChange(new RunningState(RunningStateType.STARTED));
+
 			int eventIx = 0;
 			Long[] timeStamp = new Long[2];
 			timeStamp[0] = System.currentTimeMillis();
@@ -64,10 +68,10 @@ public abstract class ProducerBase extends PerformanceCollectorBase implements P
 				while (successfulEvents.get() < numberOfEvents)
 				{
 					targetTimeStamp = targetTimeStamp + delay;
-					
+
 					// send the events
 					eventIx = sendEvents(eventIx, eventsToSend);
-					
+
 					sleepTime = targetTimeStamp - System.currentTimeMillis();
 					// add the delay - if necessary
 					if (sleepTime > 0)
@@ -99,9 +103,13 @@ public abstract class ProducerBase extends PerformanceCollectorBase implements P
 			}
 			running.set(false);
 			long totalTime = (timeStamp[1] - timeStamp[0]) / 1000;
-			System.out.println("Produced a total of: " + successfulEvents.get() + " events in " + totalTime + " secs (rate=" + ((double) numberOfEvents / (double) totalTime) + " e/s).");
+			if( testType == TestType.TIME )
+				System.out.println("Produced a total of: " + successfulEvents.get() + " events in " + totalTime + " secs (rate=" + ((double) numberOfEvents / (double) totalTime) + " e/s).");
+			else
+				System.out.println("Produced a total of: " + successfulEvents.get() + " events");
+			
 			if (runningStateListener != null)
-				runningStateListener.onStateChange(RunningState.STOPPED);
+				runningStateListener.onStateChange(new RunningState(RunningStateType.STOPPED));
 		}
 	}
 
@@ -111,5 +119,5 @@ public abstract class ProducerBase extends PerformanceCollectorBase implements P
 		super.destroy();
 		events.clear();
 	}
-	
+
 }

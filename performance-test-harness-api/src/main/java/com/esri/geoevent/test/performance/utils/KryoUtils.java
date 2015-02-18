@@ -4,10 +4,16 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 import com.esri.geoevent.test.performance.Protocol;
+import com.esri.geoevent.test.performance.Request;
+import com.esri.geoevent.test.performance.RequestType;
+import com.esri.geoevent.test.performance.Response;
+import com.esri.geoevent.test.performance.ResponseType;
 import com.esri.geoevent.test.performance.jaxb.AbstractConfig;
 import com.esri.geoevent.test.performance.jaxb.Config;
 import com.esri.geoevent.test.performance.jaxb.ConsumerConfig;
@@ -33,6 +39,9 @@ public class KryoUtils
 {
 	public static <T> T fromString(String data, Class<T> type)
 	{
+		if( StringUtils.isEmpty(data) )
+			return null;
+		
 		Kryo kryo = setupKryo();
 		Input input = new Input(new ByteArrayInputStream(data.getBytes()));
 		T returnObj = kryo.readObject(input, type);
@@ -42,6 +51,9 @@ public class KryoUtils
 	
 	public static <T> String toString(T t, Class<T> type)
 	{
+		if( t == null )
+			return null;
+		
 		Kryo kryo = setupKryo();
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		Output output = new Output(baos);
@@ -78,6 +90,10 @@ public class KryoUtils
 		kryo.register(TimeTest.class);
 		kryo.register(Test.class);
 		kryo.register(ArrayList.class);
+		kryo.register(Request.class);
+		kryo.register(Response.class);
+		kryo.register(RequestType.class);
+		kryo.register(ResponseType.class);
 		return kryo;
 	}
 	

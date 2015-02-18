@@ -12,6 +12,7 @@ import org.eclipse.jetty.websocket.WebSocketClientFactory;
 import com.esri.geoevent.test.performance.PerformanceCollectorBase;
 import com.esri.geoevent.test.performance.Mode;
 import com.esri.geoevent.test.performance.RunningState;
+import com.esri.geoevent.test.performance.RunningStateType;
 import com.esri.geoevent.test.performance.TestException;
 import com.esri.geoevent.test.performance.jaxb.Config;
 
@@ -141,7 +142,7 @@ public class WebsocketEventProducer extends PerformanceCollectorBase
 		if (numberOfEvents > 0)
 		{
 			if (runningStateListener != null)
-				runningStateListener.onStateChange(RunningState.STARTED);
+				runningStateListener.onStateChange(new RunningState(RunningStateType.STARTED));
 			int eventIx = 0;
 			Long[] timeStamp = new Long[2];
 			timeStamp[0] = System.currentTimeMillis();
@@ -170,7 +171,7 @@ public class WebsocketEventProducer extends PerformanceCollectorBase
 			timeStamps.put(timeStamps.size(), timeStamp);
 			running.set(false);
 			if (runningStateListener != null)
-				runningStateListener.onStateChange(RunningState.STOPPED);
+				runningStateListener.onStateChange(new RunningState(RunningStateType.STOPPED));
 		}
 	}
 
