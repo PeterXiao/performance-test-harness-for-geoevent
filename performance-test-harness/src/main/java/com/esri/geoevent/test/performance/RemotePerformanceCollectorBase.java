@@ -293,7 +293,7 @@ public class RemotePerformanceCollectorBase implements PerformanceCollector
 		{
 			this.host = host;
 			this.port = commandPort;
-			System.out.println("Creating remote connection to " + host + ":"+port);
+			System.out.println( Messages.getMessage("REMOTE_COLLECTOR_CONNECTION_CREATED", host, String.valueOf(port)) );
 			socket = new Socket( host, port);
 			socket.setSoTimeout(50);
 			in = new BufferedReader( new InputStreamReader( socket.getInputStream() ) );
@@ -343,7 +343,6 @@ public class RemotePerformanceCollectorBase implements PerformanceCollector
 			
 			if (!isLocal)
 			{
-				//System.out.println("getting remote clock time.");
 				DatagramPacket timeSocket = new DatagramPacket( new byte[8], 8, InetAddress.getByName(host), 7720);
 				DatagramSocket sock = new DatagramSocket(7720);
 				while(true)
@@ -363,7 +362,7 @@ public class RemotePerformanceCollectorBase implements PerformanceCollector
 						break;
 					}
 					else
-						System.out.println("While getting the remote clock time, round trip was " + roundTripTime + ", trying again.");
+						System.out.println( Messages.getMessage("REMOTE_COLLECTOR_CLOCK_SYNC_MSG",  String.valueOf(roundTripTime)) );
 				}
 			}
 		}

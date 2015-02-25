@@ -17,6 +17,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.esri.geoevent.test.performance.Messages;
 import com.esri.geoevent.test.performance.RunnableComponent;
 import com.esri.geoevent.test.performance.RunningState;
 import com.esri.geoevent.test.performance.RunningStateType;
@@ -74,7 +75,7 @@ public class TcpSocketServer implements RunnableComponent, Runnable
 		socketChannel.configureBlocking(false);
 		socketChannel.socket().bind(new InetSocketAddress(port));
 		socketChannel.register(selector, SelectionKey.OP_ACCEPT);
-		System.out.println( "Listening for a TCP connections on port: " + port );
+		System.out.println( Messages.getMessage("TCP_SERVER_START_MSG", String.valueOf(port)) );
 	}
 
 	private synchronized void reset()

@@ -69,7 +69,7 @@ public class ThroughputPerformanceTestHarness implements TestHarness, RunningSta
 		this.testType = fixture.getSimulation().getTest().getType();
 		
 		System.out.println("-------------------------------------------------------");
-		System.out.println(" Runnning Performance test \"" + testName + "\" ");
+		System.out.println( Messages.getMessage("TEST_HARNESS_START_MSG", testName ) );
 		System.out.println("-------------------------------------------------------");
 
 		ProducerConfig producerConfig = fixture.getProducerConfig();
@@ -115,7 +115,7 @@ public class ThroughputPerformanceTestHarness implements TestHarness, RunningSta
 	public void runTest() throws TestException
 	{
 		if (eventsPerIteration < 1)
-			throw new TestException("Number of events to be produced/consumed per iteration cannot be less than 1.");
+			throw new TestException( Messages.getMessage("TEST_HARNESS_NUM_OF_EVENTS_VALIDATION") );
 		if (!eventConsumer.isRunning() && !eventProducer.isRunning())
 		{
 			// set the running flag
@@ -124,7 +124,7 @@ public class ThroughputPerformanceTestHarness implements TestHarness, RunningSta
 
 			currentIteration++;
 			if( testType != TestType.TIME)
-				System.out.println("Running iteration: " + currentIteration);
+				System.out.println( Messages.getMessage("TEST_HARNESS_ITERATION_MSG", currentIteration) );
 			
 			try
 			{
@@ -132,13 +132,11 @@ public class ThroughputPerformanceTestHarness implements TestHarness, RunningSta
 				if( expectedResultCount != -1 )
 				{
 					eventConsumer.setNumberOfExpectedResults(producerCount * expectedResultCount);
-					//System.out.println("Setting the NumberOfExpectedResults to: " + (producerCount * expectedResultCount));
 				}
 				else
 				{
 					expectedResultCount = eventsPerIteration;
 					eventConsumer.setNumberOfExpectedResults(producerCount * eventsPerIteration);
-					//System.out.println("Setting the NumberOfExpectedResults to: " + (producerCount * eventsPerIteration));
 				}
 				eventConsumer.start();
 				// Sleep for a second to let the consumer get started.
@@ -152,7 +150,7 @@ public class ThroughputPerformanceTestHarness implements TestHarness, RunningSta
 			}
 			catch (RunningException e)
 			{
-				throw new TestException("Event Consumer failed to start.");
+				throw new TestException( Messages.getMessage("TEST_HARNESS_CONSUMER_START_ERROR") );
 			}
 			try
 			{
@@ -161,7 +159,7 @@ public class ThroughputPerformanceTestHarness implements TestHarness, RunningSta
 			}
 			catch (RunningException e)
 			{
-				throw new TestException("Event Producer failed to start.");
+				throw new TestException( Messages.getMessage("TEST_HARNESS_PRODUCER_START_ERROR") );
 			}
 		}
 	}
@@ -206,7 +204,6 @@ public class ThroughputPerformanceTestHarness implements TestHarness, RunningSta
 		Map<Integer, Long[]> producerTimestamps = eventProducer.getTimeStamps();
 		Map<Integer, Long[]> consumerTimestamps = eventConsumer.getTimeStamps();
 		
-		//System.out.println("Producer Size: " + producerTimestamps.size() + ", Consumer Size: " + consumerTimestamps.size() + " Iterations (" + numberOfIterations + ").");
 		if (producerTimestamps.size() == numberOfIterations && consumerTimestamps.size() == numberOfIterations)
 		{
 			createStatistics(eventProducer.getSuccessfulEvents(), eventConsumer.getSuccessfulEvents(), producerTimestamps, consumerTimestamps, expectedResultCount);
@@ -255,7 +252,7 @@ public class ThroughputPerformanceTestHarness implements TestHarness, RunningSta
 	
 	private void createStatistics(long totalEvents, long successes, Map<Integer, Long[]> producerDiagnostics, Map<Integer, Long[]> consumerDiagnostics, int expectedResultCount)
 	{
-		System.out.print("Trying to create the report statistics ...");
+		System.out.print( Messages.getMessage("TEST_HARNESS_REPORT_STATS_MSG") );
 		int size = producerDiagnostics.size();
 
 		// check if we have a sync issue / bad events / did not receive the final event(s) on consumer side
@@ -281,9 +278,6 @@ public class ThroughputPerformanceTestHarness implements TestHarness, RunningSta
 				firstReceivedLatencies[i] = cdIx[0] - pdIx[0];
 				lastReceivedLatencies[i] = cdIx[1] - pdIx[1];
 				totalTimes[i] = cdIx[1] - pdIx[0];
-				// System.out.println( "cdIx[0] = " + cdIx[0] + ", cdIx[1] = " + cdIx[1] );
-				// System.out.println( "pdIx[0] = " + pdIx[0] + ", pdIx[1] = " + pdIx[1] );
-				// System.out.println("Total times[" + i + "] = (" + cdIx[1] + ") - (" + pdIx[0] + "): " + totalTimes[i]);
 			}
 			try
 			{
@@ -352,10 +346,10 @@ public class ThroughputPerformanceTestHarness implements TestHarness, RunningSta
 			{
 				e.printStackTrace();
 			}
-			System.out.println(" Done");
+			System.out.println( Messages.getMessage("DONE") );
 		}
 		else
-			System.out.println("Failed to create the statistics, sizes(producer=" + size + ", consumer=" + consumerDiagnostics.size() + ") do not match!");
+			System.out.println( Messages.getMessage("TEST_HARNESS_REPORT_STATS_ERROR", size, consumerDiagnostics.size() ) );
 	}
 
 	@Override

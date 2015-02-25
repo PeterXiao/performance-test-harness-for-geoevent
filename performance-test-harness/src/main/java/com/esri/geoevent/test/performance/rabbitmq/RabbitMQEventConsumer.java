@@ -45,7 +45,6 @@ public class RabbitMQEventConsumer extends ConsumerBase
 			channel = connection.createChannel();
 			channel.queueDeclare(queueName, false, false, true, null);
 			channel.queueBind(queueName, exchangeName, routingKey);
-			System.out.println(" [*] Waiting for messages. To exit press CTRL+C");
 			// channel.basicQos(1);
 			consumer = new QueueingConsumer(channel);
 			channel.basicConsume(queueName, true, consumer);

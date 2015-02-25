@@ -61,6 +61,7 @@ public class TestHarnessExecutor
 	@SuppressWarnings("static-access")
 	public static void main(String[] args)
 	{
+		// TODO: Localize the messages
 		// test harness options
 		Options testHarnessOptions = new Options();
 		testHarnessOptions.addOption(OptionBuilder.withLongOpt("fixtures").withDescription("The fixtures xml file to load and configure the performance test harness.").hasArg().isRequired().create("f"));
@@ -114,7 +115,7 @@ public class TestHarnessExecutor
 			}
 			catch (JAXBException error)
 			{
-				System.err.println("There was a problem parsing the \"" + fixturesFilePath + "\". Cannot continue, exiting.");
+				System.err.println( Messages.getMessage("TEST_HARNESS_EXECUTOR_CONFIG_ERROR", fixturesFilePath ) );
 				error.printStackTrace();
 				return;
 			}
@@ -143,7 +144,7 @@ public class TestHarnessExecutor
 			} 
 			catch( ProvisionException error )
 			{
-				System.err.println( "Failed to provision the performance test harness. Cannot continue existing now.");
+				System.err.println( Messages.getMessage("TEST_HARNESS_EXECUTOR_PROVISIONING_ERROR") );
 				error.printStackTrace();
 				return;
 			}
@@ -169,7 +170,7 @@ public class TestHarnessExecutor
 					}
 				} catch( Exception error )
 				{
-					System.err.println( "Failed to provision the fixture \"" + fixture.getName() + "\". Cannot continue with this fixture. Skipping this test.");
+					System.err.println( Messages.getMessage("TEST_HARNESS_EXECUTOR_FIXTURE_PROVISIONING_ERROR", fixture.getName()) );
 					error.printStackTrace();
 					continue;
 				}
@@ -404,10 +405,10 @@ public class TestHarnessExecutor
 			}
 		});
 
-		formatter.printHelp("java ThroughputPerformanceTestHarness", testHarnessOptions, true);
+		formatter.printHelp( Messages.getMessage("TEST_HARNESS_EXECUTOR_HELP_TITLE_MSG"), testHarnessOptions, true);
 		System.out.println("");
-		System.out.println("or simply invoke as a remotely controlled process like this:");
-		formatter.printHelp("java ThroughputPerformanceTestHarness", performerOptions, true);
+		System.out.println( Messages.getMessage("TEST_HARNESS_EXECUTOR_HELP_SUBTITLE_MSG") );
+		formatter.printHelp( Messages.getMessage("TEST_HARNESS_EXECUTOR_HELP_TITLE_MSG"), performerOptions, true);
 		System.out.println("");
 	}
 
@@ -415,13 +416,13 @@ public class TestHarnessExecutor
 	{
 		if (StringUtils.isEmpty(fixturesFilePath))
 		{
-			System.err.println("Invalid \"fixtures\" value \"" + fixturesFilePath + "\". The fixtures must be a valid file.");
+			System.err.println( Messages.getMessage("TEST_HARNESS_EXECUTOR_FIXTURE_VALIDATION", fixturesFilePath) );
 			return false;
 		}
 		File fixturesFile = new File(fixturesFilePath);
 		if (!fixturesFile.exists() || fixturesFile.isDirectory())
 		{
-			System.err.println("Invalid \"fixtures\" value \"" + fixturesFilePath + "\". The fixtures must be a valid file and not a directory. Check the file path to see if it exist.");
+			System.err.println( Messages.getMessage("TEST_HARNESS_EXECUTOR_FIXTURE_FILE_VALIDATION", fixturesFilePath) );
 			return false;
 		}
 		return true;
@@ -432,13 +433,13 @@ public class TestHarnessExecutor
 		Protocol protocol = Protocol.fromValue(protocolStr);
 		if (protocol == Protocol.UNKNOWN)
 		{
-			System.err.println("Invalid \"protocol\" value \"" + protocolStr + "\". The mode must be set to one of these values: \"TCP\", \"WEBSOCKETS\", \"ACTIVE_MQ\", \"RABBIT_MQ\".");
+			System.err.println( Messages.getMessage("TEST_HARNESS_EXECUTOR_PROTOCOL_VALIDATION", protocolStr, Protocol.getAllowableValues()) );
 			return false;
 		}
 		Mode mode = Mode.fromValue(modeStr);
 		if (mode == Mode.UNKNOWN)
 		{
-			System.err.println("Invalid \"mode\" value \"" + modeStr + "\". The mode must be set to one of these values: \"producer\" or \"consumer\".");
+			System.err.println( Messages.getMessage("TEST_HARNESS_EXECUTOR_MODE_VALIDATION", modeStr, Mode.getAllowableValues() ) );
 			return false;
 		}
 
@@ -451,7 +452,7 @@ public class TestHarnessExecutor
 			}
 			catch (NumberFormatException error)
 			{
-				System.err.println("Invalid \"commandListenerPort\" value \"" + commandListenerPort + "\". The mode must be a number or set to \"local\" to run locally.");
+				System.err.println( Messages.getMessage("TEST_HARNESS_EXECUTOR_COMMAND_PORT_VALIDATION", String.valueOf(commandListenerPort)) );
 				return false;
 			}
 		}

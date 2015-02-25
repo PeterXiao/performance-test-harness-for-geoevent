@@ -1,4 +1,4 @@
-package com.esri.ges.test.performance.jaxb;
+package com.esri.ges.test.performance;
 
 import java.util.Comparator;
 

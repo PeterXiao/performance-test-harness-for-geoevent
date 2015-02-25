@@ -30,4 +30,21 @@ public enum Protocol
 		else 
 			return UNKNOWN;
 	}
+	
+	public static String getAllowableValues()
+	{
+		StringBuilder allowableValues = new StringBuilder("");
+		int index = 0;
+		for (Protocol protocol : Protocol.values()) 
+		{
+			if( protocol != UNKNOWN )
+			{
+				if( index != 0 )
+					allowableValues.append(",");
+				allowableValues.append("\"").append(protocol.toString()).append("\"");
+				index++;
+			}
+		}
+		return allowableValues.toString();
+	}
 }

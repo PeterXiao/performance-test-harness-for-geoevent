@@ -140,7 +140,7 @@ public abstract class ConsumerBase extends PerformanceCollectorBase implements C
 					lastSuccessIncrement = now;
 				if (now - lastSuccessIncrement > timeOutInSec * 1000)
 				{
-					System.out.println("Timeout reached.  Stopping test because data apparently stopped flowing.");
+					System.out.println( Messages.getMessage("CONSUMER_TIMEOUT_MSG") );
 					finishConsuming(lastSuccessIncrement);
 				}
 			}
@@ -169,12 +169,12 @@ public abstract class ConsumerBase extends PerformanceCollectorBase implements C
 		{
 			totalTime = ((double) timeStamp[1] - (double) timeStamp[0]) / 1000d;
 			if( testType == TestType.TIME )
-				System.out.println("Consumed a total of: " + successfulEvents.get() + " events in " + totalTime + " secs (rate=" + ((double) successfulEvents.get() / totalTime) + " e/s).");
+				System.out.println( Messages.getMessage("CONSUMER_TIMED_FINISH_MSG", successfulEvents.get(), String.valueOf(totalTime), String.valueOf(((double) successfulEvents.get() / totalTime))) );
 			else
-				System.out.println("Consumed a total of: " + successfulEvents.get() + " events.");
+				System.out.println( Messages.getMessage("CONSUMER_FINISH_MSG", successfulEvents.get()) );
 		}
 		else if (successfulEvents.get() > 0)
-			System.out.println("Consumed a total of: " + successfulEvents.get() + " events.");
+			System.out.println( Messages.getMessage("CONSUMER_FINISH_MSG", successfulEvents.get()) );
 
 		// send the stop status
 		running.set(false);

@@ -1,0 +1,33 @@
+.layout { 
+  -fx-background-color: #ffffff;
+}
+
+.labels {
+	-fx-font-size: 11pt;
+    -fx-opacity: 1;
+    -fx-font-weight: bold;
+}
+
+.buttons {
+	-fx-font-size: 11pt;
+    -fx-cursor: hand;
+    -fx-opacity: 1;
+}
+
+.box { 
+	-fx-padding: 10;
+	-fx-spacing: 10;
+}
+
+.modeBox { 
+  	-fx-padding: 10;
+  	-fx-border-width: 1; 
+  	-fx-border-radius: 5; 
+  	-fx-border-style: solid;
+  	-fx-spacing: 10;
+}
+
+.bordered-titled-title {
+  -fx-background-color: white;
+  -fx-translate-y: -20; /* play around with this value when changing the title font to get a vertically centered title */
+}

@@ -421,7 +421,7 @@ public abstract class PerformanceCollectorBase implements PerformanceCollector, 
 					{
 						if( ex.getMessage().equals("Connection reset") )
 						{
-							System.out.println("The orchestrator disconnected.");
+							System.out.println( Messages.getMessage("ORCHESTRATOR_DISCONNECTED_MSG") );
 							reset();
 						}
 						else
