@@ -17,6 +17,7 @@
 	<modules>
 		<module>performance-test-harness-api</module>
 		<module>performance-test-harness</module>
+		<module>performance-test-harness-ui</module>
 	</modules>
 
 	<dependencyManagement>

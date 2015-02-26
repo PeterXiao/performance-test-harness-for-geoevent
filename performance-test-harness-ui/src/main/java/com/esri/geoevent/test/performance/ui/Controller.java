@@ -14,7 +14,6 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
-import com.esri.geoevent.test.performance.Messages;
 import com.esri.geoevent.test.performance.ui.controls.RestrictiveTextField;
 import com.esri.geoevent.test.performance.ui.controls.TitledBorder;
 
@@ -47,12 +46,12 @@ public class Controller implements Initializable
 	@Override
 	public void initialize(URL location, ResourceBundle resources)
 	{		
-		modeBox.setTitle( Messages.getMessage("UI_MODE_LABEL") );
-		producerMode.setText( Messages.getMessage("UI_PRODUCER_MODE_LABEL") );
-		orchestratorMode.setText( Messages.getMessage("UI_ORCHESTRATOR_MODE_LABEL") );
-		consumerMode.setText( Messages.getMessage("UI_CONSUMER_MODE_LABEL") );
-		portLabel.setText( Messages.getMessage("UI_PORT_LABEL") );
-		port.setPromptText( Messages.getMessage("UI_PORT_PROMPT") );
+		modeBox.setTitle( UIMessages.getMessage("UI_MODE_LABEL") );
+		producerMode.setText( UIMessages.getMessage("UI_PRODUCER_MODE_LABEL") );
+		orchestratorMode.setText( UIMessages.getMessage("UI_ORCHESTRATOR_MODE_LABEL") );
+		consumerMode.setText( UIMessages.getMessage("UI_CONSUMER_MODE_LABEL") );
+		portLabel.setText( UIMessages.getMessage("UI_PORT_LABEL") );
+		port.setPromptText( UIMessages.getMessage("UI_PORT_PROMPT") );
 		setConnectButtonState(null);
 	}
 	
@@ -62,13 +61,13 @@ public class Controller implements Initializable
 		// if its selected then we are connected 
 		if( connectButton.isSelected() )
 		{
-			connectButton.setTooltip( new Tooltip( Messages.getMessage("UI_DISCONNECT_DESC")) );
+			connectButton.setTooltip( new Tooltip( UIMessages.getMessage("UI_DISCONNECT_DESC")) );
 			connectButton.setGraphic(CONNECTED_IMAGE);
 		}
 		// else we are disconnected
 		else
 		{
-			connectButton.setTooltip( new Tooltip( Messages.getMessage("UI_CONNECT_DESC")) );
+			connectButton.setTooltip( new Tooltip( UIMessages.getMessage("UI_CONNECT_DESC")) );
 			connectButton.setGraphic(DISCONNECTED_IMAGE);
 		}
 	}

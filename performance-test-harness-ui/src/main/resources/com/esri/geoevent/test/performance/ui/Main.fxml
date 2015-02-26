@@ -12,20 +12,12 @@
 <?import javafx.scene.control.TextField?>
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" stylesheets="@default.css" styleClass="layout" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.esri.geoevent.test.performance.ui.Controller">
-   <fx:define>
-   		<ToggleGroup fx:id="mode"/>
-   </fx:define>
    <children>
       <VBox styleClass="box">
          <children>
          	<TitledBorder fx:id="modeBox" maxWidth="-Infinity" minWidth="-Infinity" styleClass="modeBox">
             	<VBox>
 	            	<HBox styleClass="box" alignment="CENTER">
-	            		<RadioButton fx:id="producerMode" toggleGroup="$mode" selected="true" styleClass="buttons"/>
-	              		<RadioButton fx:id="orchestratorMode" toggleGroup="$mode" styleClass="buttons"/>
-	              		<RadioButton fx:id="consumerMode" toggleGroup="$mode" styleClass="buttons"/>
-	           	 	</HBox>
-	           	 	<HBox styleClass="box" alignment="CENTER">
 	           	 		<Label fx:id="portLabel" styleClass="labels"/>
 	           	 		<RestrictiveTextField  fx:id="port" restrict="[0-9]" maxLength="10" />
 	           	 		<ToggleButton fx:id="connectButton" styleClass="buttons" onAction="#setConnectButtonState" />

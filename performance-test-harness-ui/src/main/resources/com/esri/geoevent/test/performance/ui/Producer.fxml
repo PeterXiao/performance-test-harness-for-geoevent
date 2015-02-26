@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
+<?import com.esri.geoevent.test.performance.ui.controls.*?>
+
+<?scenebuilder-stylesheet default.css?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.RowConstraints?>
+
+<GridPane 
+	xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" 
+	prefHeight="660" prefWidth="660" 
+	stylesheets="@default.css" 
+	fx:controller="com.esri.geoevent.test.performance.ui.ProducerController"
+	styleClass="box"
+	hgap="10"
+	vgap="4">
+   <columnConstraints>
+		<ColumnConstraints hgrow="SOMETIMES" minWidth="580" percentWidth="100" halignment="CENTER"/>
+	</columnConstraints>
+	<rowConstraints>
+		<RowConstraints minHeight="60" valignment="CENTER" percentHeight="25" />
+		<RowConstraints vgrow="SOMETIMES" minHeight="200" percentHeight="75" valignment="CENTER" />
+	</rowConstraints>
+   	<children>
+	   	<TitledBorder fx:id="commandListenerBox" styleClass="modeBox" GridPane.columnIndex="0" GridPane.rowIndex="0">
+			<GridPane alignment="CENTER" hgap="4" vgap="4" styleClass="box">
+		    	<columnConstraints>
+		        	<ColumnConstraints minWidth="200" halignment="RIGHT"/>
+		          	<ColumnConstraints hgrow="SOMETIMES" minWidth="300" percentWidth="100" halignment="LEFT"/>
+		         </columnConstraints>
+		         <children>
+		         	<Label fx:id="protocolLabel" styleClass="labels" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+		          	<ComboBox fx:id="protocol" styleClass="buttons" GridPane.columnIndex="1" GridPane.rowIndex="0" prefWidth="300"/>
+		          		 
+		           	<Label fx:id="portLabel" styleClass="labels" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+		           	<HBox alignment="CENTER_LEFT" styleClass="box" GridPane.columnIndex="1" GridPane.rowIndex="1" >
+		            	<RestrictiveTextField  fx:id="port" restrict="[0-9]" maxLength="10" prefWidth="240"/>
+		            	<ToggleButton fx:id="connectButton" styleClass="buttons" onAction="#toggleRunningState" />
+		           	</HBox>
+		          </children>
+			</GridPane>
+	    </TitledBorder>
+	    <TitledBorder fx:id="loggerBox" styleClass="modeBox" GridPane.columnIndex="0" GridPane.rowIndex="1">
+        	<GridPane alignment="CENTER" hgap="4" vgap="4" styleClass="box">
+         		<columnConstraints>
+            		<ColumnConstraints hgrow="SOMETIMES" minWidth="500" percentWidth="100" halignment="CENTER"/>
+            	</columnConstraints>
+            	<rowConstraints>
+					<RowConstraints minHeight="40" valignment="CENTER" percentHeight="10" />
+					<RowConstraints vgrow="SOMETIMES" minHeight="300" percentHeight="90" valignment="CENTER" />
+				</rowConstraints>
+         		<HBox alignment="CENTER_RIGHT" spacing="10" GridPane.columnIndex="0" GridPane.rowIndex="0" >
+         			<Button fx:id="copyBtn"  styleClass="buttons" onAction="#copyLogger"/>
+         			<Button fx:id="clearBtn" styleClass="buttons" onAction="#clearLogger"/>
+         		</HBox>
+         		<TextArea fx:id="logger" editable="false" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+         	</GridPane>
+       	</TitledBorder>
+	</children>	
+</GridPane>

@@ -61,6 +61,13 @@ public class RemotePerformanceCollectorBase implements PerformanceCollector
 		// This should never be called on the Remote Diagnostics Collectors
 		System.err.println("listenOnCommandPort() was called on the " + this.getClass().getName() + " class, which should never happen.  It commands other machines, not the other way around.");
 	}
+	
+	@Override
+	public void disconnectCommandPort()
+	{
+		// This should never be called on the Remote Diagnostics Collectors
+		System.err.println("disconnectCommandPort() was called on the " + this.getClass().getName() + " class, which should never happen.  It commands other machines, not the other way around.");
+	}
 
 	//-------------------------------------------------------------
 	// Start Request Commands

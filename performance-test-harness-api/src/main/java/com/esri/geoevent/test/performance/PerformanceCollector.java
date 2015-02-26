@@ -15,5 +15,6 @@ public interface PerformanceCollector extends RunnableComponent
   public void setNumberOfExpectedResults(int numberOfExpectedResults);
   public Map<Integer, Long[]> getTimeStamps();
   public void listenOnCommandPort(int port, boolean isLocal);
+  public void disconnectCommandPort();
   public long getSuccessfulEvents();
 }

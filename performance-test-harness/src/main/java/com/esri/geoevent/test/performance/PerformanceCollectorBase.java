@@ -9,6 +9,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +36,8 @@ public abstract class PerformanceCollectorBase implements PerformanceCollector, 
 	protected AtomicBoolean					running						= new AtomicBoolean(false);
 	protected RunningStateListener	runningStateListener;
 	protected List<String>					events						= new ArrayList<String>();
-	private CommandInterpreter			commandInterpreter;
+	private 	CommandInterpreter 		commandInterpreter;
+	private 	Thread								commandInterpreterThread;
 	protected AtomicLong						successfulEvents	= new AtomicLong();
 	protected final Mode						mode;
 
@@ -156,26 +158,37 @@ public abstract class PerformanceCollectorBase implements PerformanceCollector, 
 		}
 	}
 
+	@Override
 	public void listenOnCommandPort(int commandPort, boolean isLocal)
 	{
-		// System.out.println("Listening on port " + commandPort);
+		System.out.println( Messages.getMessage("PERFORMANCE_COLLECTOR_LISTENING_CMD_PORT_MSG", String.valueOf(commandPort)) );
 		commandInterpreter = new CommandInterpreter(commandPort);
 		setRunningStateListener(commandInterpreter);
-		Thread thread = new Thread(commandInterpreter);
-		thread.start();
+		commandInterpreterThread = new Thread(commandInterpreter);
+		commandInterpreterThread.start();
 		if (!isLocal)
 		{
-			thread = new Thread(new ClockSync());
+			Thread thread = new Thread(new ClockSync());
 			thread.start();
 		}
 	}
 
+	@Override
+	public void disconnectCommandPort()
+	{
+		commandInterpreter.destroy();
+		commandInterpreterThread.interrupt();
+		commandInterpreterThread = null;
+		System.out.println( Messages.getMessage("PERFORMANCE_COLLECTOR_DISCONNECTED_CMD_PORT_MSG") );
+	}
+	
 	private class CommandInterpreter implements Runnable, RunningStateListener
 	{
 		int											port;
 		private BufferedReader	in;
 		private PrintWriter			out;
-
+		private ServerSocket 	server;
+		
 		public CommandInterpreter(int commandPort)
 		{
 			this.port = commandPort;
@@ -183,14 +196,13 @@ public abstract class PerformanceCollectorBase implements PerformanceCollector, 
 
 		public void run()
 		{
-			ServerSocket s;
 			try 
 			{
-				s = new ServerSocket( port );
+				server = new ServerSocket( port );
 				while(true)
 				{
 					//System.out.println("Listening for a connection from the orchestrator.");
-					Socket commandSocket = s.accept();
+					Socket commandSocket = server.accept();
 					try
 					{
 						commandSocket.setSoTimeout(50);
@@ -240,7 +252,7 @@ public abstract class PerformanceCollectorBase implements PerformanceCollector, 
 								Request request = KryoUtils.fromString(requestStr, Request.class);
 								if( request == null )
 								{
-									System.err.println( "Failed to parse out the Request object!" );
+									System.err.println( Messages.getMessage("PERFORMANCE_COLLECTOR_REQUEST_PARSE_ERROR") );
 									continue;
 								}
 								
@@ -256,7 +268,7 @@ public abstract class PerformanceCollectorBase implements PerformanceCollector, 
 											// parse out the init data
 											if( additionalDataStr == null )
 											{
-												String errorMsg = "Failed to parse out the Additional Data for INIT!";
+												String errorMsg = Messages.getMessage("PERFORMANCE_COLLECTOR_INIT_PARSE_ERROR");
 												response = new Response(ResponseType.ERROR, errorMsg);
 												System.err.println( errorMsg );
 												respond(response);
@@ -408,7 +420,7 @@ public abstract class PerformanceCollectorBase implements PerformanceCollector, 
 										break;
 										
 									case UNKNOWN:
-										String erroMsg = "Could not recognize the current Request type \"" + RequestType.UNKNOWN + "\". Discarding the current request: " + command;
+										String erroMsg = Messages.getMessage("PERFORMANCE_COLLECTOR_UNKNOWN_REQUEST_ERROR", RequestType.UNKNOWN, command);
 										response = new Response(ResponseType.ERROR, erroMsg);
 										System.err.println(erroMsg);
 										respond(response);
@@ -421,16 +433,21 @@ public abstract class PerformanceCollectorBase implements PerformanceCollector, 
 					{
 						if( ex.getMessage().equals("Connection reset") )
 						{
-							System.out.println( Messages.getMessage("ORCHESTRATOR_DISCONNECTED_MSG") );
+							System.out.println( Messages.getMessage("PERFORMANCE_COLLECTOR_DISCONNECTED_MSG") );
 							reset();
 						}
 						else
 							ex.printStackTrace();
 					}
 				}
-			} catch (IOException e) 
+			} 
+			catch (SocketException error) 
 			{
-				e.printStackTrace();
+				//ignored
+			}
+			catch (Exception error) 
+			{
+				error.printStackTrace();
 			}
 		}
 
@@ -455,6 +472,13 @@ public abstract class PerformanceCollectorBase implements PerformanceCollector, 
 					out.flush();
 				}
 			}
+		}
+		
+		private void destroy()
+		{
+			IOUtils.closeQuietly(in);
+			IOUtils.closeQuietly(out);
+			IOUtils.closeQuietly(server);
 		}
 	}
 }

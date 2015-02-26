@@ -2,8 +2,6 @@ package com.esri.geoevent.test.performance.ui;
 
 import java.io.IOException;
 
-import com.esri.geoevent.test.performance.Messages;
-
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
@@ -40,7 +38,7 @@ public class MainApplication extends Application
 			Scene scene = new Scene(parent);
 
 			primaryStage.setOnCloseRequest(new AppCloser());
-			primaryStage.setTitle( Messages.getMessage("UI_TITLE") );
+			primaryStage.setTitle( UIMessages.getMessage("UI_TITLE") );
 			primaryStage.setScene(scene);
 			primaryStage.show();
 			MainApplication.primaryStage = primaryStage;

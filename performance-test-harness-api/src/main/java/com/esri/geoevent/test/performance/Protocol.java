@@ -7,25 +7,44 @@ import org.apache.commons.lang3.StringUtils;
 @XmlEnum
 public enum Protocol 
 {
-	TCP, WEBSOCKETS, ACTIVE_MQ, RABBIT_MQ, STREAM_SERVICE, KAFKA, WEBSOCKET_SERVER, UNKNOWN;
+	TCP("Tcp"), WEBSOCKETS( "Web Socket" ), ACTIVE_MQ ("Active MQ"), RABBIT_MQ("Rabbit MQ"), 
+	STREAM_SERVICE("Stream Services"), KAFKA("Kafka"), WEBSOCKET_SERVER("Web Socket Server"), UNKNOWN("Unknown");
+
+	private String label;
+	
+	private Protocol(String label)
+	{
+		this.label = label;
+	}
+	
+	private String getLabel()
+	{
+		return label;
+	}
+	
+	@Override
+	public String toString()
+	{
+		return getLabel();
+	}
 	
 	public static Protocol fromValue(String valueStr)
 	{
 		if( StringUtils.isBlank(valueStr) )
 			return UNKNOWN;
-		if( TCP.toString().equalsIgnoreCase(valueStr))
+		if( TCP.toString().equalsIgnoreCase(valueStr) || TCP.name().equalsIgnoreCase(valueStr) )
 			return TCP;
-		else if( WEBSOCKETS.toString().equalsIgnoreCase(valueStr))
+		else if( WEBSOCKETS.toString().equalsIgnoreCase(valueStr) || WEBSOCKETS.name().equalsIgnoreCase(valueStr))
 			return WEBSOCKETS;
-		else if( ACTIVE_MQ.toString().equalsIgnoreCase(valueStr))
+		else if( ACTIVE_MQ.toString().equalsIgnoreCase(valueStr) || ACTIVE_MQ.name().equalsIgnoreCase(valueStr))
 			return ACTIVE_MQ;
-		else if( RABBIT_MQ.toString().equalsIgnoreCase(valueStr))
+		else if( RABBIT_MQ.toString().equalsIgnoreCase(valueStr) || RABBIT_MQ.name().equalsIgnoreCase(valueStr))
 			return RABBIT_MQ;
-		else if( STREAM_SERVICE.toString().equalsIgnoreCase(valueStr))
+		else if( STREAM_SERVICE.toString().equalsIgnoreCase(valueStr) || STREAM_SERVICE.name().equalsIgnoreCase(valueStr))
 			return STREAM_SERVICE;
-		else if( KAFKA.toString().equalsIgnoreCase(valueStr))
+		else if( KAFKA.toString().equalsIgnoreCase(valueStr) || KAFKA.name().equalsIgnoreCase(valueStr))
 		  return KAFKA;
-		else if( WEBSOCKET_SERVER.toString().equalsIgnoreCase(valueStr))
+		else if( WEBSOCKET_SERVER.toString().equalsIgnoreCase(valueStr) || WEBSOCKET_SERVER.name().equalsIgnoreCase(valueStr))
 		  return WEBSOCKET_SERVER;
 		else 
 			return UNKNOWN;

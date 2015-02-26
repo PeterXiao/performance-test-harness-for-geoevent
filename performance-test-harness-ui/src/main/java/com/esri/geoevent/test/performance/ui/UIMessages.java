@@ -1,9 +1,9 @@
-package com.esri.geoevent.test.performance;
+package com.esri.geoevent.test.performance.ui;
 
 import java.text.MessageFormat;
 import java.util.ResourceBundle;
 
-public class Messages
+public class UIMessages
 {	
 	// the resource bundle with messages
 	private static ResourceBundle bundle;
@@ -76,7 +76,7 @@ public class Messages
 		
 		try
 		{
-			bundle = ResourceBundle.getBundle(Messages.class.getName());
+			bundle = ResourceBundle.getBundle(UIMessages.class.getName());
 		}
 		catch (Throwable exception)
 		{
