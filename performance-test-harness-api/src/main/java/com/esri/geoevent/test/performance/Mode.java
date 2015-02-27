@@ -4,18 +4,20 @@ import org.apache.commons.lang3.StringUtils;
 
 public enum Mode
 {
-	CONSUMER, PRODUCER, UNKNOWN;
+	Consumer, Producer, Orchestrator, Unknown;
 	
 	public static Mode fromValue(String valueStr)
 	{
 		if( StringUtils.isBlank(valueStr) )
-			return UNKNOWN;
-		if( CONSUMER.toString().equalsIgnoreCase(valueStr))
-			return CONSUMER;
-		else if( PRODUCER.toString().equalsIgnoreCase(valueStr))
-			return PRODUCER;
+			return Unknown;
+		if( Consumer.toString().equalsIgnoreCase(valueStr))
+			return Consumer;
+		else if( Producer.toString().equalsIgnoreCase(valueStr))
+			return Producer;
+		else if( Orchestrator.toString().equalsIgnoreCase(valueStr))
+			return Orchestrator;
 		else 
-			return UNKNOWN;
+			return Unknown;
 	}
 	
 	public static String getAllowableValues()
@@ -24,7 +26,7 @@ public enum Mode
 		int index = 0;
 		for (Mode mode : Mode.values()) 
 		{
-			if( mode != UNKNOWN )
+			if( mode != Unknown )
 			{
 				if( index != 0 )
 					allowableValues.append(",");

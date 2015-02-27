@@ -31,7 +31,7 @@ public class WebsocketEventProducer extends PerformanceCollectorBase
 
 	public WebsocketEventProducer()
 	{
-		super(Mode.PRODUCER);
+		super(Mode.Producer);
 	}
 	
 	class MyConnection  implements WebSocket.OnTextMessage

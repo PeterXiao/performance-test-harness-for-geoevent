@@ -18,7 +18,7 @@ public abstract class ConsumerBase extends PerformanceCollectorBase implements C
 	
 	public ConsumerBase()
 	{
-		super(Mode.CONSUMER);
+		super(Mode.Consumer);
 	}
 
 	@Override

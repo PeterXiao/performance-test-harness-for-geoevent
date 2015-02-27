@@ -194,14 +194,6 @@
 					<skip>true</skip>
 				</configuration>
 			</plugin>
-			<plugin>
-				<groupId>com.zenjava</groupId>
-				<artifactId>javafx-maven-plugin</artifactId>
-				<version>8.1.2</version>
-				<configuration>
-					<mainClass>com.esri.geoevent.clusterSimulator.ui.MainApplication</mainClass>
-				</configuration>
-			</plugin>
 		</plugins>
 		
 		<pluginManagement>

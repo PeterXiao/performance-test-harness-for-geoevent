@@ -13,7 +13,7 @@ public abstract class ProducerBase extends PerformanceCollectorBase implements P
 
 	public ProducerBase()
 	{
-		super(Mode.PRODUCER);
+		super(Mode.Producer);
 	}
 
 	@Override

@@ -7,7 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 @XmlEnum
 public enum Protocol 
 {
-	TCP("Tcp"), WEBSOCKETS( "Web Socket" ), ACTIVE_MQ ("Active MQ"), RABBIT_MQ("Rabbit MQ"), 
+	TCP("Tcp"), TCP_SERVER("Tcp Server"), WEBSOCKETS( "Web Socket" ), ACTIVE_MQ ("Active MQ"), RABBIT_MQ("Rabbit MQ"), 
 	STREAM_SERVICE("Stream Services"), KAFKA("Kafka"), WEBSOCKET_SERVER("Web Socket Server"), UNKNOWN("Unknown");
 
 	private String label;
@@ -34,6 +34,8 @@ public enum Protocol
 			return UNKNOWN;
 		if( TCP.toString().equalsIgnoreCase(valueStr) || TCP.name().equalsIgnoreCase(valueStr) )
 			return TCP;
+		if( TCP_SERVER.toString().equalsIgnoreCase(valueStr) || TCP_SERVER.name().equalsIgnoreCase(valueStr) )
+			return TCP_SERVER;
 		else if( WEBSOCKETS.toString().equalsIgnoreCase(valueStr) || WEBSOCKETS.name().equalsIgnoreCase(valueStr))
 			return WEBSOCKETS;
 		else if( ACTIVE_MQ.toString().equalsIgnoreCase(valueStr) || ACTIVE_MQ.name().equalsIgnoreCase(valueStr))

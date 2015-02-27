@@ -42,7 +42,7 @@ public class WebsocketServerEverntProducer extends PerformanceCollectorBase
 
 	public WebsocketServerEverntProducer()
 	{
-		super(Mode.PRODUCER);
+		super(Mode.Producer);
 		server = new Server(8089);
 		ServletHandler servletHandler = new ServletHandler();
 		_webSocketServlet = new WebsocketOutboundServlet();

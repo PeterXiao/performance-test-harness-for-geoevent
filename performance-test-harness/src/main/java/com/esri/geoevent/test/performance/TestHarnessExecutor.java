@@ -260,7 +260,7 @@ public class TestHarnessExecutor
 			}
 
 			// activate
-			if (mode == Mode.PRODUCER)
+			if (mode == Mode.Producer)
 			{
 				PerformanceCollector producer = null;
 				switch (protocol)
@@ -305,7 +305,7 @@ public class TestHarnessExecutor
 				}
 				producer.listenOnCommandPort((isLocal ? 5010 : commandListenerPort), isLocal);
 			}
-			else if (mode == Mode.CONSUMER)
+			else if (mode == Mode.Consumer)
 			{
 				PerformanceCollector consumer = null;
 				switch (protocol)
@@ -437,7 +437,7 @@ public class TestHarnessExecutor
 			return false;
 		}
 		Mode mode = Mode.fromValue(modeStr);
-		if (mode == Mode.UNKNOWN)
+		if (mode == Mode.Unknown)
 		{
 			System.err.println( Messages.getMessage("TEST_HARNESS_EXECUTOR_MODE_VALIDATION", modeStr, Mode.getAllowableValues() ) );
 			return false;

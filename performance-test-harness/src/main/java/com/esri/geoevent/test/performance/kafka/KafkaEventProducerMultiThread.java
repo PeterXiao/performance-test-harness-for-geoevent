@@ -48,7 +48,7 @@ public class KafkaEventProducerMultiThread extends PerformanceCollectorBase
   
   public KafkaEventProducerMultiThread()
   {
-  	super(Mode.PRODUCER);
+  	super(Mode.Producer);
   }
 
   @Override

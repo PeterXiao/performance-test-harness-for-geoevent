@@ -11,6 +11,10 @@
 	<artifactId>performance-test-harness-ui</artifactId>
 	<name>Esri :: GeoEvent :: Test Harness :: Performance Test Harness UI</name>
 	
+	<properties>
+		<javafx.version>8.0</javafx.version>
+	</properties>
+	
 	<dependencies>	
 		<dependency>
 			<groupId>${project.groupId}</groupId>
@@ -38,5 +42,58 @@
 				<filtering>true</filtering>
 			</testResource>
 		</testResources>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>copy-dependencies</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>copy-dependencies</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${project.build.directory}/jfx/app/lib</outputDirectory>
+							<overWriteReleases>false</overWriteReleases>
+							<overWriteSnapshots>false</overWriteSnapshots>
+							<overWriteIfNewer>true</overWriteIfNewer>
+							<includeScope>compile</includeScope>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>2.5</version>
+				<executions>
+					<execution>
+						<id>Producer-Application</id>
+						<phase>package</phase>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+						<configuration>
+							<finalName>Performance-Test-Harness-${project.version}</finalName>
+							<outputDirectory>${project.build.directory}/jfx/app</outputDirectory>
+							<archive>
+								<manifest>
+									<addClasspath>true</addClasspath>
+									<classpathPrefix>lib/</classpathPrefix>
+									<mainClass>com.esri.geoevent.test.performance.ui.MainApplication</mainClass>
+								</manifest>
+								<manifestEntries>
+									<Class-Path>config/ lib/</Class-Path>
+									<JavaFX-Version>${javafx.version}</JavaFX-Version>
+								</manifestEntries>
+							</archive>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			
+		</plugins>
 	</build>
 </project>

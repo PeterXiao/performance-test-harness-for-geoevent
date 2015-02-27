@@ -275,9 +275,9 @@ public abstract class PerformanceCollectorBase implements PerformanceCollector, 
 												continue;
 											}
 											Config config = null;
-											if( mode == Mode.CONSUMER)
+											if( mode == Mode.Consumer)
 												config = KryoUtils.fromString(additionalDataStr, ConsumerConfig.class);
-											else if( mode == Mode.PRODUCER)
+											else if( mode == Mode.Producer)
 												config = KryoUtils.fromString(additionalDataStr, ProducerConfig.class);
 											
 											init(config);

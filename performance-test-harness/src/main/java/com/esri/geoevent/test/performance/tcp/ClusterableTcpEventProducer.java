@@ -34,7 +34,7 @@ public class ClusterableTcpEventProducer extends PerformanceCollectorBase
 
 	public ClusterableTcpEventProducer(int communicationPort)
 	{
-		super(Mode.PRODUCER);
+		super(Mode.Producer);
 		port = communicationPort;
 		if (serverMode)
 		{
