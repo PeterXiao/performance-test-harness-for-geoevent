@@ -175,7 +175,7 @@ public abstract class PerformanceCollectorBase implements PerformanceCollector, 
 		if( this.isLocal == null )
 			this.isLocal = isLocal;
 		
-		System.out.println(Messages.getMessage("PERFORMANCE_COLLECTOR_LISTENING_CMD_PORT_MSG", String.valueOf(commandPort)));
+		System.out.println(ImplMessages.getMessage("PERFORMANCE_COLLECTOR_LISTENING_CMD_PORT_MSG", String.valueOf(commandPort)));
 		commandInterpreter = new CommandInterpreter(commandPort);
 		setRunningStateListener(commandInterpreter);
 		commandInterpreterThread = new Thread(commandInterpreter);
@@ -193,7 +193,7 @@ public abstract class PerformanceCollectorBase implements PerformanceCollector, 
 		commandInterpreter.destroy();
 		commandInterpreterThread.interrupt();
 		commandInterpreterThread = null;
-		System.out.println(Messages.getMessage("PERFORMANCE_COLLECTOR_DISCONNECTED_CMD_PORT_MSG"));
+		System.out.println(ImplMessages.getMessage("PERFORMANCE_COLLECTOR_DISCONNECTED_CMD_PORT_MSG"));
 	}
 
 	private class CommandInterpreter implements Runnable, RunningStateListener
@@ -256,7 +256,7 @@ public abstract class PerformanceCollectorBase implements PerformanceCollector, 
 								System.out.println("Received request \"" + request + "\"");
 							if (request == null)
 							{
-								System.err.println(Messages.getMessage("PERFORMANCE_COLLECTOR_REQUEST_PARSE_ERROR"));
+								System.err.println(ImplMessages.getMessage("PERFORMANCE_COLLECTOR_REQUEST_PARSE_ERROR"));
 								continue;
 							}
 
@@ -271,7 +271,7 @@ public abstract class PerformanceCollectorBase implements PerformanceCollector, 
 										// parse out the init data
 										if (additionalDataStr == null)
 										{
-											String errorMsg = Messages.getMessage("PERFORMANCE_COLLECTOR_INIT_PARSE_ERROR");
+											String errorMsg = ImplMessages.getMessage("PERFORMANCE_COLLECTOR_INIT_PARSE_ERROR");
 											response = new Response(ResponseType.ERROR, errorMsg);
 											System.err.println(errorMsg);
 											respond(response);
@@ -422,7 +422,7 @@ public abstract class PerformanceCollectorBase implements PerformanceCollector, 
 									break;
 
 								case UNKNOWN:
-									String erroMsg = Messages.getMessage("PERFORMANCE_COLLECTOR_UNKNOWN_REQUEST_ERROR", RequestType.UNKNOWN, command);
+									String erroMsg = ImplMessages.getMessage("PERFORMANCE_COLLECTOR_UNKNOWN_REQUEST_ERROR", RequestType.UNKNOWN, command);
 									response = new Response(ResponseType.ERROR, erroMsg);
 									System.err.println(erroMsg);
 									respond(response);
@@ -434,7 +434,7 @@ public abstract class PerformanceCollectorBase implements PerformanceCollector, 
 					{
 						if (ex.getMessage().equals("Connection reset"))
 						{
-							System.out.println(Messages.getMessage("PERFORMANCE_COLLECTOR_DISCONNECTED_MSG"));
+							System.out.println(ImplMessages.getMessage("PERFORMANCE_COLLECTOR_DISCONNECTED_MSG"));
 							reset();
 						}
 						else

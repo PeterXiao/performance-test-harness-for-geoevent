@@ -1,11 +1,11 @@
-package com.esri.geoevent.test.performance.ui;
+package com.esri.geoevent.test.performance;
 
 import java.text.MessageFormat;
 
 import com.esri.geoevent.test.performance.i18n.Messages;
 import com.esri.geoevent.test.performance.i18n.MessagesFactory;
 
-public class UIMessages
+public class ApiMessages
 {
 	// the resource bundle with messages
 	private static Messages	messages;
@@ -49,7 +49,7 @@ public class UIMessages
 
 		try
 		{
-			messages = MessagesFactory.getMessages(UIMessages.class);
+			messages = MessagesFactory.getMessages(ApiMessages.class);
 		}
 		catch (Throwable exception)
 		{

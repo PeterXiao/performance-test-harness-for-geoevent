@@ -124,7 +124,7 @@ public abstract class ConsumerBase extends PerformanceCollectorBase implements C
 					lastSuccessIncrement = now;
 				if (now - lastSuccessIncrement > timeOutInSec * 1000)
 				{
-					System.out.println( Messages.getMessage("CONSUMER_TIMEOUT_MSG") );
+					System.out.println( ImplMessages.getMessage("CONSUMER_TIMEOUT_MSG") );
 					finishConsuming(lastSuccessIncrement);
 				}
 			}
@@ -167,13 +167,13 @@ public abstract class ConsumerBase extends PerformanceCollectorBase implements C
 					}
 					totalTime = totalTimeInSec;
 				}
-				System.out.println( Messages.getMessage("CONSUMER_TIMED_FINISH_MSG", successfulEvents.get(), String.valueOf(totalTime), String.valueOf(((double) successfulEvents.get() / totalTime))) );
+				System.out.println( ImplMessages.getMessage("CONSUMER_TIMED_FINISH_MSG", successfulEvents.get(), String.valueOf(totalTime), String.valueOf(((double) successfulEvents.get() / totalTime))) );
 			}
 			else
-				System.out.println( Messages.getMessage("CONSUMER_FINISH_MSG", successfulEvents.get()) );
+				System.out.println( ImplMessages.getMessage("CONSUMER_FINISH_MSG", successfulEvents.get()) );
 		}
 		else if (successfulEvents.get() > 0)
-			System.out.println( Messages.getMessage("CONSUMER_FINISH_MSG", successfulEvents.get()) );
+			System.out.println( ImplMessages.getMessage("CONSUMER_FINISH_MSG", successfulEvents.get()) );
 
 		// send the stop status
 		running.set(false);

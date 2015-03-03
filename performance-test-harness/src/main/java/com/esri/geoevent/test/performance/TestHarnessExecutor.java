@@ -115,7 +115,7 @@ public class TestHarnessExecutor
 			}
 			catch (JAXBException error)
 			{
-				System.err.println( Messages.getMessage("TEST_HARNESS_EXECUTOR_CONFIG_ERROR", fixturesFilePath ) );
+				System.err.println( ImplMessages.getMessage("TEST_HARNESS_EXECUTOR_CONFIG_ERROR", fixturesFilePath ) );
 				error.printStackTrace();
 				return;
 			}
@@ -144,7 +144,7 @@ public class TestHarnessExecutor
 			} 
 			catch( ProvisionException error )
 			{
-				System.err.println( Messages.getMessage("TEST_HARNESS_EXECUTOR_PROVISIONING_ERROR") );
+				System.err.println( ImplMessages.getMessage("TEST_HARNESS_EXECUTOR_PROVISIONING_ERROR") );
 				error.printStackTrace();
 				return;
 			}
@@ -170,7 +170,7 @@ public class TestHarnessExecutor
 					}
 				} catch( Exception error )
 				{
-					System.err.println( Messages.getMessage("TEST_HARNESS_EXECUTOR_FIXTURE_PROVISIONING_ERROR", fixture.getName()) );
+					System.err.println( ImplMessages.getMessage("TEST_HARNESS_EXECUTOR_FIXTURE_PROVISIONING_ERROR", fixture.getName()) );
 					error.printStackTrace();
 					continue;
 				}
@@ -403,10 +403,10 @@ public class TestHarnessExecutor
 			}
 		});
 
-		formatter.printHelp( Messages.getMessage("TEST_HARNESS_EXECUTOR_HELP_TITLE_MSG"), testHarnessOptions, true);
+		formatter.printHelp( ImplMessages.getMessage("TEST_HARNESS_EXECUTOR_HELP_TITLE_MSG"), testHarnessOptions, true);
 		System.out.println("");
-		System.out.println( Messages.getMessage("TEST_HARNESS_EXECUTOR_HELP_SUBTITLE_MSG") );
-		formatter.printHelp( Messages.getMessage("TEST_HARNESS_EXECUTOR_HELP_TITLE_MSG"), performerOptions, true);
+		System.out.println( ImplMessages.getMessage("TEST_HARNESS_EXECUTOR_HELP_SUBTITLE_MSG") );
+		formatter.printHelp( ImplMessages.getMessage("TEST_HARNESS_EXECUTOR_HELP_TITLE_MSG"), performerOptions, true);
 		System.out.println("");
 	}
 
@@ -414,13 +414,13 @@ public class TestHarnessExecutor
 	{
 		if (StringUtils.isEmpty(fixturesFilePath))
 		{
-			System.err.println( Messages.getMessage("TEST_HARNESS_EXECUTOR_FIXTURE_VALIDATION", fixturesFilePath) );
+			System.err.println( ImplMessages.getMessage("TEST_HARNESS_EXECUTOR_FIXTURE_VALIDATION", fixturesFilePath) );
 			return false;
 		}
 		File fixturesFile = new File(fixturesFilePath);
 		if (!fixturesFile.exists() || fixturesFile.isDirectory())
 		{
-			System.err.println( Messages.getMessage("TEST_HARNESS_EXECUTOR_FIXTURE_FILE_VALIDATION", fixturesFilePath) );
+			System.err.println( ImplMessages.getMessage("TEST_HARNESS_EXECUTOR_FIXTURE_FILE_VALIDATION", fixturesFilePath) );
 			return false;
 		}
 		return true;
@@ -431,13 +431,13 @@ public class TestHarnessExecutor
 		Protocol protocol = Protocol.fromValue(protocolStr);
 		if (protocol == Protocol.UNKNOWN)
 		{
-			System.err.println( Messages.getMessage("TEST_HARNESS_EXECUTOR_PROTOCOL_VALIDATION", protocolStr, Protocol.getAllowableValues()) );
+			System.err.println( ImplMessages.getMessage("TEST_HARNESS_EXECUTOR_PROTOCOL_VALIDATION", protocolStr, Protocol.getAllowableValues()) );
 			return false;
 		}
 		Mode mode = Mode.fromValue(modeStr);
 		if (mode == Mode.Unknown)
 		{
-			System.err.println( Messages.getMessage("TEST_HARNESS_EXECUTOR_MODE_VALIDATION", modeStr, Mode.getAllowableValues() ) );
+			System.err.println( ImplMessages.getMessage("TEST_HARNESS_EXECUTOR_MODE_VALIDATION", modeStr, Mode.getAllowableValues() ) );
 			return false;
 		}
 
@@ -450,7 +450,7 @@ public class TestHarnessExecutor
 			}
 			catch (NumberFormatException error)
 			{
-				System.err.println( Messages.getMessage("TEST_HARNESS_EXECUTOR_COMMAND_PORT_VALIDATION", String.valueOf(commandListenerPort)) );
+				System.err.println( ImplMessages.getMessage("TEST_HARNESS_EXECUTOR_COMMAND_PORT_VALIDATION", String.valueOf(commandListenerPort)) );
 				return false;
 			}
 		}

@@ -1,12 +1,24 @@
-package com.esri.geoevent.test.performance;
+package com.esri.geoevent.test.performance.i18n;
 
 import java.text.MessageFormat;
 import java.util.ResourceBundle;
 
-public class Messages
+public class MessagesImpl implements Messages
 {	
-	// the resource bundle with messages
-	private static ResourceBundle bundle;
+	/**
+	 * The main {@link ResourceBundle}
+	 */
+	private final ResourceBundle bundle;
+	
+	/**
+	 * Protected constructor
+	 * 
+	 * @param name of the resource bundle to load (relative to its classpath)
+	 */
+	protected MessagesImpl(String name)
+	{
+		bundle = getResourceBundle(name);
+	}
 	
 	/**
 	 * This convenience method fetches a localized string according to the parameter <code>key</code> which is passed in. The 
@@ -17,9 +29,9 @@ public class Messages
 	 *          
 	 * @return the message
 	 */
-	public static String getMessage(String key)
+	@Override
+	public String getMessage(String key)
 	{
-		ResourceBundle bundle = getResourceBundle();
 		if (bundle == null || key == null)
 			return key;
 
@@ -51,9 +63,9 @@ public class Messages
 	 *          
 	 * @return the message
 	 */
-	public static String getMessage(String key, Object... params)
+	@Override
+	public String getMessage(String key, Object... params)
 	{
-		ResourceBundle bundle = getResourceBundle();
 		if (bundle == null || key == null)
 			return key;
 
@@ -69,14 +81,12 @@ public class Messages
 	 * Private method get retrieve the message bundle from the class loader as a resource.
 	 * @return
 	 */
-	protected static ResourceBundle getResourceBundle()
+	private ResourceBundle getResourceBundle(String location)
 	{
-		if( bundle != null )
-			return bundle;
-		
+		ResourceBundle bundle = null;
 		try
 		{
-			bundle = ResourceBundle.getBundle(Messages.class.getName());
+			bundle = ResourceBundle.getBundle(location);
 		}
 		catch (Throwable exception)
 		{
@@ -94,7 +104,7 @@ public class Messages
 	 * @param params of type Object[] or Object...params
 	 * @return The formatted and translated message.
 	 */
-	private static String formatMessage(String message, Object... params)
+	private String formatMessage(String message, Object... params)
 	{
 		// else format with params
 		String formattedString = null;

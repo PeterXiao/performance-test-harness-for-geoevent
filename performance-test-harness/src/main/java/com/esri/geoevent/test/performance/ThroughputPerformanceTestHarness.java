@@ -72,7 +72,7 @@ public class ThroughputPerformanceTestHarness implements TestHarness, RunningSta
 		this.testType = fixture.getSimulation().getTest().getType();
 				
 		System.out.println("-------------------------------------------------------");
-		System.out.println( Messages.getMessage("TEST_HARNESS_START_MSG", testName ) );
+		System.out.println( ImplMessages.getMessage("TEST_HARNESS_START_MSG", testName ) );
 		System.out.println("-------------------------------------------------------");
 
 		ProducerConfig producerConfig = fixture.getProducerConfig();
@@ -125,7 +125,7 @@ public class ThroughputPerformanceTestHarness implements TestHarness, RunningSta
 	public void runTest() throws TestException
 	{
 		if (eventsPerIteration < 1)
-			throw new TestException( Messages.getMessage("TEST_HARNESS_NUM_OF_EVENTS_VALIDATION") );
+			throw new TestException( ImplMessages.getMessage("TEST_HARNESS_NUM_OF_EVENTS_VALIDATION") );
 		if (!eventConsumer.isRunning() && !eventProducer.isRunning())
 		{
 			// set the running flag
@@ -134,7 +134,7 @@ public class ThroughputPerformanceTestHarness implements TestHarness, RunningSta
 
 			currentIteration++;
 			if( testType != TestType.TIME)
-				System.out.println( Messages.getMessage("TEST_HARNESS_ITERATION_MSG", currentIteration) );
+				System.out.println( ImplMessages.getMessage("TEST_HARNESS_ITERATION_MSG", currentIteration) );
 			
 			// calculate two things 
 			// 1.) the number of events to produce for this iteration
@@ -179,7 +179,7 @@ public class ThroughputPerformanceTestHarness implements TestHarness, RunningSta
 			}
 			catch (RunningException e)
 			{
-				throw new TestException( Messages.getMessage("TEST_HARNESS_CONSUMER_START_ERROR") );
+				throw new TestException( ImplMessages.getMessage("TEST_HARNESS_CONSUMER_START_ERROR") );
 			}
 			try
 			{
@@ -188,7 +188,7 @@ public class ThroughputPerformanceTestHarness implements TestHarness, RunningSta
 			}
 			catch (RunningException e)
 			{
-				throw new TestException( Messages.getMessage("TEST_HARNESS_PRODUCER_START_ERROR") );
+				throw new TestException( ImplMessages.getMessage("TEST_HARNESS_PRODUCER_START_ERROR") );
 			}
 		}
 	}
@@ -278,7 +278,7 @@ public class ThroughputPerformanceTestHarness implements TestHarness, RunningSta
 	
 	private void createStatistics(long totalEvents, long successes, Map<Integer, Long[]> producerDiagnostics, Map<Integer, Long[]> consumerDiagnostics, int expectedResultCount, long bytesConsumed)
 	{
-		System.out.print( Messages.getMessage("TEST_HARNESS_REPORT_STATS_MSG") );
+		System.out.print( ImplMessages.getMessage("TEST_HARNESS_REPORT_STATS_MSG") );
 		int size = producerDiagnostics.size();
 
 		// check if we have a sync issue / bad events / did not receive the final event(s) on consumer side
@@ -381,10 +381,10 @@ public class ThroughputPerformanceTestHarness implements TestHarness, RunningSta
 			{
 				e.printStackTrace();
 			}
-			System.out.println( Messages.getMessage("DONE") );
+			System.out.println( ImplMessages.getMessage("DONE") );
 		}
 		else
-			System.out.println( Messages.getMessage("TEST_HARNESS_REPORT_STATS_ERROR", size, consumerDiagnostics.size() ) );
+			System.out.println( ImplMessages.getMessage("TEST_HARNESS_REPORT_STATS_ERROR", size, consumerDiagnostics.size() ) );
 	}
 
 	@Override

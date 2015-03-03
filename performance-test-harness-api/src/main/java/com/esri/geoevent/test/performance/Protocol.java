@@ -7,8 +7,15 @@ import org.apache.commons.lang3.StringUtils;
 @XmlEnum
 public enum Protocol 
 {
-	TCP("Tcp"), TCP_SERVER("Tcp Server"), WEBSOCKETS( "Web Socket" ), ACTIVE_MQ ("Active MQ"), RABBIT_MQ("Rabbit MQ"), 
-	STREAM_SERVICE("Stream Services"), KAFKA("Kafka"), WEBSOCKET_SERVER("Web Socket Server"), UNKNOWN("Unknown");
+	TCP(ApiMessages.getMessage("PROTOCOL_TCP")), 
+	TCP_SERVER(ApiMessages.getMessage("PROTOCOL_TCP_SERVER")), 
+	WEBSOCKETS(ApiMessages.getMessage("PROTOCOL_WEBSOCKETS")), 
+	ACTIVE_MQ (ApiMessages.getMessage("PROTOCOL_ACTIVE_MQ")), 
+	RABBIT_MQ(ApiMessages.getMessage("PROTOCOL_RABBIT_MQ")), 
+	STREAM_SERVICE(ApiMessages.getMessage("PROTOCOL_STREAM_SERVICE")), 
+	KAFKA(ApiMessages.getMessage("PROTOCOL_KAFKA")), 
+	WEBSOCKET_SERVER(ApiMessages.getMessage("PROTOCOL_WEBSOCKET_SERVER")), 
+	UNKNOWN(ApiMessages.getMessage("PROTOCOL_UNKNOWN"));
 
 	private String label;
 	

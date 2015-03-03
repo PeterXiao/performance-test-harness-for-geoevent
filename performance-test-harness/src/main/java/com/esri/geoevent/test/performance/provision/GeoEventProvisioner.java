@@ -28,7 +28,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 
-import com.esri.geoevent.test.performance.Messages;
+import com.esri.geoevent.test.performance.ImplMessages;
 import com.esri.geoevent.test.performance.jaxb.Config;
 
 public class GeoEventProvisioner implements Provisioner
@@ -46,7 +46,7 @@ public class GeoEventProvisioner implements Provisioner
 	public void init(Config config) throws ProvisionException
 	{
 		if( config == null )
-			throw new ProvisionException( Messages.getMessage("PROVISIONER_INIT_ERROR") );
+			throw new ProvisionException( ImplMessages.getMessage("PROVISIONER_INIT_ERROR") );
 		
 		this.hostName = config.getPropertyValue("hostName");
 		this.userName = config.getPropertyValue("userName");
@@ -62,37 +62,37 @@ public class GeoEventProvisioner implements Provisioner
 		try
 		{
 			System.out.println("-----------------------------------------------");
-			System.out.println( Messages.getMessage("PROVISIONER_START_MSG") );
+			System.out.println( ImplMessages.getMessage("PROVISIONER_START_MSG") );
 			System.out.println("-----------------------------------------------");
 			
 			refreshToken();
 			resetConfiguration();
 			uploadConfiguration();
-			System.out.println( Messages.getMessage("PROVISIONER_FINISH_MSG") );
+			System.out.println( ImplMessages.getMessage("PROVISIONER_FINISH_MSG") );
 		}
 		catch (IOException ex)
 		{
-			throw new ProvisionException( Messages.getMessage("PROVISIONER_ERROR", ex.getMessage() ) );
+			throw new ProvisionException( ImplMessages.getMessage("PROVISIONER_ERROR", ex.getMessage() ) );
 		}
 	}
 	
 	private void validate() throws ProvisionException
 	{
 		if(StringUtils.isEmpty(hostName))
-			throw new ProvisionException( Messages.getMessage("PROVISIONER_PROPERTY_VALIDATION", "hostName") );
+			throw new ProvisionException( ImplMessages.getMessage("PROVISIONER_PROPERTY_VALIDATION", "hostName") );
 		if(StringUtils.isEmpty(userName))
-			throw new ProvisionException( Messages.getMessage("PROVISIONER_PROPERTY_VALIDATION", "userName") );
+			throw new ProvisionException( ImplMessages.getMessage("PROVISIONER_PROPERTY_VALIDATION", "userName") );
 		if(StringUtils.isEmpty(password))
-			throw new ProvisionException( Messages.getMessage("PROVISIONER_PROPERTY_VALIDATION", "password") );
+			throw new ProvisionException( ImplMessages.getMessage("PROVISIONER_PROPERTY_VALIDATION", "password") );
 		if(StringUtils.isEmpty(configFile))
-			throw new ProvisionException( Messages.getMessage("PROVISIONER_PROPERTY_VALIDATION", "configFile") );
+			throw new ProvisionException( ImplMessages.getMessage("PROVISIONER_PROPERTY_VALIDATION", "configFile") );
 		if(!new File(configFile).exists())
-			throw new ProvisionException( Messages.getMessage("PROVISIONER_CONFIG_FILE_VALIDATION", "configFile") );
+			throw new ProvisionException( ImplMessages.getMessage("PROVISIONER_CONFIG_FILE_VALIDATION", "configFile") );
 	}
 	
 	private void resetConfiguration() throws IOException
 	{
-		System.out.print( Messages.getMessage("PROVISIONER_RESETTING_CONFIG_MSG") );
+		System.out.print( ImplMessages.getMessage("PROVISIONER_RESETTING_CONFIG_MSG") );
 		String url = "https://" + hostName + ":" + 6143 + "/geoevent/admin/configuration/reset/.json";
 
 		CloseableHttpClient httpClient = HttpClients.custom().setSSLSocketFactory(getSSLSocketFactory()).build();
@@ -104,12 +104,12 @@ public class GeoEventProvisioner implements Provisioner
 		@SuppressWarnings("unused")
 		JsonNode jsonResponse = mapper.readTree(entity.getContent());
 		sleep(10 * 1000);
-		System.out.println( Messages.getMessage("DONE") );
+		System.out.println( ImplMessages.getMessage("DONE") );
 	}
 
 	private void uploadConfiguration() throws IOException
 	{
-		System.out.print( Messages.getMessage("PROVISIONER_UPLOADING_CONFIG_MSG") );
+		System.out.print( ImplMessages.getMessage("PROVISIONER_UPLOADING_CONFIG_MSG") );
 		// String url = "https://"+hostname+":"+6143+"/geoevent/admin/configuration/install/.json";
 		String url = "https://" + hostName + ":" + 6143 + "/geoevent/admin/configuration/.json";
 
@@ -125,7 +125,7 @@ public class GeoEventProvisioner implements Provisioner
 		@SuppressWarnings("unused")
 		JsonNode jsonResponse = mapper.readTree(entity.getContent());
 		sleep(10 * 1000);
-		System.out.println( Messages.getMessage("DONE") );
+		System.out.println( ImplMessages.getMessage("DONE") );
 	}
 
 	private void refreshToken() throws IOException
@@ -135,7 +135,7 @@ public class GeoEventProvisioner implements Provisioner
 		if (now < expiration)
 			return;
 
-		System.out.print( Messages.getMessage("PROVISIONER_FETCHING_TOKEN_MSG") );
+		System.out.print( ImplMessages.getMessage("PROVISIONER_FETCHING_TOKEN_MSG") );
 		referer = "https://" + hostName + ":6143/geoevent/admin";
 		String serverTokenUrl = "http://" + hostName + ":6080/arcgis/tokens/generateToken";
 		CloseableHttpClient httpClient = HttpClients.createDefault();
@@ -149,16 +149,16 @@ public class GeoEventProvisioner implements Provisioner
 
 			if (!schema.has("token"))
 			{
-				System.out.println( Messages.getMessage("PROVISIONER_TOKEN_ERROR_RESPONSE", schema.toString()));
-				throw new IOException( Messages.getMessage("PROVISIONER_TOKEN_ERROR") );
+				System.out.println( ImplMessages.getMessage("PROVISIONER_TOKEN_ERROR_RESPONSE", schema.toString()));
+				throw new IOException( ImplMessages.getMessage("PROVISIONER_TOKEN_ERROR") );
 			}
 			token = schema.get("token").asText();
 			expiration = schema.get("expires").asLong();
-			System.out.println( Messages.getMessage("DONE") );
+			System.out.println( ImplMessages.getMessage("DONE") );
 		}
 		catch (UnsupportedEncodingException | ClientProtocolException | URISyntaxException e)
 		{
-			System.err.println( Messages.getMessage("PROVISIONER_TOKEN_EXCEPTION_ERROR", e.getMessage()));
+			System.err.println( ImplMessages.getMessage("PROVISIONER_TOKEN_EXCEPTION_ERROR", e.getMessage()));
 			e.printStackTrace();
 			throw new IOException(e.getMessage());
 		}

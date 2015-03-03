@@ -104,9 +104,9 @@ public abstract class ProducerBase extends PerformanceCollectorBase implements P
 			running.set(false);
 			double totalTime = (timeStamp[1] - timeStamp[0]) / 1000;
 			if( testType == TestType.TIME )
-				System.out.println( Messages.getMessage("PRODUCER_TIMED_FINISH_MSG", successfulEvents.get(), String.valueOf(totalTime), String.valueOf(((double) numberOfEvents / (double) totalTime))) );
+				System.out.println( ImplMessages.getMessage("PRODUCER_TIMED_FINISH_MSG", successfulEvents.get(), String.valueOf(totalTime), String.valueOf(((double) numberOfEvents / (double) totalTime))) );
 			else
-				System.out.println( Messages.getMessage("PRODUCER_FINISH_MSG", successfulEvents.get()) );
+				System.out.println( ImplMessages.getMessage("PRODUCER_FINISH_MSG", successfulEvents.get()) );
 			
 			if (runningStateListener != null)
 				runningStateListener.onStateChange(new RunningState(RunningStateType.STOPPED));
