@@ -8,7 +8,7 @@
 	<!--  Provision the Fixtures with a specific GeoEvent Configuration -->
 	<ProvisionerConfig className="com.esri.geoevent.test.performance.provision.GeoEventProvisioner">
 		<Properties>
-			<Property name="hostName">ricardot.esri.com</Property>
+			<Property name="hostName">rtrujillo.esri.com</Property>
 			<Property name="userName">admin</Property>
 			<Property name="password">admin</Property>
 			<Property name="configFile">src/test/resources/geoevent-config/GeoEventConfig-TCP.xml</Property>
@@ -19,7 +19,7 @@
 		<!-- SHARED CONFIGURATION -->
 		<DefaultSharedConfig protocol="TCP">
 			<Properties>
-				<Property name="host">ricardot</Property>
+				<Property name="host">rtrujillo</Property>
 			</Properties>
 		</DefaultSharedConfig>
 		<ProducerConfig commandPort="5010">

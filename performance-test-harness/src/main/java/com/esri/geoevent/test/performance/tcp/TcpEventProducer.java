@@ -53,9 +53,11 @@ public class TcpEventProducer extends ProducerBase
 				eventIndex = 0;
 			try
 			{
-				os.write(events.get(eventIndex++).getBytes());
+				String message = events.get(eventIndex++);
+				os.write(message.getBytes());
 				os.flush();
 				successfulEvents.incrementAndGet();
+				successfulEventBytes.addAndGet(message.getBytes().length);
 				if (running.get() == false)
 					break;
 			}

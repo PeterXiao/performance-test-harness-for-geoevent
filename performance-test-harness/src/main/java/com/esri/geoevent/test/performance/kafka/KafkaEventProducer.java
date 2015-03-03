@@ -74,6 +74,7 @@ public class KafkaEventProducer extends ProducerBase
 //        messages.add(new KeyedMessage<String, String>(topic, thisEvent.split(",")[0], thisEvent));
 //        messages.add(new KeyedMessage(topic, events.get(eventIndex++)));
         successfulEvents.incrementAndGet();
+        successfulEventBytes.addAndGet(thisEvent.getBytes().length);
         if (running.get() == false)
           break;
       }

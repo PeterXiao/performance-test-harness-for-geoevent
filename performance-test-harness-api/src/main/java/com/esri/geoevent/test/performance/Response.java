@@ -1,8 +1,6 @@
 package com.esri.geoevent.test.performance;
 
 import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
 
 public class Response
 {	
@@ -62,6 +60,17 @@ public class Response
 	@Override
 	public String toString()
 	{
-		return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+		StringBuilder builder = new StringBuilder();
+		builder.append( getClass().getSimpleName() );
+		builder.append( "[");
+		builder.append( "type=");
+		builder.append( getType() );
+		if( getData() != null )
+		{
+			builder.append( ",data=");
+			builder.append( getData() );
+		}
+		builder.append( "]");
+		return builder.toString();
 	}
 }

@@ -22,7 +22,6 @@
 	xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" 
 	prefHeight="660" prefWidth="660" 
 	stylesheets="@default.css" 
-	fx:controller="com.esri.geoevent.test.performance.ui.ProducerController"
 	styleClass="box"
 	hgap="10"
 	vgap="4">

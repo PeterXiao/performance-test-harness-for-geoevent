@@ -6,11 +6,9 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
-import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -25,10 +23,11 @@ import com.esri.geoevent.test.performance.jaxb.Config;
 import com.esri.geoevent.test.performance.jaxb.ConsumerConfig;
 import com.esri.geoevent.test.performance.jaxb.ProducerConfig;
 import com.esri.geoevent.test.performance.utils.KryoUtils;
+import com.esri.geoevent.test.performance.utils.MessageUtils;
 
 public abstract class PerformanceCollectorBase implements PerformanceCollector, Runnable
 {
-	private static final String 		REQUEST_SEPERATOR = "::::";
+	private static final String			REQUEST_SEPERATOR	= "::::";
 
 	protected int										numberOfEvents;
 	protected int										numberOfExpectedResults;
@@ -36,10 +35,13 @@ public abstract class PerformanceCollectorBase implements PerformanceCollector, 
 	protected AtomicBoolean					running						= new AtomicBoolean(false);
 	protected RunningStateListener	runningStateListener;
 	protected List<String>					events						= new ArrayList<String>();
-	private 	CommandInterpreter 		commandInterpreter;
-	private 	Thread								commandInterpreterThread;
+	private CommandInterpreter			commandInterpreter;
+	private Thread									commandInterpreterThread;
 	protected AtomicLong						successfulEvents	= new AtomicLong();
+	protected AtomicLong						successfulEventBytes	= new AtomicLong();
 	protected final Mode						mode;
+	private Integer									commandPort;
+	private Boolean									isLocal;
 
 	public PerformanceCollectorBase(Mode mode)
 	{
@@ -71,6 +73,11 @@ public abstract class PerformanceCollectorBase implements PerformanceCollector, 
 		return successfulEvents.get();
 	}
 
+	public long getSuccessfulEventBytes()
+	{
+		return successfulEventBytes.get();
+	}
+	
 	public synchronized Map<Integer, Long[]> getTimeStamps()
 	{
 		return timeStamps;
@@ -106,6 +113,7 @@ public abstract class PerformanceCollectorBase implements PerformanceCollector, 
 	public void reset()
 	{
 		successfulEvents.set(0);
+		successfulEventBytes.set(0);
 		synchronized (timeStamps)
 		{
 			timeStamps.clear();
@@ -161,7 +169,13 @@ public abstract class PerformanceCollectorBase implements PerformanceCollector, 
 	@Override
 	public void listenOnCommandPort(int commandPort, boolean isLocal)
 	{
-		System.out.println( Messages.getMessage("PERFORMANCE_COLLECTOR_LISTENING_CMD_PORT_MSG", String.valueOf(commandPort)) );
+		// keep for re-initialization
+		if( this.commandPort == null )
+			this.commandPort = commandPort;
+		if( this.isLocal == null )
+			this.isLocal = isLocal;
+		
+		System.out.println(Messages.getMessage("PERFORMANCE_COLLECTOR_LISTENING_CMD_PORT_MSG", String.valueOf(commandPort)));
 		commandInterpreter = new CommandInterpreter(commandPort);
 		setRunningStateListener(commandInterpreter);
 		commandInterpreterThread = new Thread(commandInterpreter);
@@ -179,16 +193,16 @@ public abstract class PerformanceCollectorBase implements PerformanceCollector, 
 		commandInterpreter.destroy();
 		commandInterpreterThread.interrupt();
 		commandInterpreterThread = null;
-		System.out.println( Messages.getMessage("PERFORMANCE_COLLECTOR_DISCONNECTED_CMD_PORT_MSG") );
+		System.out.println(Messages.getMessage("PERFORMANCE_COLLECTOR_DISCONNECTED_CMD_PORT_MSG"));
 	}
-	
+
 	private class CommandInterpreter implements Runnable, RunningStateListener
 	{
 		int											port;
 		private BufferedReader	in;
 		private PrintWriter			out;
-		private ServerSocket 	server;
-		
+		private ServerSocket		server;
+
 		public CommandInterpreter(int commandPort)
 		{
 			this.port = commandPort;
@@ -196,256 +210,243 @@ public abstract class PerformanceCollectorBase implements PerformanceCollector, 
 
 		public void run()
 		{
-			try 
+			try
 			{
-				server = new ServerSocket( port );
-				while(true)
+				server = new ServerSocket(port);
+				while (true)
 				{
-					//System.out.println("Listening for a connection from the orchestrator.");
+					// System.out.println("Listening for a connection from the orchestrator.");
 					Socket commandSocket = server.accept();
 					try
 					{
-						commandSocket.setSoTimeout(50);
-						in = new BufferedReader( new InputStreamReader( commandSocket.getInputStream() ) );
-						out = new PrintWriter( commandSocket.getOutputStream() );
-						while(in != null)
+						// commandSocket.setSoTimeout(50);
+						in = new BufferedReader(new InputStreamReader(commandSocket.getInputStream()));
+						out = new PrintWriter(commandSocket.getOutputStream());
+						while (in != null)
 						{
-							//we need to read multiple lines efficiently
-							StringWriter sw = new StringWriter();
 							String command = null;
 							try
 							{
-								char[] buffer = new char[1024 * 4];
-								int n = 0;
-								while (-1 != (n = in.read(buffer))) {
-								    sw.write(buffer, 0, n);
-								}
+								command = in.readLine();
 							}
-							catch(SocketTimeoutException ex)
+							catch (Exception ignored)
 							{
-								//ignore
 							}
-							finally
-							{
-								command = sw.toString();
-							}
-							
-							if( StringUtils.isEmpty(command))
+							if (StringUtils.isEmpty(command))
 								continue;
-							
-							//System.out.println("Received command \"" + command + "\"");
-							synchronized(out)
+
+							// System.out.println("Received request (raw) \"" + command +"\"");
+							command = MessageUtils.unescapeNewLineCharacters(command);
+
+							String requestStr = command;
+							String additionalDataStr = null;
+							if (command.contains(REQUEST_SEPERATOR))
 							{
-								String requestStr = command;
-								String additionalDataStr = null;
-								if( command.contains(REQUEST_SEPERATOR) )
-								{
-									String[] requestSplitter = command.split(REQUEST_SEPERATOR);
-									if( requestSplitter == null || requestSplitter.length < 2 )
-										continue;
-									
-									requestStr = requestSplitter[0];
-									additionalDataStr = requestSplitter[1];
-								}
-								
-								// parse out the request object
-								Request request = KryoUtils.fromString(requestStr, Request.class);
-								if( request == null )
-								{
-									System.err.println( Messages.getMessage("PERFORMANCE_COLLECTOR_REQUEST_PARSE_ERROR") );
+								String[] requestSplitter = command.split(REQUEST_SEPERATOR);
+								if (requestSplitter == null || requestSplitter.length < 2)
 									continue;
-								}
+
+								requestStr = requestSplitter[0];
+								additionalDataStr = requestSplitter[1];
+							}
+
+							// parse out the request object
+							Request request = KryoUtils.fromString(requestStr, Request.class);
+							if (TestHarnessExecutor.DEBUG)
+								System.out.println("Received request \"" + request + "\"");
+							if (request == null)
+							{
+								System.err.println(Messages.getMessage("PERFORMANCE_COLLECTOR_REQUEST_PARSE_ERROR"));
+								continue;
+							}
+
+							// request action switch
+							Response response = null;
+							switch (request.getType())
+							{
+								case INIT:
+									response = new Response(ResponseType.OK);
+									try
+									{
+										// parse out the init data
+										if (additionalDataStr == null)
+										{
+											String errorMsg = Messages.getMessage("PERFORMANCE_COLLECTOR_INIT_PARSE_ERROR");
+											response = new Response(ResponseType.ERROR, errorMsg);
+											System.err.println(errorMsg);
+											respond(response);
+											continue;
+										}
+										Config config = null;
+										if (mode == Mode.Consumer)
+											config = KryoUtils.fromString(additionalDataStr, ConsumerConfig.class);
+										else if (mode == Mode.Producer)
+											config = KryoUtils.fromString(additionalDataStr, ProducerConfig.class);
+										if (TestHarnessExecutor.DEBUG)
+											System.out.println("Received additional config " + config);
+										init(config);
+									}
+									catch (Exception ex)
+									{
+										response = new Response(ResponseType.ERROR, ex.getMessage());
+									}
+									finally
+									{
+										respond(response);
+									}
+									break;
+
+								case START:
+									response = new Response(ResponseType.OK);
+									try
+									{
+										start();
+									}
+									catch (Exception ex)
+									{
+										response = new Response(ResponseType.ERROR, ex.getMessage());
+									}
+									finally
+									{
+										respond(response);
+									}
+									break;
+
+								case STOP:
+									response = new Response(ResponseType.OK);
+									try
+									{
+										stop();
+									}
+									catch (Exception ex)
+									{
+										response = new Response(ResponseType.ERROR, ex.getMessage());
+									}
+									finally
+									{
+										respond(response);
+									}
+									break;
+
+								case IS_RUNNING:
+									response = new Response(ResponseType.OK);
+									if (isRunning())
+										response.setData("true");
+									else
+										response.setData("false");
+									respond(response);
+									break;
+
+								case GET_RUNNING_STATE:
+									RunningStateType st = getRunningState();
+									response = new Response(ResponseType.OK, st.toString());
+									respond(response);
+									break;
+
+								case VALIDATE:
+									response = new Response(ResponseType.OK);
+									try
+									{
+										validate();
+									}
+									catch (Exception ex)
+									{
+										response = new Response(ResponseType.ERROR, ex.getMessage());
+									}
+									finally
+									{
+										respond(response);
+									}
+									break;
+
+								case DESTROY:
+									reset();
+									response = new Response(ResponseType.OK);
+									respond(response);
+									destroy();
+									listenOnCommandPort(commandPort, isLocal);
+									break;
+
+								case RESET:
+									reset();
+									response = new Response(ResponseType.OK);
+									respond(response);
+									break;
+
+								case GET_NUMBER_OF_EVENTS:
+									response = new Response(ResponseType.OK, String.valueOf(getNumberOfEvents()));
+									respond(response);
+									break;
+
+								case GET_SUCCESSFUL_EVENTS:
+									response = new Response(ResponseType.OK, String.valueOf(getSuccessfulEvents()));
+									respond(response);
+									break;
 								
-								// request action switch
-								Response response = null;
-								switch( request.getType() )
-								{
-									case INIT:
-										
-										response = new Response(ResponseType.OK);
-										try
-										{
-											// parse out the init data
-											if( additionalDataStr == null )
-											{
-												String errorMsg = Messages.getMessage("PERFORMANCE_COLLECTOR_INIT_PARSE_ERROR");
-												response = new Response(ResponseType.ERROR, errorMsg);
-												System.err.println( errorMsg );
-												respond(response);
-												continue;
-											}
-											Config config = null;
-											if( mode == Mode.Consumer)
-												config = KryoUtils.fromString(additionalDataStr, ConsumerConfig.class);
-											else if( mode == Mode.Producer)
-												config = KryoUtils.fromString(additionalDataStr, ProducerConfig.class);
-											
-											init(config);
-										}
-										catch(Exception ex)
-										{
-											response = new Response(ResponseType.ERROR, ex.getMessage());
-										}
-										finally
-										{
-											respond(response);
-										}
-										break;
-									
-									case START:
-										response = new Response(ResponseType.OK);
-										try
-										{
-											start();
-										}
-										catch(Exception ex)
-										{
-											response = new Response(ResponseType.ERROR, ex.getMessage());
-										}
-										finally
-										{
-											respond(response);
-										}
-										break;
-										
-									case STOP:
-										response = new Response(ResponseType.OK);
-										try
-										{
-											stop();
-										}
-										catch(Exception ex)
-										{
-											response = new Response(ResponseType.ERROR, ex.getMessage());
-										}
-										finally
-										{
-											respond(response);
-										}
-										break;
-										
-									case IS_RUNNING:
-										response = new Response(ResponseType.OK);
-										if(isRunning())
-											response.setData( "true" );
-										else
-											response.setData( "false" );
-										respond(response);
-										break;
-									
-									case GET_RUNNING_STATE:
-										RunningStateType st = getRunningState();
-										response = new Response(ResponseType.OK, st.toString());
-										respond(response);
-										break;
-										
-									case VALIDATE:
-										response = new Response(ResponseType.OK);
-										try
-										{
-											validate();
-										}
-										catch(Exception ex)
-										{
-											response = new Response(ResponseType.ERROR, ex.getMessage());
-										}
-										finally
-										{
-											respond(response);
-										}
-										break;
-									
-									case DESTROY:
-										destroy();
-										
-										response = new Response(ResponseType.OK);
-										respond(response);
-										
-										//close the input and output stream
-										IOUtils.closeQuietly(in);
-										in = null;
-										IOUtils.closeQuietly(out);
-										out= null;
-										
-										//continue to the top of the while loop
-										continue;
-										
-									case RESET:
-										reset();
-										response = new Response(ResponseType.OK);
-										respond(response);
-										break;
-									
-									case GET_NUMBER_OF_EVENTS:
-										response = new Response(ResponseType.OK, String.valueOf(getNumberOfEvents()));
-										respond(response);
-										break;
-										
-									case GET_SUCCESSFUL_EVENTS:
-										response = new Response(ResponseType.OK, String.valueOf(getSuccessfulEvents()));
-										respond(response);
-										break;
-										
-									case SET_NUMBER_OF_EVENTS:
-										setNumberOfEvents(Integer.parseInt(request.getData()));
-										response = new Response(ResponseType.OK);
-										respond(response);
-										break;
-										
-									case SET_NUMBER_OF_EXPECTED_RESULTS:
-										setNumberOfExpectedResults(Integer.parseInt(request.getData()));
-										response = new Response(ResponseType.OK);
-										respond(response);
-										break;
-									
-									case GET_TIMESTAMPS:
-										// TODO: We need a better way to send this across the wire
-										// build the time stamps string 
-										Map<Integer, Long[]> values = getTimeStamps();
-										StringBuilder stringBuilder = new StringBuilder();
-										for( Integer key : values.keySet() )
-										{
-											stringBuilder.append("__"+key);
-											Long[] valueArray = values.get(key);
-											for( Long l : valueArray )
-												stringBuilder.append("::"+l);
-										}
-										
-										String timeStampsStr = null;
-										if(stringBuilder.length()>2)
-											timeStampsStr = stringBuilder.substring(2);
-										
-										response = new Response(ResponseType.OK, timeStampsStr);
-										respond(response);
-										break;
-										
-									case UNKNOWN:
-										String erroMsg = Messages.getMessage("PERFORMANCE_COLLECTOR_UNKNOWN_REQUEST_ERROR", RequestType.UNKNOWN, command);
-										response = new Response(ResponseType.ERROR, erroMsg);
-										System.err.println(erroMsg);
-										respond(response);
-										continue;
-								}
+								case GET_SUCCESSFUL_EVENT_BYTES:
+									response = new Response(ResponseType.OK, String.valueOf(getSuccessfulEventBytes()));
+									respond(response);
+									break;
+
+								case SET_NUMBER_OF_EVENTS:
+									setNumberOfEvents(Integer.parseInt(request.getData()));
+									response = new Response(ResponseType.OK);
+									respond(response);
+									break;
+
+								case SET_NUMBER_OF_EXPECTED_RESULTS:
+									setNumberOfExpectedResults(Integer.parseInt(request.getData()));
+									response = new Response(ResponseType.OK);
+									respond(response);
+									break;
+
+								case GET_TIMESTAMPS:
+									// TODO: We need a better way to send this across the wire
+									// build the time stamps string
+									Map<Integer, Long[]> values = getTimeStamps();
+									StringBuilder stringBuilder = new StringBuilder();
+									for (Integer key : values.keySet())
+									{
+										stringBuilder.append("__" + key);
+										Long[] valueArray = values.get(key);
+										for (Long l : valueArray)
+											stringBuilder.append("::" + l);
+									}
+
+									String timeStampsStr = null;
+									if (stringBuilder.length() > 2)
+										timeStampsStr = stringBuilder.substring(2);
+
+									response = new Response(ResponseType.OK, timeStampsStr);
+									respond(response);
+									break;
+
+								case UNKNOWN:
+									String erroMsg = Messages.getMessage("PERFORMANCE_COLLECTOR_UNKNOWN_REQUEST_ERROR", RequestType.UNKNOWN, command);
+									response = new Response(ResponseType.ERROR, erroMsg);
+									System.err.println(erroMsg);
+									respond(response);
+									continue;
 							}
 						}
 					}
-					catch(IOException ex)
+					catch (Exception ex)
 					{
-						if( ex.getMessage().equals("Connection reset") )
+						if (ex.getMessage().equals("Connection reset"))
 						{
-							System.out.println( Messages.getMessage("PERFORMANCE_COLLECTOR_DISCONNECTED_MSG") );
+							System.out.println(Messages.getMessage("PERFORMANCE_COLLECTOR_DISCONNECTED_MSG"));
 							reset();
 						}
 						else
 							ex.printStackTrace();
 					}
 				}
-			} 
-			catch (SocketException error) 
-			{
-				//ignored
 			}
-			catch (Exception error) 
+			catch (SocketException error)
+			{
+				// ignored
+			}
+			catch (Exception error)
 			{
 				error.printStackTrace();
 			}
@@ -458,22 +459,28 @@ public abstract class PerformanceCollectorBase implements PerformanceCollector, 
 			{
 				Response response = new Response(ResponseType.STATE_CHANGED, newState.getType().toString());
 				respond(response);
+				if (TestHarnessExecutor.DEBUG)
+					System.out.println("@@@ State change event(" + newState + ")  sent!");
 			}
 		}
-		
+
 		private void respond(Response response)
 		{
-			if( out != null )
+			if (out != null)
 			{
-				synchronized (out)
-				{
-					String responseStr = KryoUtils.toString(response, Response.class);
-					out.println(responseStr);
-					out.flush();
-				}
+				if (TestHarnessExecutor.DEBUG)
+					System.out.println("Sending response: \"" + response + "\"");
+				String responseStr = KryoUtils.toString(response, Response.class);
+				responseStr = MessageUtils.escapeNewLineCharacters(responseStr);
+				// if( TestHarnessExecutor.DEBUG )
+				// System.out.println("Sending response (raw): \"" + responseStr + "\"");
+				out.println(responseStr);
+				out.flush();
 			}
+			else
+				System.err.println("Failed to send the response: \"" + response + "\". The Output stream is NULL!");
 		}
-		
+
 		private void destroy()
 		{
 			IOUtils.closeQuietly(in);

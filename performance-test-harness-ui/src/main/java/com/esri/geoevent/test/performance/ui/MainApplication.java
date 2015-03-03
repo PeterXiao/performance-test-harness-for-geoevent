@@ -43,15 +43,19 @@ public class MainApplication extends Application
 			System.exit(0);
 			return;
 		}
+		
 		Mode mode = Mode.fromValue(modeStr);
 		String fxmlFile = "";
+		Object controller = null;
 		switch( mode )
 		{
 			case Producer:
-				fxmlFile = "Producer.fxml";
+				fxmlFile = "PerformanceCollector.fxml";
+				controller = new ProducerController();
 				break;
 			case Consumer:
-				fxmlFile = "Consumer.fxml";
+				fxmlFile = "PerformanceCollector.fxml";
+				controller = new ConsumerController();
 				break;
 			case Orchestrator:
 				fxmlFile = "Orchestrator.fxml";
@@ -67,6 +71,7 @@ public class MainApplication extends Application
 		try
 		{
 			FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFile));
+			loader.setController(controller);
 			Parent parent = (Parent) loader.load();
 			Scene scene = new Scene(parent);
 

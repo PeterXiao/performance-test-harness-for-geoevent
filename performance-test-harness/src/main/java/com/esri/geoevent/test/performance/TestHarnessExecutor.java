@@ -20,7 +20,6 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 
@@ -58,6 +57,8 @@ public class TestHarnessExecutor
 	private static boolean reportComplete;
 	private static long startTime;
 	
+	public static boolean DEBUG = false;
+	
 	@SuppressWarnings("static-access")
 	public static void main(String[] args)
 	{
@@ -70,7 +71,6 @@ public class TestHarnessExecutor
 		// performer options
 		Options performerOptions = new Options();
 		performerOptions.addOption(OptionBuilder.withLongOpt("type").withDescription("[TCP(default) | WEBSOCKETS | ACTIVE_MQ | RABBIT_MQ]").hasArg().isRequired().create("t"));
-		performerOptions.addOption(OptionBuilder.withLongOpt("clusterable").withDescription("[yes|no]").hasArg().create("c"));
 		performerOptions.addOption(OptionBuilder.withLongOpt("mode").withDescription("[producer|consumer]").hasArg().isRequired().create("m"));
 		performerOptions.addOption(OptionBuilder.withLongOpt("commandListenerPort").withDescription("The TCP Port where this diagnostic tool will listen for commands from the orchestrator, e.g. 5010. It can be set to \"local\" to be run locally (port 5010 for \"producer\" and port 5020 for \"consumer\"").hasArg().isRequired().create("p"));
 		performerOptions.addOption(OptionBuilder.withLongOpt("consumerServerPort").withDescription("The TCP Port where the consumer will listen for TCP connections to consume events, e.g. 5775. (Default value is 5775").hasArg().create("cp"));
@@ -185,6 +185,9 @@ public class TestHarnessExecutor
 				catch (Exception error)
 				{
 					error.printStackTrace();
+					testHarness.destroy();
+					testHarness = null;
+					continue;
 				}
 				
 				// check if we are running and sleep accordingly
@@ -240,7 +243,6 @@ public class TestHarnessExecutor
 			String protocolValue = cmd.getOptionValue("t");
 			String modeValue = cmd.getOptionValue("m");
 			String commandListenerPortValue = cmd.getOptionValue("p");
-			boolean isClusterable = BooleanUtils.toBoolean(cmd.getOptionValue("c"));
 
 			// validate
 			if (!validateTestHarnessOptions(protocolValue, modeValue, commandListenerPortValue))
@@ -266,13 +268,11 @@ public class TestHarnessExecutor
 				switch (protocol)
 				{
 					case TCP:
-						if(isClusterable)
-						{
-							int connectionPort = NumberUtils.toInt(cmd.getOptionValue("cp"), 5775);
-							producer = new ClusterableTcpEventProducer(connectionPort);
-						}
-						else 
-							producer = new TcpEventProducer();
+						producer = new TcpEventProducer();
+						break;
+					case TCP_SERVER:
+						int connectionPort = NumberUtils.toInt(cmd.getOptionValue("cp"), 5775);
+						producer = new ClusterableTcpEventProducer(connectionPort);
 						break;
 					case WEBSOCKETS:
 						producer = new WebsocketEventProducer();
@@ -311,22 +311,20 @@ public class TestHarnessExecutor
 				switch (protocol)
 				{
 					case TCP:
-						if( isClusterable )
-						{
-							int consumerServerPort = NumberUtils.toInt(cmd.getOptionValue("cp"), 5775);
-							final ClusterableTcpEventConsumer clusterableTcpEventConsumer = new ClusterableTcpEventConsumer(consumerServerPort);
-							consumer = clusterableTcpEventConsumer;
-							// add this runtime hook - cleanup after we shutdown
-							Runtime.getRuntime().addShutdownHook(new Thread() {
-								@Override
-								public void run()
-								{
-									clusterableTcpEventConsumer.shutdown();
-								}
-							});
-						}
-						else
-							consumer = new TcpEventConsumer();
+						consumer = new TcpEventConsumer();
+						break;
+					case TCP_SERVER:
+						int consumerServerPort = NumberUtils.toInt(cmd.getOptionValue("cp"), 5775);
+						final ClusterableTcpEventConsumer clusterableTcpEventConsumer = new ClusterableTcpEventConsumer(consumerServerPort);
+						consumer = clusterableTcpEventConsumer;
+						// add this runtime hook - cleanup after we shutdown
+						Runtime.getRuntime().addShutdownHook(new Thread() {
+							@Override
+							public void run()
+							{
+								clusterableTcpEventConsumer.shutdown();
+							}
+						});
 						break;
 					case WEBSOCKETS:
 						consumer = new WebsocketEventConsumer();

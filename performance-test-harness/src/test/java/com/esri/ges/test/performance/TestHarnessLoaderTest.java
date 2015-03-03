@@ -47,18 +47,10 @@ public class TestHarnessLoaderTest
 		// setup producer
 		args = "-m producer -t tcp -p local";
 		TestHarnessExecutor.main(args.split(" "));
-		int numOfThreadsAtStartTime = Thread.activeCount();
 		
 		// run the test
 		args = "-f src/test/resources/fixtures_simple_tcp.xml";
 		TestHarnessExecutor.main(args.split(" "));
-		
-		int numOfThreads = Thread.activeCount();
-		while( numOfThreads > numOfThreadsAtStartTime )
-		{
-			Thread.sleep(100);
-			numOfThreads = Thread.activeCount();
-		}
 	}
 	
 	@Test
@@ -71,18 +63,10 @@ public class TestHarnessLoaderTest
 		// setup producer
 		args = "-m producer -t tcp -p local";
 		TestHarnessExecutor.main(args.split(" "));
-		int numOfThreadsAtStartTime = Thread.activeCount();
 		
 		// run the test
 		args = "-f src/test/resources/fixtures_ramp_tcp.xml";
 		TestHarnessExecutor.main(args.split(" "));
-		
-		int numOfThreads = Thread.activeCount();
-		while( numOfThreads > numOfThreadsAtStartTime )
-		{
-			Thread.sleep(100);
-			numOfThreads = Thread.activeCount();
-		}
 	}
 	
 	@Test
@@ -95,18 +79,10 @@ public class TestHarnessLoaderTest
 		// setup producer
 		args = "-m producer -t tcp -p local";
 		TestHarnessExecutor.main(args.split(" "));
-		int numOfThreadsAtStartTime = Thread.activeCount();
 		
 		// run the test
 		args = "-f src/test/resources/fixtures_stress_tcp.xml";
 		TestHarnessExecutor.main(args.split(" "));
-		
-		int numOfThreads = Thread.activeCount();
-		while( numOfThreads > numOfThreadsAtStartTime )
-		{
-			Thread.sleep(100);
-			numOfThreads = Thread.activeCount();
-		}
 	}
 	
 	@Test
@@ -119,18 +95,10 @@ public class TestHarnessLoaderTest
 		// setup producer
 		args = "-m producer -t tcp -p local";
 		TestHarnessExecutor.main(args.split(" "));
-		int numOfThreadsAtStartTime = Thread.activeCount();
 		
 		// run the test
 		args = "-f src/test/resources/fixtures_provisioning_tcp.xml";
 		TestHarnessExecutor.main(args.split(" "));
-		
-		int numOfThreads = Thread.activeCount();
-		while( numOfThreads > numOfThreadsAtStartTime )
-		{
-			Thread.sleep(100);
-			numOfThreads = Thread.activeCount();
-		}
 	}
 	
 	@Test
@@ -143,18 +111,10 @@ public class TestHarnessLoaderTest
 		// setup producer
 		args = "-m producer -t tcp -p local";
 		TestHarnessExecutor.main(args.split(" "));
-		int numOfThreadsAtStartTime = Thread.activeCount();
 		
 		// run the test
 		args = "-f src/test/resources/fixtures_provisioning_per_fixture_tcp.xml";
 		TestHarnessExecutor.main(args.split(" "));
-		
-		int numOfThreads = Thread.activeCount();
-		while( numOfThreads > numOfThreadsAtStartTime )
-		{
-			Thread.sleep(100);
-			numOfThreads = Thread.activeCount();
-		}
 	}
 	
 	@Test
@@ -167,18 +127,10 @@ public class TestHarnessLoaderTest
 	  // setup producer
 	  args = "-m producer -t rabbit_mq -p local";
 	  TestHarnessExecutor.main(args.split(" "));
-	  int numOfThreadsAtStartTime = Thread.activeCount();
 	  
 	  // run the test
 	  args = "-f src/test/resources/fixtures_rabbitmq.xml";
 	  TestHarnessExecutor.main(args.split(" "));
-	  
-	  int numOfThreads = Thread.activeCount();
-	  while( numOfThreads > numOfThreadsAtStartTime )
-	  {
-	    Thread.sleep(100);
-	    numOfThreads = Thread.activeCount();
-	  }
 	}
 	
 	@Test
@@ -193,18 +145,10 @@ public class TestHarnessLoaderTest
 	  // setup producer
 	  args = "-m producer -t kafka -p local";
 	  TestHarnessExecutor.main(args.split(" "));
-	  int numOfThreadsAtStartTime = Thread.activeCount();
 	  
 	  // run the test
 	  args = "-f src/test/resources/fixtures_kafka.xml";
 	  TestHarnessExecutor.main(args.split(" "));
-	  
-	  int numOfThreads = Thread.activeCount();
-	  while( numOfThreads > numOfThreadsAtStartTime )
-	  {
-	    Thread.sleep(100);
-	    numOfThreads = Thread.activeCount();
-	  }
 	}
 	
 	@Test
@@ -232,31 +176,6 @@ public class TestHarnessLoaderTest
 //      numOfThreads = Thread.activeCount();
 //    }
   }
-	
-	@Test
-	public void testPerformanceTestHarnessMode_CLUSTERED() throws InterruptedException
-	{
-		// setup consumer
-		String args = "-m consumer -t tcp -p local -c yes";
-		TestHarnessExecutor.main(args.split(" "));
-		
-		// setup producer
-		args = "-m producer -t tcp -p local -c yes";
-		TestHarnessExecutor.main(args.split(" "));
-		int numOfThreadsAtStartTime = Thread.activeCount();
-		
-		// run the test
-		//args = "-f src/test/resources/fixtures_states_all_3K.xml";
-		args = "-f src/test/resources/fixtures_clustered_run.xml";
-		TestHarnessExecutor.main(args.split(" "));
-		
-		int numOfThreads = Thread.activeCount();
-		while( numOfThreads > numOfThreadsAtStartTime )
-		{
-			Thread.sleep(100);
-			numOfThreads = Thread.activeCount();
-		}
-	}
 	
 	@Test
 	public void testCMDLineParameters_HELP()

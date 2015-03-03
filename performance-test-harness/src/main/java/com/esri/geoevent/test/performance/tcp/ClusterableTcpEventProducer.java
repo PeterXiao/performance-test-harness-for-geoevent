@@ -357,6 +357,7 @@ public class ClusterableTcpEventProducer extends PerformanceCollectorBase
 						os.flush();
 						workerSuccessfulEvents.incrementAndGet();
 						successfulEvents.incrementAndGet();
+						successfulEventBytes.addAndGet(data.length);
 					}
 					if (running.get() == false)
 						break;

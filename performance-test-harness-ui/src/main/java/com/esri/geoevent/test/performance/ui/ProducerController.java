@@ -9,6 +9,7 @@ import org.apache.commons.lang3.math.NumberUtils;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
+import com.esri.geoevent.test.performance.Mode;
 import com.esri.geoevent.test.performance.PerformanceCollector;
 import com.esri.geoevent.test.performance.Protocol;
 import com.esri.geoevent.test.performance.activemq.ActiveMQEventProducer;
@@ -33,6 +34,7 @@ public class ProducerController extends PerformanceCollectorController
 	{		
 		super.initialize(location, resources);
 		
+		titleLabel.setText( Mode.Producer.toString() );
 		protocol.setItems( getProtocolList());
 		port.setText(String.valueOf(DEFAULT_COMMAND_PORT));
 	}

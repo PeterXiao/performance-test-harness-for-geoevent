@@ -118,7 +118,7 @@ public class Simulation implements Appliable<Simulation>
 			case TIME:
 				return ((TimeTest)getTest()).getEventsPerSec();
 			case STRESS:
-				return ((StressTest)getTest()).getNumOfEvents();
+				return 0;
 			default:
 				return 1;
 		}

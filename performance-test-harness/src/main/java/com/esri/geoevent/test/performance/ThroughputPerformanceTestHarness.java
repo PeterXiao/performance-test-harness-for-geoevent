@@ -10,8 +10,11 @@ import com.esri.geoevent.test.performance.jaxb.ConsumerConfig;
 import com.esri.geoevent.test.performance.jaxb.Fixture;
 import com.esri.geoevent.test.performance.jaxb.ProducerConfig;
 import com.esri.geoevent.test.performance.jaxb.Property;
+import com.esri.geoevent.test.performance.jaxb.RampTest;
 import com.esri.geoevent.test.performance.jaxb.RemoteHost;
+import com.esri.geoevent.test.performance.jaxb.StressTest;
 import com.esri.geoevent.test.performance.jaxb.TestType;
+import com.esri.geoevent.test.performance.jaxb.TimeTest;
 import com.esri.geoevent.test.performance.statistics.FixtureStatistic;
 import com.esri.geoevent.test.performance.statistics.FixturesStatistics;
 import com.esri.geoevent.test.performance.statistics.Statistics;
@@ -67,7 +70,7 @@ public class ThroughputPerformanceTestHarness implements TestHarness, RunningSta
 		this.staggeringInterval = fixture.getSimulation().getStaggeringInterval();
 		this.testName = fixture.getName();
 		this.testType = fixture.getSimulation().getTest().getType();
-		
+				
 		System.out.println("-------------------------------------------------------");
 		System.out.println( Messages.getMessage("TEST_HARNESS_START_MSG", testName ) );
 		System.out.println("-------------------------------------------------------");
@@ -87,6 +90,13 @@ public class ThroughputPerformanceTestHarness implements TestHarness, RunningSta
 		producerConfig.getProperties().add(new Property("testType", testType.toString()));
 		
 		consumerConfig.getProperties().add(new Property("testType", testType.toString()));
+		if( testType == TestType.TIME )
+		{
+			TimeTest timeTest = (TimeTest) fixture.getSimulation().getTest();
+			int expectedEventsPerSec = (timeTest.getExpectedResultCountPerSec() != -1) ? timeTest.getExpectedResultCountPerSec() : eventsPerSec;
+			consumerConfig.getProperties().add(new Property("eventsPerSec", String.valueOf(expectedEventsPerSec)));
+			consumerConfig.getProperties().add(new Property("totalTimeInSec", String.valueOf(timeTest.getTotalTimeInSec())));
+		}
 		
 		// get the list of producers
 		List<RemoteHost> producers = producerConfig.getProducers();
@@ -95,8 +105,8 @@ public class ThroughputPerformanceTestHarness implements TestHarness, RunningSta
 
 		// init the remote producer(s) proxy
 		eventProducer = new RemotePerformanceCollectorBase(producers);
-		eventProducer.init(producerConfig);
 		eventProducer.setRunningStateListener(this);
+		eventProducer.init(producerConfig);
 		eventProducer.validate();
 
 		// get the list of consumers
@@ -106,8 +116,8 @@ public class ThroughputPerformanceTestHarness implements TestHarness, RunningSta
 
 		// init the remote consumer(s) proxy
 		eventConsumer = new RemotePerformanceCollectorBase(consumers);
-		eventConsumer.init(consumerConfig);
 		eventConsumer.setRunningStateListener(this);
+		eventConsumer.init(consumerConfig);
 		eventConsumer.validate();
 	}
 
@@ -126,18 +136,37 @@ public class ThroughputPerformanceTestHarness implements TestHarness, RunningSta
 			if( testType != TestType.TIME)
 				System.out.println( Messages.getMessage("TEST_HARNESS_ITERATION_MSG", currentIteration) );
 			
+			// calculate two things 
+			// 1.) the number of events to produce for this iteration
+			// 2.) the number of expected events to consumer for this iteration
+			
+			int numOfEventsToProduce = 0;
+			int expectedResultCountToConsume = 0;
+			switch( fixture.getSimulation().getTest().getType() )
+			{	
+				case RAMP:
+					RampTest rampTest = (RampTest) fixture.getSimulation().getTest();
+					numOfEventsToProduce = (producerCount * rampTest.getEventsToAddPerTest() * currentIteration); 
+					expectedResultCountToConsume = (rampTest.getExpectedResultCountPerTest() != -1) ? (producerCount * rampTest.getExpectedResultCountPerTest() * currentIteration) : numOfEventsToProduce; 
+					break;
+				case STRESS:
+					StressTest stressTest = (StressTest) fixture.getSimulation().getTest();
+					numOfEventsToProduce = (producerCount * stressTest.getNumOfEvents()); 
+					expectedResultCountToConsume = (stressTest.getExpectedResultCount() != -1) ? (producerCount * stressTest.getExpectedResultCount() * currentIteration) : numOfEventsToProduce * currentIteration;
+					break;
+				case TIME:
+					TimeTest timeTest = (TimeTest) fixture.getSimulation().getTest();
+					numOfEventsToProduce = timeTest.getEventsPerSec() * timeTest.getTotalTimeInSec();
+					expectedResultCountToConsume = (timeTest.getExpectedResultCountPerSec() != -1) ? (timeTest.getExpectedResultCountPerSec() * timeTest.getTotalTimeInSec()) : numOfEventsToProduce;
+					break;
+				default:
+					break;
+			}
+			
 			try
 			{
-				eventConsumer.setNumberOfEvents(producerCount * eventsPerIteration);
-				if( expectedResultCount != -1 )
-				{
-					eventConsumer.setNumberOfExpectedResults(producerCount * expectedResultCount);
-				}
-				else
-				{
-					expectedResultCount = eventsPerIteration;
-					eventConsumer.setNumberOfExpectedResults(producerCount * eventsPerIteration);
-				}
+				eventConsumer.setNumberOfEvents(numOfEventsToProduce);
+				eventConsumer.setNumberOfExpectedResults(expectedResultCountToConsume);
 				eventConsumer.start();
 				// Sleep for a second to let the consumer get started.
 				try
@@ -154,7 +183,7 @@ public class ThroughputPerformanceTestHarness implements TestHarness, RunningSta
 			}
 			try
 			{
-				eventProducer.setNumberOfEvents(eventsPerIteration);
+				eventProducer.setNumberOfEvents(numOfEventsToProduce);
 				eventProducer.start();
 			}
 			catch (RunningException e)
@@ -167,17 +196,19 @@ public class ThroughputPerformanceTestHarness implements TestHarness, RunningSta
 	@Override
 	public void destroy()
 	{
-		if (running.get())
+		try
 		{
-			try
-			{
+			if( eventProducer != null )
 				eventProducer.destroy();
+			if( eventConsumer != null )
 				eventConsumer.destroy();
-			}
-			finally
-			{
-				running.set(false);
-			}
+		}
+		catch( Exception ignored )
+		{
+		}
+		finally
+		{
+			running.set(false);
 		}
 	}
 
@@ -186,6 +217,7 @@ public class ThroughputPerformanceTestHarness implements TestHarness, RunningSta
 	{
 		// add the state of the component to our cache
 		runningStateMap.put(state.getConnectionString(), state);
+		//System.out.println( "Adding connection string: " + state.getConnectionString() + " with state: " + state);
 		checkIfTestIsComplete();
 	}
 
@@ -209,12 +241,10 @@ public class ThroughputPerformanceTestHarness implements TestHarness, RunningSta
 			createStatistics(eventProducer.getSuccessfulEvents(), eventConsumer.getSuccessfulEvents(), producerTimestamps, consumerTimestamps, expectedResultCount);
 			eventProducer.reset();
 			eventConsumer.reset();
+			
 			if (eventsPerIteration < maxEventsPerIteration)
 			{
-				eventsPerIteration += eventsPerIterationStep;
-				if (expectedResultCountPerIteration != -1)
-					expectedResultCount += expectedResultCountPerIteration;
-				
+				eventsPerIteration += eventsPerIterationStep;				
 				// re-run the tests - next iteration
 				try
 				{
@@ -232,12 +262,7 @@ public class ThroughputPerformanceTestHarness implements TestHarness, RunningSta
 			}
 		}
 		else
-		{
-			if (expectedResultCountPerIteration != -1)
-				expectedResultCount += (producerCount * expectedResultCountPerIteration);
-			else
-				expectedResultCount += (producerCount * eventsPerIteration);
-			
+		{			
 			// re-run the tests - next iteration
 			try
 			{

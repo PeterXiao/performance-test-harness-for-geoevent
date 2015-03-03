@@ -157,6 +157,7 @@ public class WebsocketEventProducer extends PerformanceCollectorBase
 					for( MyConnection conn : connections )
 						conn.getConnection().sendMessage(message);
 					long currentCount = successfulEvents.incrementAndGet();
+					successfulEventBytes.addAndGet(message.getBytes().length);
 					if( currentCount % 100000 == 0 )
 						System.out.println("Sent " + currentCount + " messages.");
 					if (running.get() == false)

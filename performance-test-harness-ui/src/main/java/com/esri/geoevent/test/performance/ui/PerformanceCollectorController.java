@@ -21,7 +21,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 
-import com.esri.geoevent.test.performance.Mode;
 import com.esri.geoevent.test.performance.Protocol;
 import com.esri.geoevent.test.performance.ui.controls.RestrictiveTextField;
 import com.esri.geoevent.test.performance.ui.controls.TitledBorder;
@@ -63,7 +62,6 @@ public abstract class PerformanceCollectorController implements Initializable
 	@Override
 	public void initialize(URL location, ResourceBundle resources)
 	{		
-		titleLabel.setText( Mode.Producer.toString() );
 		commandListenerBox.setTitle( UIMessages.getMessage("UI_COMMAND_BOX_LABEL") );
 		protocolLabel.setText( UIMessages.getMessage("UI_PROTOCOL_LABEL") );
 		protocol.setValue( Protocol.TCP );
@@ -95,6 +93,7 @@ public abstract class PerformanceCollectorController implements Initializable
 			// disable
 			protocol.setDisable(true);
 			port.setDisable(true);
+			serverPort.setDisable(true);
 			start();
 		}
 		// else we are stopped
@@ -106,6 +105,7 @@ public abstract class PerformanceCollectorController implements Initializable
 			// enable
 			protocol.setDisable(false);
 			port.setDisable(false);
+			serverPort.setDisable(false);
 			stop();
 		}
 	}

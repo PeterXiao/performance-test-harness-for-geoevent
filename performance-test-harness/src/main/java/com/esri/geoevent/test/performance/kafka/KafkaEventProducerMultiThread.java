@@ -250,6 +250,7 @@ public class KafkaEventProducerMultiThread extends PerformanceCollectorBase
           String thisEvent = sync_events.get(eventIndex++);
           messages.add(new KeyedMessage<String, String>(topic, thisEvent.substring(0, thisEvent.indexOf(",")), thisEvent));
           successfulEvents.incrementAndGet();
+          successfulEventBytes.addAndGet(thisEvent.getBytes().length);
           if (running.get() == false)
             break;
         }

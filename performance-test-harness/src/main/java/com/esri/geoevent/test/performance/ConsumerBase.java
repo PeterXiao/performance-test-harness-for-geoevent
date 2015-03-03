@@ -9,23 +9,16 @@ import com.esri.geoevent.test.performance.jaxb.TestType;
 public abstract class ConsumerBase extends PerformanceCollectorBase implements Consumer
 {
 	private AtomicInteger	eventIx								= new AtomicInteger(0);
-	private int						expectedResultCount		= 0;
 	private Long[]				timeStamp							= null;
 	private long					lastSuccessCount			= 0;
 	private long					lastSuccessIncrement	= 0;
 	private long					timeOutInSec					= 10;
 	private TestType			testType							= TestType.UNKNOWN;
+	private int 					totalTimeInSec 				= -1;
 	
 	public ConsumerBase()
 	{
 		super(Mode.Consumer);
-	}
-
-	@Override
-	public void setNumberOfExpectedResults(int numberOfExpectedResults)
-	{
-		super.setNumberOfExpectedResults(numberOfExpectedResults);
-		expectedResultCount = numberOfExpectedResults;
 	}
 
 	@Override
@@ -38,17 +31,7 @@ public abstract class ConsumerBase extends PerformanceCollectorBase implements C
 
 		testType = TestType.fromValue(config.getPropertyValue("testType"));
 		timeOutInSec = ((ConsumerConfig) config).getTimeoutInSec();
-	}
-
-	@Override
-	public void reset()
-	{
-		super.reset();
-
-		eventIx = new AtomicInteger(0);
-		timeStamp = null;
-		lastSuccessCount = 0;
-		lastSuccessIncrement = 0;
+		totalTimeInSec = Integer.parseInt(config.getPropertyValue("totalTimeInSec", "-1"));
 	}
 
 	/**
@@ -66,12 +49,13 @@ public abstract class ConsumerBase extends PerformanceCollectorBase implements C
 			timeStamp[0] = System.currentTimeMillis();
 		}
 
-		int currentCount = eventIx.incrementAndGet();
-		successfulEvents.incrementAndGet();
-
+		eventIx.incrementAndGet();
+		long successEvents = successfulEvents.incrementAndGet();
+		successfulEventBytes.addAndGet(message.getBytes().length);
+		
 		// check if we are done - received all expected results
-		//System.out.println( "Current Count[" + currentCount + "] =? Expected Count[" + expectedResultCount +"]" );
-		if (currentCount == expectedResultCount)
+		//System.out.println( "Current Count[" + currentCount + "] =? Expected Count[" + expectedResultCount +"] =? Success Events["  + successEvents + "]");
+		if (successEvents == getNumberOfExpectedResults())
 		{
 			finishConsuming(System.currentTimeMillis());
 		}
@@ -168,8 +152,23 @@ public abstract class ConsumerBase extends PerformanceCollectorBase implements C
 		if (timeStamp != null && timeStamp[0] != null && timeStamp[1] != null)
 		{
 			totalTime = ((double) timeStamp[1] - (double) timeStamp[0]) / 1000d;
+			
+			// for tests of type TIME - lets get the greatest of the two times for display purposes (actual time versus total time)
 			if( testType == TestType.TIME )
+			{
+				if( totalTime < new Integer(totalTimeInSec).doubleValue() )
+				{
+					// sleep to sync up the displays - this does not effect the calculations
+					double timeToSleep = new Integer(totalTimeInSec).doubleValue() - (totalTime * 1000.0d);
+					try {
+						Thread.sleep( new Double(timeToSleep).longValue() );
+					} catch ( Exception ignored )
+					{
+					}
+					totalTime = totalTimeInSec;
+				}
 				System.out.println( Messages.getMessage("CONSUMER_TIMED_FINISH_MSG", successfulEvents.get(), String.valueOf(totalTime), String.valueOf(((double) successfulEvents.get() / totalTime))) );
+			}
 			else
 				System.out.println( Messages.getMessage("CONSUMER_FINISH_MSG", successfulEvents.get()) );
 		}

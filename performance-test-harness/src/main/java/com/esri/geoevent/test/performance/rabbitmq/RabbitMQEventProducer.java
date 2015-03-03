@@ -74,6 +74,7 @@ public class RabbitMQEventProducer extends ProducerBase
 				byte[] bytes = thisEvent.getBytes();
 				channel.basicPublish(exchangeName, routingKey, null, bytes);
 				successfulEvents.incrementAndGet();
+				successfulEventBytes.addAndGet(thisEvent.getBytes().length);
 				if (running.get() == false)
 					break;
 			}

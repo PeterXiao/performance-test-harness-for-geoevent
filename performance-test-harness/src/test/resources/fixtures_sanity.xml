@@ -36,7 +36,7 @@
 		</ConsumerConfig>
 				
 		<Simulation>
-			<StressTest iterations="10" minEvents="1000" expectedResultCount="989"/>
+			<StressTest iterations="10" numOfEvents="1000" expectedResultCount="989"/>
 		</Simulation>
 	</DefaultFixture>
 	
@@ -49,7 +49,7 @@
 			</Properties>
 		</ProducerConfig>
 		<Simulation>
-			<StressTest iterations="100" minEvents="81" expectedResultCount="79"/>
+			<StressTest iterations="100" numOfEvents="81" expectedResultCount="79"/>
 		</Simulation>
 	</Fixture>
 	

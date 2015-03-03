@@ -17,4 +17,5 @@ public interface PerformanceCollector extends RunnableComponent
   public void listenOnCommandPort(int port, boolean isLocal);
   public void disconnectCommandPort();
   public long getSuccessfulEvents();
+  public long getSuccessfulEventBytes();
 }

@@ -174,6 +174,7 @@ public class WebsocketServerEverntProducer extends PerformanceCollectorBase
 				String thisEvent = events.get(eventIndex++);
 				_webSocketServlet.publish(thisEvent);
 				successfulEvents.incrementAndGet();
+				successfulEventBytes.addAndGet(thisEvent.getBytes().length);
 				if (running.get() == false)
 					break;
 			}

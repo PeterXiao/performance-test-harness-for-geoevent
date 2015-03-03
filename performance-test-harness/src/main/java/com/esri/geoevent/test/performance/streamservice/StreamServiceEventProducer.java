@@ -96,6 +96,7 @@ public class StreamServiceEventProducer extends ProducerBase
 				for (ConnectionHandler conn : connections)
 					conn.getConnection().sendMessage(message);
 				successfulEvents.incrementAndGet();
+				successfulEventBytes.addAndGet(message.getBytes().length);
 				if (running.get() == false)
 					break;
 			}

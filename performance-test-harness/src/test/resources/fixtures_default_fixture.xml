@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <Fixtures>
 	<Report type="CSV">
-		<ReportFile>reports\Multiple.csv</ReportFile>
+		<ReportFile>reports\default.csv</ReportFile>
 	</Report>
 	
 	<DefaultFixture>
 		
 		<!-- SHARED CONFIGURATION -->
-		<DefaultSharedConfig host="ricardot" protocol="TCP" isLocal="true">
+		<DefaultSharedConfig host="rtrujillo" protocol="TCP" isLocal="true">
 			<Properties>
 				<Property name="host">rtrujillo</Property>
 				<Property name="eventsPerSec">1000</Property>

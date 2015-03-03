@@ -9,7 +9,7 @@
 		<!-- SHARED CONFIGURATION -->
 		<DefaultSharedConfig protocol="TCP">
 			<Properties>
-				<Property name="host">ricardot</Property>
+				<Property name="host">rtrujillo</Property>
 			</Properties>
 		</DefaultSharedConfig>
 		<ProducerConfig commandPort="5010">

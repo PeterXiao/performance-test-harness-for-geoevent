@@ -17,6 +17,7 @@ public enum RequestType
 	SET_NUMBER_OF_EVENTS, 
 	SET_NUMBER_OF_EXPECTED_RESULTS, 
 	GET_SUCCESSFUL_EVENTS,
+	GET_SUCCESSFUL_EVENT_BYTES,
 	UNKNOWN;
 	
 	public static RequestType fromValue(String valueStr)
@@ -51,6 +52,8 @@ public enum RequestType
 			return SET_NUMBER_OF_EXPECTED_RESULTS;
 		else if( GET_SUCCESSFUL_EVENTS.toString().equalsIgnoreCase(valueStr))
 			return GET_SUCCESSFUL_EVENTS;
+		else if( GET_SUCCESSFUL_EVENT_BYTES.toString().equalsIgnoreCase(valueStr))
+			return GET_SUCCESSFUL_EVENT_BYTES;
 		else 
 			return UNKNOWN;
 	}

@@ -102,7 +102,7 @@ public abstract class ProducerBase extends PerformanceCollectorBase implements P
 				timeStamps.put(timeStamps.size(), timeStamp);
 			}
 			running.set(false);
-			long totalTime = (timeStamp[1] - timeStamp[0]) / 1000;
+			double totalTime = (timeStamp[1] - timeStamp[0]) / 1000;
 			if( testType == TestType.TIME )
 				System.out.println( Messages.getMessage("PRODUCER_TIMED_FINISH_MSG", successfulEvents.get(), String.valueOf(totalTime), String.valueOf(((double) numberOfEvents / (double) totalTime))) );
 			else
@@ -112,7 +112,7 @@ public abstract class ProducerBase extends PerformanceCollectorBase implements P
 				runningStateListener.onStateChange(new RunningState(RunningStateType.STOPPED));
 		}
 	}
-
+	
 	@Override
 	public void destroy()
 	{
