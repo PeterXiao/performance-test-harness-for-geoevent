@@ -61,8 +61,8 @@ public class ThroughputPerformanceTestHarness implements TestHarness, RunningSta
 		this.minEventsPerIteration = fixture.getSimulation().getMinEvents();
 		this.maxEventsPerIteration = fixture.getSimulation().getMaxEvents();
 		this.eventsPerIterationStep = fixture.getSimulation().getEventsToAddPerIteration();
-		this.producerConnections = fixture.getProducerConfig().getNumOfConnections();
-		this.consumerConnections = fixture.getConsumerConfig().getNumOfConnections();
+		this.producerConnections = Math.max(fixture.getProducerConfig().getNumOfConnections(), 1);
+		this.consumerConnections = Math.max(fixture.getConsumerConfig().getNumOfConnections(), 1);
 		this.expectedResultCountPerIteration = fixture.getSimulation().getExpectedResultCount();
 		this.eventsPerIteration = this.minEventsPerIteration;
 		this.expectedResultCount = this.expectedResultCountPerIteration;
@@ -238,7 +238,8 @@ public class ThroughputPerformanceTestHarness implements TestHarness, RunningSta
 		
 		if (producerTimestamps.size() == numberOfIterations && consumerTimestamps.size() == numberOfIterations)
 		{
-			createStatistics(eventProducer.getSuccessfulEvents(), eventConsumer.getSuccessfulEvents(), producerTimestamps, consumerTimestamps, expectedResultCount);
+			long bytesConsumed = eventConsumer.getSuccessfulEventBytes();
+			createStatistics(eventProducer.getSuccessfulEvents(), eventConsumer.getSuccessfulEvents(), producerTimestamps, consumerTimestamps, expectedResultCount, bytesConsumed);
 			eventProducer.reset();
 			eventConsumer.reset();
 			
@@ -275,7 +276,7 @@ public class ThroughputPerformanceTestHarness implements TestHarness, RunningSta
 		}
 	}
 	
-	private void createStatistics(long totalEvents, long successes, Map<Integer, Long[]> producerDiagnostics, Map<Integer, Long[]> consumerDiagnostics, int expectedResultCount)
+	private void createStatistics(long totalEvents, long successes, Map<Integer, Long[]> producerDiagnostics, Map<Integer, Long[]> consumerDiagnostics, int expectedResultCount, long bytesConsumed)
 	{
 		System.out.print( Messages.getMessage("TEST_HARNESS_REPORT_STATS_MSG") );
 		int size = producerDiagnostics.size();
@@ -318,6 +319,9 @@ public class ThroughputPerformanceTestHarness implements TestHarness, RunningSta
 				fixtureStat.addStat("producerConnections", producerConnections);
 				fixtureStat.addStat("consumerConnections", consumerConnections);
 
+				fixtureStat.addStat("totalBytesConsumed", bytesConsumed);
+				fixtureStat.addStat("avgBytesConsumedPerMessage", new Long(bytesConsumed).doubleValue() / ( new Long(successes).doubleValue() / new Integer(numberOfIterations).doubleValue() ) );
+				
 				Statistics prodTimesStats = new Statistics(productionTimes);
 				fixtureStat.addStat("minProductionTime", prodTimesStats.getMinimum());
 				fixtureStat.addStat("maxProductionTime", prodTimesStats.getMaximum());
@@ -339,17 +343,6 @@ public class ThroughputPerformanceTestHarness implements TestHarness, RunningSta
 				fixtureStat.addStat("medTotalTime", totalTimesStats.getMedian());
 				fixtureStat.addStat("devTotalTime", totalTimesStats.getStdDev());
 
-				double minEventsPerSec = ((double) (actualTotalEvents - failures) / (double) totalTimesStats.getMinimum()) * 1000.0d;
-				fixtureStat.addStat("minEventsPerSec", minEventsPerSec);
-				double maxEventsPerSec = ((double) (actualTotalEvents - failures) / (double) totalTimesStats.getMaximum()) * 1000.0d;
-				fixtureStat.addStat("maxEventsPerSec", maxEventsPerSec);
-				double avgEventsPerSec = ((double) (actualTotalEvents - failures) / totalTimesStats.getMean()) * 1000.0d;
-				fixtureStat.addStat("avgEventsPerSec", avgEventsPerSec);
-				if (eventsPerSec > 0)
-				{
-					fixtureStat.addStat("Rate", eventsPerSec);
-					fixtureStat.addStat("%", avgEventsPerSec / (double) eventsPerSec);
-				}
 				Statistics firstReceivedLatenciesStats = new Statistics(firstReceivedLatencies);
 				fixtureStat.addStat("minFirstReceivedLatency", firstReceivedLatenciesStats.getMinimum());
 				fixtureStat.addStat("maxFirstReceivedLatency", firstReceivedLatenciesStats.getMaximum());
@@ -364,6 +357,23 @@ public class ThroughputPerformanceTestHarness implements TestHarness, RunningSta
 				fixtureStat.addStat("medLastReceivedLatency", lastReceivedLatenciesStats.getMedian());
 				fixtureStat.addStat("devLastReceivedLatency", lastReceivedLatenciesStats.getStdDev());
 
+				double latency = Math.max( firstReceivedLatenciesStats.getMinimum(), 0);
+				double minEventsPerSec = ((double) (actualTotalEvents - failures) / ((double) totalTimesStats.getMinimum() - latency)) * 1000.0d;
+				fixtureStat.addStat("minEventsPerSec", minEventsPerSec);
+				
+				latency = Math.max( firstReceivedLatenciesStats.getMaximum(), 0);
+				double maxEventsPerSec = ((double) (actualTotalEvents - failures) / ((double) totalTimesStats.getMaximum() - latency)) * 1000.0d;
+				fixtureStat.addStat("maxEventsPerSec", maxEventsPerSec);
+				
+				latency = Math.max( firstReceivedLatenciesStats.getMean(), 0);
+				double avgEventsPerSec = ((double) (actualTotalEvents - failures) / (totalTimesStats.getMean() - latency)) * 1000.0d;
+				fixtureStat.addStat("avgEventsPerSec", avgEventsPerSec);
+				if (eventsPerSec > 0)
+				{
+					fixtureStat.addStat("Rate", eventsPerSec);
+					fixtureStat.addStat("%", avgEventsPerSec / (double) eventsPerSec);
+				}
+				
 				// add the statistics
 				FixturesStatistics.getInstance().addFixtureStatistic(testName, fixtureStat);
 			}

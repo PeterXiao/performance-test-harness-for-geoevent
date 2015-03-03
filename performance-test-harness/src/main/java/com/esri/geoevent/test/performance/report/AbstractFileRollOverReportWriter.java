@@ -82,7 +82,7 @@ public abstract class AbstractFileRollOverReportWriter
 				"medProductionTime", "devProductionTime", "minConsumptionTime", "maxConsumptionTime", "avgConsumptionTime", "medConsumptionTime", "devConsumptionTime", 
 				"minTotalTime", "maxTotalTime", "avgTotalTime", "medTotalTime", "devTotalTime", "minEventsPerSec", "maxEventsPerSec", "avgEventsPerSec", 
 				"minFirstReceivedLatency", "maxFirstReceivedLatency", "avgFirstReceivedLatency", "medFirstReceivedLatency", "devFirstReceivedLatency", 
-				"minLastReceivedLatency", "maxLastReceivedLatency", "avgLastReceivedLatency", "medLastReceivedLatency", "devLastReceivedLatency" 
+				"minLastReceivedLatency", "maxLastReceivedLatency", "avgLastReceivedLatency", "medLastReceivedLatency", "devLastReceivedLatency", "totalBytesConsumed", "avgBytesConsumedPerMessage"
 		};
 		return Arrays.asList(columns);
 	}
@@ -92,7 +92,7 @@ public abstract class AbstractFileRollOverReportWriter
 		String[] columns = new String[] 
 		{
 				"Rate", "totalEvents", "successes", "expectedResultCount", "failures",
-				"avgTotalTime", "avgEventsPerSec", "%"
+				"avgTotalTime", "avgEventsPerSec", "%", "totalBytesConsumed", "avgBytesConsumedPerMessage"
 		};
 		return Arrays.asList(columns);
 	}
