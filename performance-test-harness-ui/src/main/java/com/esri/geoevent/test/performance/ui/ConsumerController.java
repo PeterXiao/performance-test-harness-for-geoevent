@@ -3,6 +3,7 @@ package com.esri.geoevent.test.performance.ui;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
+import java.util.prefs.Preferences;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -23,6 +24,7 @@ public class ConsumerController extends PerformanceCollectorController
 {
 	// statics
 	private static final int DEFAULT_COMMAND_PORT = 5020;
+	private static final int DEFAULT_SERVER_PORT = 5775;
 	
 	// our producer worker
 	private PerformanceCollector consumer;
@@ -35,6 +37,9 @@ public class ConsumerController extends PerformanceCollectorController
 		titleLabel.setText( Mode.Consumer.toString() );
 		protocol.setItems( getProtocolList());
 		port.setText(String.valueOf(DEFAULT_COMMAND_PORT));
+		serverPort.setText(String.valueOf(DEFAULT_SERVER_PORT));
+		
+		loadState();
 	}
 	
 	@Override
@@ -50,7 +55,7 @@ public class ConsumerController extends PerformanceCollectorController
 				consumer = new TcpEventConsumer();
 				break;
 			case TCP_SERVER:
-				int connectionPort = NumberUtils.toInt(serverPort.getText(), 5775);
+				int connectionPort = NumberUtils.toInt(serverPort.getText(), DEFAULT_SERVER_PORT);
 				consumer = new ClusterableTcpEventConsumer(connectionPort);
 			break;
 			case WEBSOCKETS:
@@ -81,6 +86,31 @@ public class ConsumerController extends PerformanceCollectorController
 			consumer.disconnectCommandPort();
 			consumer = null;
 		}
+	}
+	
+	@Override
+	protected void saveState()
+	{
+		Protocol selectedProtocol = protocol.getValue();
+		int portNumber = NumberUtils.toInt(port.getText(), DEFAULT_COMMAND_PORT);
+		int serverPortNumber = NumberUtils.toInt(serverPort.getText(), DEFAULT_SERVER_PORT);
+		
+		Preferences preferences = Preferences.userNodeForPackage(ConsumerController.class);
+		preferences.put("protocol", selectedProtocol.toString());
+		preferences.put("port", String.valueOf(portNumber));
+		preferences.put("serverPort", String.valueOf(serverPortNumber));
+	}
+	
+	protected void loadState()
+	{
+		Preferences preferences = Preferences.userNodeForPackage(ConsumerController.class);
+		Protocol selectedProtocol = Protocol.fromValue(preferences.get("protocol", Protocol.TCP.toString()));
+		int portNumber = NumberUtils.toInt(preferences.get("port", String.valueOf(DEFAULT_COMMAND_PORT)));
+		int serverPortNumber = NumberUtils.toInt(preferences.get("serverPort", String.valueOf(DEFAULT_SERVER_PORT)));
+		
+		protocol.setValue(selectedProtocol);
+		port.setText(String.valueOf(portNumber));
+		serverPort.setText(String.valueOf(serverPortNumber));
 	}
 	
 	private ObservableList<Protocol> getProtocolList()

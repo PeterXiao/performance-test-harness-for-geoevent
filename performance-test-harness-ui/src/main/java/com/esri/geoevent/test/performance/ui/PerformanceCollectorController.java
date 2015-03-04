@@ -7,6 +7,8 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -67,9 +69,35 @@ public abstract class PerformanceCollectorController implements Initializable
 		protocol.setValue( Protocol.TCP );
 		serverPort.setPromptText( UIMessages.getMessage("UI_SERVER_PORT_PROMPT") );
 		serverPort.setTooltip( new Tooltip(UIMessages.getMessage("UI_SERVER_PORT_DESC")) );
+		// add a focus out event to save the state
+		serverPort.focusedProperty().addListener(new ChangeListener<Boolean>()
+			{
+				@Override
+				public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue)
+				{
+					// if we focused out
+					if( ! newValue )
+					{
+						saveState();
+					}
+				}
+			});
 		portLabel.setText( UIMessages.getMessage("UI_PORT_LABEL") );
 		port.setPromptText( UIMessages.getMessage("UI_PORT_PROMPT") );
 		port.setTooltip( new Tooltip(UIMessages.getMessage("UI_PORT_DESC")) );
+		// add a focus out event to save the state
+		port.focusedProperty().addListener(new ChangeListener<Boolean>()
+				{
+					@Override
+					public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue)
+					{
+						// if we focused out
+						if( ! newValue )
+						{
+							saveState();
+						}
+					}
+				});
 		loggerBox.setTitle( UIMessages.getMessage("UI_LOGGER_BOX_LABEL") );
 		copyBtn.setText( UIMessages.getMessage("UI_COPY_BUTTON_LABEL") );
 		copyBtn.setTooltip( new Tooltip(UIMessages.getMessage("UI_COPY_BUTTON_DESC")) );
@@ -95,6 +123,7 @@ public abstract class PerformanceCollectorController implements Initializable
 			port.setDisable(true);
 			serverPort.setDisable(true);
 			start();
+			saveState();
 		}
 		// else we are stopped
 		else
@@ -121,6 +150,7 @@ public abstract class PerformanceCollectorController implements Initializable
 		{
 			serverPort.setVisible(false);
 		}
+		saveState();
 	}
 	
 	@FXML
@@ -136,6 +166,12 @@ public abstract class PerformanceCollectorController implements Initializable
     final ClipboardContent content = new ClipboardContent();
     content.putString( logger.getText() );
     clipboard.setContent(content);
+	}
+	
+	@FXML
+	public void saveState(ActionEvent event)
+	{
+		saveState();
 	}
 	
 	private void redirectSystemOutAndErrToTextArea()
@@ -159,4 +195,8 @@ public abstract class PerformanceCollectorController implements Initializable
 	protected abstract void start();
 	
 	protected abstract void stop();
+	
+	protected abstract void saveState();
+	
+	protected abstract void loadState();
 }
