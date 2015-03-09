@@ -148,7 +148,7 @@
 						<manifest>
 							<addClasspath>true</addClasspath>
 							<classpathPrefix>lib/</classpathPrefix>
-							<mainClass>com.esri.ges.test.performance.TestHarnessExecutor</mainClass>
+							<mainClass>com.esri.geoevent.test.performance.TestHarnessExecutor</mainClass>
 						</manifest>
 						<manifestEntries>
 							<Class-Path>config/ lib/</Class-Path>
