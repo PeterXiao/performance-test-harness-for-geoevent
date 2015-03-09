@@ -80,8 +80,6 @@ public abstract class AbstractConfig implements Config, Appliable<AbstractConfig
 		if( config == null)
 			return;
 		
-		if( getCommandPort() == DEFAULT_COMMAND_PORT )
-			setCommandPort( config.getCommandPort() );
 		if( getHost() == DEFAULT_HOST )
 			setHost( config.getHost() );
 		if( getProtocol() == DEFAULT_PROTOCOL )

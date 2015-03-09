@@ -17,9 +17,15 @@ public class ConsumerConfig extends AbstractConfig
 {
 	protected final int DEFAULT_TIMEOUT_IN_SEC = 10;
 	protected final int DEFAULT_NUM_OF_CONNECTIONS = 1;
-	
+	protected final int DEFAULT_COMMAND_PORT = 5020;
+
 	private List<RemoteHost> consumers = new ArrayList<RemoteHost>();
 	private long timeoutInSec = DEFAULT_TIMEOUT_IN_SEC;
+
+	public ConsumerConfig()
+	{
+		setCommandPort(DEFAULT_COMMAND_PORT);
+	}
 	
 	@XmlElementWrapper(name = "Consumers", required=false)
 	@XmlElement(name = "Consumer", required=false)
@@ -42,7 +48,7 @@ public class ConsumerConfig extends AbstractConfig
 	{
 		this.timeoutInSec = timeoutInSec;
 	}
-	
+
 	@XmlTransient
 	public int getNumOfConnections()
 	{
@@ -61,6 +67,8 @@ public class ConsumerConfig extends AbstractConfig
 			ConsumerConfig consumerConfig = (ConsumerConfig) config;
 			if( getTimeoutInSec() == DEFAULT_TIMEOUT_IN_SEC )
 				setTimeoutInSec( consumerConfig.getTimeoutInSec() );
+			if( getCommandPort() == DEFAULT_COMMAND_PORT )
+				setCommandPort( config.getCommandPort() );
 			
 			if( consumerConfig.getConsumers() != null && ! consumerConfig.getConsumers().isEmpty() )
 			{

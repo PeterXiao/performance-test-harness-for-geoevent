@@ -15,9 +15,15 @@ import org.apache.commons.lang3.StringUtils;
 public class ProducerConfig extends AbstractConfig
 {
 	protected final int DEFAULT_NUM_OF_CONNECTIONS = 1;	
-	
-	private List<RemoteHost> producers = new ArrayList<RemoteHost>();
+	protected final int DEFAULT_COMMAND_PORT = 5010;
 
+	private List<RemoteHost> producers = new ArrayList<RemoteHost>();
+	
+	public ProducerConfig()
+	{
+		setCommandPort(DEFAULT_COMMAND_PORT);
+	}
+	
 	@XmlElementWrapper(name = "Producers", required=false)
 	@XmlElement(name = "Producer", required=false)
 	public List<RemoteHost> getProducers()
@@ -27,7 +33,7 @@ public class ProducerConfig extends AbstractConfig
 	public void setProducers(List<RemoteHost> producers)
 	{
 		this.producers = producers;
-	}
+	}	
 	
 	@XmlTransient
 	public int getNumOfConnections()
@@ -51,6 +57,8 @@ public class ProducerConfig extends AbstractConfig
 		if( config instanceof ProducerConfig )
 		{
 			ProducerConfig producerConfig = (ProducerConfig) config;
+			if( getCommandPort() == DEFAULT_COMMAND_PORT )
+				setCommandPort( config.getCommandPort() );
 			if( producerConfig.getProducers() != null && ! producerConfig.getProducers().isEmpty() )
 			{
 				if( getProducers().isEmpty() )
