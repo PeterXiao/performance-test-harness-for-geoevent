@@ -1,6 +1,7 @@
 package com.esri.geoevent.test.performance;
 
 import java.io.IOException;
+import java.net.BindException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
@@ -53,10 +54,17 @@ public class ClockSync implements Runnable
 				}
 			}
 		}
+		catch (BindException e)
+		{
+			// port is in use - increment and try again
+			port++;
+			this.run();
+		}
 		catch (SocketException e)
 		{
 			e.printStackTrace();
-		} catch (IOException e)
+		}
+		catch (IOException e)
 		{
 			e.printStackTrace();
 		}
