@@ -11,8 +11,6 @@
 		<DefaultSharedConfig protocol="TCP">
 			<Properties>
 				<Property name="hosts">rtrujillo</Property>
-				<Property name="eventsPerSec">1000</Property>
-				<Property name="staggeringInterval">10</Property>
 			</Properties>
 		</DefaultSharedConfig>
 		

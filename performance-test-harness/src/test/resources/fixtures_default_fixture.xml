@@ -9,15 +9,12 @@
 		<DefaultSharedConfig host="rtrujillo" protocol="TCP" isLocal="true">
 			<Properties>
 				<Property name="hosts">rtrujillo</Property>
-				<Property name="eventsPerSec">1000</Property>
-				<Property name="staggeringInterval">10</Property>
 			</Properties>
 		</DefaultSharedConfig>
 		
 		<ProducerConfig protocol="TCP" commandPort="5010" isLocal="true">
 			<Properties>
 				<Property name="simulationFile">C:\Testing\performance-test-10.3.0\simulations\county_envelopes_1000_points.csv</Property>
-				<Property name="hosts">rtrujillo</Property>
 				<Property name="port">5565</Property>
 			</Properties>
 			<Producers>
@@ -27,7 +24,6 @@
 		
 		<ConsumerConfig protocol="TCP" commandPort="5020" isLocal="true" timeoutInSec="5">
 			<Properties>
-				<Property name="hosts">rtrujillo</Property>
 				<Property name="port">5565</Property>
 			</Properties>
 			<Consumers>
