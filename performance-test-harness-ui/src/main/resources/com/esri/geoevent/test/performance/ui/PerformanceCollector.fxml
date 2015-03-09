@@ -29,14 +29,14 @@
 		<ColumnConstraints hgrow="SOMETIMES" minWidth="580" percentWidth="100" halignment="CENTER"/>
 	</columnConstraints>
 	<rowConstraints>
-		<RowConstraints minHeight="10" valignment="CENTER" percentHeight="2" />
+		<RowConstraints minHeight="10" valignment="CENTER" percentHeight="3" />
 		<RowConstraints minHeight="40" valignment="CENTER" percentHeight="22" />
-		<RowConstraints vgrow="SOMETIMES" minHeight="200" percentHeight="76" valignment="CENTER" />
+		<RowConstraints vgrow="SOMETIMES" minHeight="200" percentHeight="75" valignment="CENTER" />
 	</rowConstraints>
    	<children>
    		<Label fx:id="titleLabel" maxHeight="10" styleClass="title" GridPane.halignment="LEFT" GridPane.columnIndex="0" GridPane.rowIndex="0">
    			<GridPane.margin>
-               <Insets bottom="0.0" left="0.0" right="0.0" top="0.0" />
+               <Insets bottom="0.0" left="4.0" right="0.0" top="4.0" />
           	</GridPane.margin>
    		</Label>
 	   	<TitledBorder fx:id="commandListenerBox" styleClass="modeBox" GridPane.columnIndex="0" GridPane.rowIndex="1">

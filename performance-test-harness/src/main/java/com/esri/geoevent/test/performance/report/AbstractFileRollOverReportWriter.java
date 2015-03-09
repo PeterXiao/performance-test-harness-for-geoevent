@@ -2,17 +2,36 @@ package com.esri.geoevent.test.performance.report;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 
-public abstract class AbstractFileRollOverReportWriter
+public abstract class AbstractFileRollOverReportWriter implements ReportWriter
 {
 	private int	maxNumberOfReportFiles	= 10;
 	private long totalTestingTime = -1;
+	
+	@Override
+	public List<String> getReportColumnNames(List<String> reportColumns, List<String> additionalReportColumns)
+	{
+		List<String> columns = getDefaultColumnNames();
+		if( reportColumns != null && reportColumns.size() > 0)
+			columns = reportColumns;
+		
+		if( additionalReportColumns != null && additionalReportColumns.size() > 0 )
+		{
+			HashSet<String> uniqueColumns = new HashSet<String>(columns);
+			uniqueColumns.addAll(additionalReportColumns);
+			columns = new ArrayList<String>(uniqueColumns);
+		}
+		
+		return columns;
+	}
 	
 	protected void rollOver(String fileName)
 	{
@@ -74,7 +93,7 @@ public abstract class AbstractFileRollOverReportWriter
 			return String.format("%02d:%02d.%03d", min, sec, ms);
 	}
 	
-	public List<String> getDetailedColumnNames()
+	protected List<String> getAllColumnNames()
 	{
 		String[] columns = new String[] 
 		{
@@ -87,7 +106,7 @@ public abstract class AbstractFileRollOverReportWriter
 		return Arrays.asList(columns);
 	}
 	
-	public List<String> getSimpleColumnNames()
+	protected List<String> getDefaultColumnNames()
 	{
 		String[] columns = new String[] 
 		{

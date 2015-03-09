@@ -13,7 +13,7 @@ import au.com.bytecode.opencsv.CSVWriter;
 
 import com.esri.geoevent.test.performance.statistics.FixtureStatistic;
 
-public class CSVReportWriter extends AbstractFileRollOverReportWriter implements ReportWriter
+public class CSVReportWriter extends AbstractFileRollOverReportWriter
 {
 	@Override
 	public void writeReport(String reportFile, List<String> testNames, List<String> columnNames, Map<String, List<FixtureStatistic>> stats) throws IOException

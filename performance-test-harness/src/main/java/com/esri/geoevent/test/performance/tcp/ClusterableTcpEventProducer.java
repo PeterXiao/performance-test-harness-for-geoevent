@@ -60,7 +60,7 @@ public class ClusterableTcpEventProducer extends PerformanceCollectorBase
 			String path = config.getPropertyValue("simulationFile", "");
 			loadEvents(new File(path));
 
-			host = config.getPropertyValue("host", "localhost");
+			host = config.getPropertyValue("hosts", "localhost");
 			// do we have a list of hosts
 			if (host.indexOf(",") != -1)
 			{

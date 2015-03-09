@@ -64,8 +64,11 @@ public class FixturesMarshallingTest
 		Assert.assertNotNull(fixtures.getReport().getType());
 		Assert.assertTrue(fixtures.getReport().getType() != ReportType.UNKNOWN);
 		Assert.assertTrue(fixtures.getReport().getMaxNumberOfReportFiles() > 0);
-		Assert.assertTrue(fixtures.getReport().isSimpleColumnNames());
-
+		Assert.assertNotNull(fixtures.getReport().getReportColumns());
+		Assert.assertTrue(fixtures.getReport().getReportColumns().size() > 0 );
+		Assert.assertNotNull(fixtures.getReport().getAdditionalReportColumns());
+		Assert.assertTrue(fixtures.getReport().getAdditionalReportColumns().size() > 0 );
+		
 		// check the default fixture object
 		sanityCheckFixture(fixtures.getDefaultFixture());
 		Assert.assertNull(fixtures.getDefaultFixture().getName());
@@ -95,7 +98,7 @@ public class FixturesMarshallingTest
 
 		// check the simulation
 		Assert.assertNotNull(fixtures.getFixtures().get(1).getSimulation());
-		Assert.assertTrue(fixtures.getFixtures().get(1).getSimulation().getEventsToAddPerIteration() > 0);
+		Assert.assertTrue(fixtures.getFixtures().get(1).getSimulation().getEventsToAddPerIteration() == 0);
 		Assert.assertTrue(fixtures.getFixtures().get(1).getSimulation().getExpectedResultCount() > 0);
 		Assert.assertTrue(fixtures.getFixtures().get(1).getSimulation().getMaxEvents() > 0);
 		Assert.assertTrue(fixtures.getFixtures().get(1).getSimulation().getMinEvents() > 0);
@@ -124,8 +127,11 @@ public class FixturesMarshallingTest
 		Assert.assertNotNull(fixtures.getReport().getType());
 		Assert.assertTrue(fixtures.getReport().getType() != ReportType.UNKNOWN);
 		Assert.assertTrue(fixtures.getReport().getMaxNumberOfReportFiles() > 0);
-		Assert.assertTrue(fixtures.getReport().isSimpleColumnNames());
-
+		Assert.assertNotNull(fixtures.getReport().getReportColumns());
+		Assert.assertTrue(fixtures.getReport().getReportColumns().size() > 0 );
+		Assert.assertNotNull(fixtures.getReport().getAdditionalReportColumns());
+		Assert.assertTrue(fixtures.getReport().getAdditionalReportColumns().size() > 0 );
+		
 		// check the default fixture object
 		sanityCheckFixture(fixtures.getDefaultFixture());
 		Assert.assertNull(fixtures.getDefaultFixture().getName());
@@ -238,8 +244,8 @@ public class FixturesMarshallingTest
 		Assert.assertNotNull(fixture.getConsumerConfig().getProperties().get(0));
 		Assert.assertNotNull(fixture.getConsumerConfig().getProperties().get(0).getName());
 		Assert.assertNotNull(fixture.getConsumerConfig().getProperties().get(0).getValue());
-		Assert.assertNotNull(fixture.getConsumerConfig().getPropertyByName("host"));
-		Assert.assertNotNull(fixture.getConsumerConfig().getPropertyByName("host").getValue());
+		Assert.assertNotNull(fixture.getConsumerConfig().getPropertyByName("hosts"));
+		Assert.assertNotNull(fixture.getConsumerConfig().getPropertyByName("hosts").getValue());
 
 		// check the consumers
 		Assert.assertNotNull(fixture.getConsumerConfig().getConsumers());
@@ -254,7 +260,7 @@ public class FixturesMarshallingTest
 
 		// check the simulation
 		Assert.assertNotNull(fixture.getSimulation());
-		Assert.assertTrue(fixture.getSimulation().getEventsToAddPerIteration() > 0);
+		Assert.assertTrue(fixture.getSimulation().getEventsToAddPerIteration() == 0);
 		Assert.assertTrue(fixture.getSimulation().getExpectedResultCount() > 0);
 		Assert.assertTrue(fixture.getSimulation().getMaxEvents() > 0);
 		Assert.assertTrue(fixture.getSimulation().getMinEvents() > 0);

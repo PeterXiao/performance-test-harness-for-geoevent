@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <Fixtures>
 	
-	<Report type="CSV" simpleColumnNames="true">
+	<Report type="CSV">
 		<ReportFile>target/reports/ramp_test_tcp.csv</ReportFile>
 	</Report>
 	
@@ -9,7 +9,7 @@
 		<!-- SHARED CONFIGURATION -->
 		<DefaultSharedConfig protocol="TCP">
 			<Properties>
-				<Property name="host">rtrujillo</Property>
+				<Property name="hosts">rtrujillo</Property>
 			</Properties>
 		</DefaultSharedConfig>
 		<ProducerConfig commandPort="5010">

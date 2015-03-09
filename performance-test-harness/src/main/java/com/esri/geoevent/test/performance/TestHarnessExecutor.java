@@ -368,7 +368,7 @@ public class TestHarnessExecutor
 		//write the report			
 		try
 		{
-			List<String> columnNames = (fixtures.getReport().isSimpleColumnNames()) ? reportWriter.getSimpleColumnNames() : reportWriter.getDetailedColumnNames();
+			List<String> columnNames = reportWriter.getReportColumnNames(fixtures.getReport().getReportColumns(),  fixtures.getReport().getAdditionalReportColumns());
 			reportWriter.setMaxNumberOfReportFiles(fixtures.getReport().getMaxNumberOfReportFiles());
 			reportWriter.setTotalTestingTime(totalTestingTime);
 			reportWriter.writeReport(fixtures.getReport().getReportFile(), testNames, columnNames, FixturesStatistics.getInstance().getStats());

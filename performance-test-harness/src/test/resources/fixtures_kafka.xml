@@ -1,14 +1,43 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <Fixtures>
-	<Report type="XLSX" simpleColumnNames="true">
-		<ReportFile>C:\temp\kafka-Baseline.xlsx</ReportFile>
+	<Report type="XLSX">
+		<ReportFile>target/reports/kafka.xlsx</ReportFile>
 	</Report>
-	<Fixture name="kafka" protocol="KAFKA" commandPort="5010" isLocal="true">
-		<KafkaHost topic="test_cluster_part3" acks="1">mingz14:9092,ge7-2012r2:9092,ge8-2012r2:9092</KafkaHost>
-		<GeoEventHost producerPort="5565" consumerPort="5575">localhost</GeoEventHost>
-		<Simulation consumerTimeOutInSec="10">
-			<SourceFile>C:\performance-test-10.3.0\simulations\county_envelopes_3000_points.csv</SourceFile>
-			<TimeTest eventsPerSec="80000" totalTimeInSec="20" staggeringInterval="10" />
+	
+	<DefaultFixture>
+		<DefaultSharedConfig protocol="KAFKA">
+			<Properties>
+				<Property name="topic">test_cluster_part3</Property>
+				<Property name="acks">1</Property>
+				<Property name="brokerList">mingz14:9092,ge7-2012r2:9092,ge8-2012r2:9092</Property>
+			</Properties>
+		</DefaultSharedConfig>
+		<ProducerConfig commandPort="5010">
+			<Properties>
+				<Property name="simulationFile">src/test/resources/simulations/county_envelopes_1000_points.csv</Property>
+			</Properties>
+		</ProducerConfig>
+		<ConsumerConfig protocol="TCP_SERVER" commandPort="5020" timeoutInSec="5">
+			<Properties>
+				<Property name="port">5575</Property>
+			</Properties>
+		</ConsumerConfig>
+		<Simulation>
+			<TimeTest eventsPerSec="1000" totalTimeInSec="20" staggeringInterval="10" />
+		</Simulation>
+	</DefaultFixture>
+	
+	<Fixture name="1000 e/s" />
+	
+	<Fixture name="2000 e/s">
+		<Simulation>
+			<TimeTest eventsPerSec="2000"/>
+		</Simulation>
+	</Fixture>
+	
+	<Fixture name="3000 e/s">
+		<Simulation>
+			<TimeTest eventsPerSec="3000"/>
 		</Simulation>
 	</Fixture>
 </Fixtures>

@@ -24,7 +24,7 @@ public class TcpEventConsumer extends ConsumerBase
 		{
 			super.init(config);
 			
-			host = config.getPropertyValue("host", "localhost");
+			host = config.getPropertyValue("hosts", "localhost");
 			//if we have list, then grab the first one
 			if( host.indexOf(",") != -1 )
 			{

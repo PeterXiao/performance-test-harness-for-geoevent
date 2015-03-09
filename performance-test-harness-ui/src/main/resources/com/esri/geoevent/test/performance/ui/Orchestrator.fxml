@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
+<?import com.esri.geoevent.test.performance.ui.controls.*?>
+
+<?scenebuilder-stylesheet default.css?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.cell.PropertyValueFactory?>
+<?import javafx.scene.layout.VBox?>
+<?import jfxtras.labs.scene.control.BigDecimalField?>
+
+<GridPane 
+	xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" 
+	fx:controller="com.esri.geoevent.test.performance.ui.OrchestratorController"
+	prefHeight="660" prefWidth="660" 
+	stylesheets="@default.css" 
+	hgap="10"
+	vgap="4">
+   <columnConstraints>
+		<ColumnConstraints hgrow="SOMETIMES" minWidth="580" percentWidth="100" halignment="CENTER"/>
+	</columnConstraints>
+	<rowConstraints>
+		<RowConstraints minHeight="10" valignment="CENTER" percentHeight="3" />
+		<RowConstraints minHeight="10" valignment="CENTER" percentHeight="3" />
+		<RowConstraints minHeight="40" valignment="CENTER" percentHeight="34" />
+		<RowConstraints vgrow="SOMETIMES" percentHeight="60" valignment="CENTER" />
+	</rowConstraints>
+   	<children>
+   		<MenuBar fx:id="menuBar" onKeyPressed="#handleKeyInput" styleClass="buttons" GridPane.columnIndex="0" GridPane.rowIndex="0">
+   			<Menu fx:id="fileMenu" >
+	            <items>
+	               <MenuItem fx:id="fileOpenMenuItem" styleClass="buttons"/>
+	               <MenuItem fx:id="fileSaveMenuItem" styleClass="buttons"/>
+	            </items>
+         	</Menu>
+         	<Menu fx:id="optionsMenu">
+         		<items>
+         			<MenuItem fx:id="optionsReportMenuItem" styleClass="buttons"/>
+         		</items>
+         	</Menu>
+         	<Menu fx:id="helpMenu" >
+	            <items>
+	               <MenuItem fx:id="helpAboutMenuItem" styleClass="buttons" onAction="#handleAboutAction"/>
+	            </items>
+         	</Menu>
+   		</MenuBar>
+   		<Label fx:id="titleLabel" styleClass="title" GridPane.halignment="LEFT" GridPane.columnIndex="0" GridPane.rowIndex="1">
+   			<GridPane.margin>
+               <Insets bottom="0.0" left="4.0" right="0.0" top="4.0" />
+          	</GridPane.margin>
+   		</Label>
+	   	<VBox fx:id="collectorBox" styleClass="modeBox" GridPane.columnIndex="0" GridPane.rowIndex="2">
+			<GridPane alignment="CENTER" hgap="6" vgap="4" styleClass="box">
+		    	<columnConstraints>
+		        	<ColumnConstraints hgrow="SOMETIMES" minWidth="200" percentWidth="50" halignment="CENTER"/>
+		          	<ColumnConstraints hgrow="SOMETIMES" minWidth="200" percentWidth="50" halignment="CENTER"/>
+		         </columnConstraints>
+		         <children>
+		         	<Label fx:id="producersLabel" styleClass="labels" GridPane.columnIndex="0" GridPane.rowIndex="0" GridPane.halignment="LEFT"/>
+		         	<TableView fx:id="producersTable" styleClass="tables" GridPane.columnIndex="0" GridPane.rowIndex="1">
+  						<columns>
+    						<TableColumn fx:id="producersNameColumn">
+						    	<cellValueFactory>
+						        	<PropertyValueFactory property="label"/>
+						    	</cellValueFactory>
+						    	<cellFactory>
+						    	</cellFactory>
+							</TableColumn>
+							<TableColumn fx:id="producersConnectedColumn" sortable="false">
+						    	<cellValueFactory>
+						    		<PropertyValueFactory  property="connected"/>
+						    	</cellValueFactory>
+							</TableColumn>
+						</columns>
+					</TableView>
+		         	<HBox spacing="4" GridPane.columnIndex="0" GridPane.rowIndex="2" GridPane.halignment="LEFT">
+						<TextField fx:id="producerHostName" />
+						<RestrictiveTextField fx:id="producerPort" restrict="[0-9]" maxLength="10" prefWidth="70"/>
+						<Button fx:id="producerAddBtn" onAction="#addProducer">
+							<graphic>
+								<ImageView>
+									<Image url="@images/error.png"/>
+								</ImageView>
+							</graphic>
+						</Button>
+					</HBox>
+					
+		           	<Label fx:id="consumersLabel" styleClass="labels" GridPane.columnIndex="1" GridPane.rowIndex="0" GridPane.halignment="LEFT"/>
+		           	<TableView fx:id="consumersTable" styleClass="tables" GridPane.columnIndex="1" GridPane.rowIndex="1">
+  						<columns>
+    						<TableColumn fx:id="consumersNameColumn">
+						    	<cellValueFactory>
+						        	<PropertyValueFactory property="label" />
+						    	</cellValueFactory>
+							</TableColumn>
+							<TableColumn fx:id="consumersConnectedColumn">
+						    	<cellValueFactory>
+						    		<PropertyValueFactory  property="connected"/>
+						    	</cellValueFactory>
+							</TableColumn>
+						</columns>
+					</TableView>
+					<HBox spacing="4" GridPane.columnIndex="1" GridPane.rowIndex="2" GridPane.halignment="LEFT">
+						<TextField fx:id="consumerHostName" />
+						<RestrictiveTextField fx:id="consumerPort" restrict="[0-9]" maxLength="10" prefWidth="70"/>
+						<Button fx:id="consumerAddBtn" onAction="#addConsumer">
+							<graphic>
+								<ImageView>
+									<Image url="@images/error.png"/>
+								</ImageView>
+							</graphic>
+						</Button>
+					</HBox>
+		          </children>
+			</GridPane>
+			<GridPane.margin>
+               <Insets bottom="0.0" left="0.0" right="0.0" top="0.0" />
+          	</GridPane.margin>
+	    </VBox>
+	    <VBox fx:id="simulationBox" styleClass="modeBox" GridPane.columnIndex="0" GridPane.rowIndex="3">
+	    	<GridPane alignment="CENTER" hgap="4" vgap="4" styleClass="box">
+         		<columnConstraints>
+            		<ColumnConstraints percentWidth="10" halignment="CENTER"/>
+            		<ColumnConstraints percentWidth="90" halignment="CENTER" hgrow="SOMETIMES" />
+            	</columnConstraints>
+            	<children>
+            		<Label fx:id="testTypeLabel" styleClass="labels" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+		         	<ComboBox fx:id="testType" styleClass="buttons" prefWidth="200" onAction="#toggleTestType" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+		         	
+		         	<HBox fx:id="timeTestGroup" styleClass="box" GridPane.columnIndex="1" GridPane.rowIndex="1" visible="false">	
+		          		<BigDecimalField fx:id="eventsPerSec" styleClass="buttons" minValue="1" maxValue="999999" number="1000"/>
+		          		<BigDecimalField fx:id="totalTimeInSec" styleClass="buttons" minValue="1" maxValue="86400" number="20"/>
+		          		<BigDecimalField fx:id="expectedResultCountPerSec" styleClass="buttons" minValue="1" maxValue="999999" />
+		          		<BigDecimalField fx:id="staggeringInterval" styleClass="buttons" minValue="1" maxValue="1000" number="10"/>
+		          	</HBox>
+		          	
+		          	<HBox fx:id="stressTestGroup" styleClass="box" GridPane.columnIndex="1" GridPane.rowIndex="1" visible="false">	
+		          		<BigDecimalField fx:id="numOfEvents" styleClass="buttons" minValue="1" maxValue="999999" number="1000"/>
+		          		<BigDecimalField fx:id="iterations" styleClass="buttons" minValue="1" maxValue="999999" number="10"/>
+		          		<BigDecimalField fx:id="expectedResultCount" styleClass="buttons" minValue="1" maxValue="999999" />
+		          	</HBox>
+		          	
+		          	<HBox fx:id="rampTestGroup" styleClass="box" GridPane.columnIndex="1" GridPane.rowIndex="1" visible="false">	
+		          		<BigDecimalField fx:id="minEvents" styleClass="buttons" minValue="1" maxValue="999999" number="500"/>
+		          		<BigDecimalField fx:id="maxEvents" styleClass="buttons" minValue="1" maxValue="999999" number="1000"/>
+		          		<BigDecimalField fx:id="eventsToAddPerTest" styleClass="buttons" minValue="1" maxValue="999999" number="100"/>
+		          		<BigDecimalField fx:id="expectedResultCountPerTest" styleClass="buttons" minValue="1" maxValue="999999" />
+		          	</HBox>
+            	</children>
+         	</GridPane>
+	    </VBox>
+	</children>	
+</GridPane>

@@ -102,7 +102,7 @@ public class WebsocketEventProducer extends PerformanceCollectorBase
 			}
 
 			loadEvents(new File(config.getPropertyValue("simulationFile", "")));
-			host = config.getPropertyValue("host", "localhost");
+			host = config.getPropertyValue("hosts", "localhost");
 			port = Integer.parseInt(config.getPropertyValue("port", "5570"));
 			connectionCount = Integer.parseInt(config.getPropertyValue("connectionCount", "1"));
 			

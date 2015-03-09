@@ -59,6 +59,7 @@ public class MainApplication extends Application
 				break;
 			case Orchestrator:
 				fxmlFile = "Orchestrator.fxml";
+				//controller = new OrchestratorController();
 				break;
 			default:
 				System.err.print( UIMessages.getMessage("STARTUP_ERROR_MODE_UNKNOWN", mode) + UIMessages.getMessage("STARTUP_MODE_TYPES", Mode.getAllowableValues()) );
@@ -71,7 +72,8 @@ public class MainApplication extends Application
 		try
 		{
 			FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFile));
-			loader.setController(controller);
+			if( controller != null )
+				loader.setController(controller);
 			Parent parent = (Parent) loader.load();
 			Scene scene = new Scene(parent);
 

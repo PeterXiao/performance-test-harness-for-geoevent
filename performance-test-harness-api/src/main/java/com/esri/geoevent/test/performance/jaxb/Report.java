@@ -1,7 +1,10 @@
 package com.esri.geoevent.test.performance.jaxb;
 
+import java.util.List;
+
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlList;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.lang3.ObjectUtils;
@@ -15,8 +18,9 @@ public class Report
 {
 	private ReportType type;
 	private String reportFile;
-	private boolean simpleColumnNames = false;
 	private int maxNumberOfReportFiles = 10;
+	private List<String> reportColumns;
+	private List<String> additionalReportColumns;
 	
 	@XmlAttribute
 	public ReportType getType()
@@ -39,16 +43,6 @@ public class Report
 	{
 		this.reportFile = reportFile;
 	}
-	
-	@XmlAttribute(name = "simpleColumnNames")
-	public boolean isSimpleColumnNames()
-	{
-		return simpleColumnNames;
-	}
-	public void setSimpleColumnNames(boolean simpleColumnNames)
-	{
-		this.simpleColumnNames = simpleColumnNames;
-	}
 
 	@XmlAttribute(name = "maxNumberOfReportFiles")
 	public int getMaxNumberOfReportFiles()
@@ -59,6 +53,30 @@ public class Report
 	public void setMaxNumberOfReportFiles(int maxNumberOfReportFiles)
 	{
 		this.maxNumberOfReportFiles = maxNumberOfReportFiles;
+	}
+	
+	@XmlList
+	@XmlElement(name = "ReportColumns", required=false)
+	public List<String> getReportColumns()
+	{
+		return reportColumns;
+	}
+
+	public void setReportColumns(List<String> reportColumns)
+	{
+		this.reportColumns = reportColumns;
+	}
+
+	@XmlList
+	@XmlElement(name="AdditionalReportColumns", required = false)
+	public List<String> getAdditionalReportColumns()
+	{
+		return additionalReportColumns;
+	}
+
+	public void setAdditionalReportColumns(List<String> additionalReportColumns)
+	{
+		this.additionalReportColumns = additionalReportColumns;
 	}
 	
 	@Override
@@ -73,6 +91,10 @@ public class Report
     if (!ObjectUtils.equals(getReportFile(), report.getReportFile()))
       return false;
     if (!ObjectUtils.equals(getType(), report.getType()))
+      return false;
+    if (!ObjectUtils.equals(getReportColumns(), report.getReportColumns()))
+      return false;
+    if (!ObjectUtils.equals(getAdditionalReportColumns(), report.getAdditionalReportColumns()))
       return false;
     
     return true;

@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <Fixtures>
-	<Report type="CSV" simpleColumnNames="true">
+	<Report type="CSV">
 		<ReportFile>reports\Multiple.csv</ReportFile>
+		<ReportColumns>Rate,totalEvents,successes,expectedResultCount,failures</ReportColumns>
+		<AdditionalReportColumns>totalBytesConsumed,avgBytesConsumedPerMessage</AdditionalReportColumns>
 	</Report>
 	
 	<DefaultFixture>
 		<!-- SHARED CONFIGURATION -->
 		<DefaultSharedConfig protocol="TCP">
 			<Properties>
-				<Property name="host">rtrujillo</Property>
+				<Property name="hosts">rtrujillo</Property>
 				<Property name="eventsPerSec">1000</Property>
 				<Property name="staggeringInterval">10</Property>
 			</Properties>
@@ -17,7 +19,7 @@
 		<ProducerConfig protocol="TCP" commandPort="5010">
 			<Properties>
 				<Property name="simulationFile">C:\Testing\performance-test-10.3.0\simulations\county_envelopes_1000_points.csv</Property>
-				<Property name="host">rtrujillo</Property>
+				<Property name="hosts">rtrujillo</Property>
 				<Property name="port">5565</Property>
 			</Properties>
 			<Producers>
@@ -27,7 +29,7 @@
 		
 		<ConsumerConfig protocol="TCP" commandPort="5020" timeoutInSec="5">
 			<Properties>
-				<Property name="host">rtrujillo</Property>
+				<Property name="hosts">rtrujillo</Property>
 				<Property name="port">5565</Property>
 			</Properties>
 			<Consumers>

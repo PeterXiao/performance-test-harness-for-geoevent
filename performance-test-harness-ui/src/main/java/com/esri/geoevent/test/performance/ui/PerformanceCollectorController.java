@@ -110,7 +110,7 @@ public abstract class PerformanceCollectorController implements Initializable
 	}
 	
 	@FXML
-	public void toggleRunningState(ActionEvent event)
+	public void toggleRunningState(final ActionEvent event)
 	{
 		// if its selected then we are started 
 		if( connectButton.isSelected() )
@@ -140,7 +140,7 @@ public abstract class PerformanceCollectorController implements Initializable
 	}
 	
 	@FXML
-	public void toggleServerPortState(ActionEvent event)
+	public void toggleServerPortState(final ActionEvent event)
 	{
 		if( protocol.getValue() == Protocol.TCP_SERVER )
 		{
@@ -154,13 +154,13 @@ public abstract class PerformanceCollectorController implements Initializable
 	}
 	
 	@FXML
-	public void clearLogger(ActionEvent event)
+	public void clearLogger(final ActionEvent event)
 	{
 		logger.clear();
 	}
 	
 	@FXML
-	public void copyLogger(ActionEvent event)
+	public void copyLogger(final ActionEvent event)
 	{
 		final Clipboard clipboard = Clipboard.getSystemClipboard();
     final ClipboardContent content = new ClipboardContent();
@@ -169,7 +169,7 @@ public abstract class PerformanceCollectorController implements Initializable
 	}
 	
 	@FXML
-	public void saveState(ActionEvent event)
+	public void saveState(final ActionEvent event)
 	{
 		saveState();
 	}

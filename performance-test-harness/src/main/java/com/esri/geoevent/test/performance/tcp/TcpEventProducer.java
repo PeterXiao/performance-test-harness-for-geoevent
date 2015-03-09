@@ -23,7 +23,7 @@ public class TcpEventProducer extends ProducerBase
 		super.init(config);
 		try
 		{
-			host = config.getPropertyValue("host", "localhost");
+			host = config.getPropertyValue("hosts", "localhost");
 			port = Integer.parseInt(config.getPropertyValue("port", "5565"));
 			socket = new Socket(host, port);
 			os = socket.getOutputStream();

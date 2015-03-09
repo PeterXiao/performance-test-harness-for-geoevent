@@ -101,6 +101,7 @@ public class ConsumerController extends PerformanceCollectorController
 		preferences.put("serverPort", String.valueOf(serverPortNumber));
 	}
 	
+	@Override
 	protected void loadState()
 	{
 		Preferences preferences = Preferences.userNodeForPackage(ConsumerController.class);

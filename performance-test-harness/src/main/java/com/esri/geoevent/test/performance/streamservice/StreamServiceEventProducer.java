@@ -46,7 +46,7 @@ public class StreamServiceEventProducer extends ProducerBase
 				client.setProtocol("input");
 			}
 
-			host = config.getPropertyValue("host", "localhost");
+			host = config.getPropertyValue("hosts", "localhost");
 			port = Integer.parseInt(config.getPropertyValue("port", "6180"));
 			serviceName = config.getPropertyValue("serviceName", "vehicles");
 			connectionCount = Integer.parseInt(config.getPropertyValue("connectionCount", "1"));

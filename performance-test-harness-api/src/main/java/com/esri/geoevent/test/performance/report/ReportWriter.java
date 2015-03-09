@@ -12,9 +12,7 @@ public interface ReportWriter
 	
 	void setTotalTestingTime(long totalTestingTime);
 	
-	List<String> getDetailedColumnNames();
-	
-	List<String> getSimpleColumnNames();
+	List<String> getReportColumnNames(List<String> reportColumns, List<String> additionalReportColumns);
 	
 	void writeReport(String reportFile, List<String> testNames, List<String> columnNames, Map<String, List<FixtureStatistic>> stats) throws IOException;
 	
