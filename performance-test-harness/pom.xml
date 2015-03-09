@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>com.esri.geoevent.test</groupId>
 		<artifactId>performance-test-harness-parent</artifactId>
-		<version>10.3.1</version>
+		<version>10.3.0</version>
 	</parent>
 
 	<artifactId>performance-test-harness</artifactId>
@@ -113,12 +113,12 @@
 		</dependency>
 	</dependencies>
 	<build>
-		<testResources>
-			<testResource>
-				<directory>src/main/resources</directory>
-				<filtering>true</filtering>
-			</testResource>
-		</testResources>
+		<resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -131,7 +131,7 @@
 							<goal>copy-dependencies</goal>
 						</goals>
 						<configuration>
-							<outputDirectory>${project.build.directory}/lib</outputDirectory>
+							<outputDirectory>${project.build.directory}/main/app/lib</outputDirectory>
 							<overWriteReleases>false</overWriteReleases>
 							<overWriteSnapshots>false</overWriteSnapshots>
 							<overWriteIfNewer>true</overWriteIfNewer>
@@ -144,6 +144,8 @@
 				<artifactId>maven-jar-plugin</artifactId>
 				<version>2.5</version>
 				<configuration>
+					<finalName>Performance-Test-Harness-${project.version}</finalName>
+					<outputDirectory>${project.build.directory}/main/app</outputDirectory>
 					<archive>
 						<manifest>
 							<addClasspath>true</addClasspath>
@@ -154,14 +156,6 @@
 							<Class-Path>config/ lib/</Class-Path>
 						</manifestEntries>
 					</archive>
-				</configuration>
-			</plugin>
-			<plugin>
-				<artifactId>maven-assembly-plugin</artifactId>
-				<configuration>
-					<descriptorRefs>
-						<descriptorRef>jar-with-dependencies</descriptorRef>
-					</descriptorRefs>
 				</configuration>
 			</plugin>
 			<!-- COPY THE BAT FILE TO DEPLOYMENT DIRECTORY -->
@@ -176,7 +170,7 @@
 							<goal>copy-resources</goal>
 						</goals>
 						<configuration>
-							<outputDirectory>${project.build.directory}</outputDirectory>
+							<outputDirectory>${project.build.directory}/main/app</outputDirectory>
 							<resources>
 								<resource>
 									<directory>src/main/scripts</directory>

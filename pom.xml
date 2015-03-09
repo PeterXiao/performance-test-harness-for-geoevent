@@ -5,7 +5,7 @@
 
 	<groupId>com.esri.geoevent.test</groupId>
 	<artifactId>performance-test-harness-parent</artifactId>
-	<version>10.3.1</version>
+	<version>10.3.0</version>
 	<name>Esri :: GeoEvent :: Test Harness :: Performance Test Harness Parent</name>
 	<packaging>pom</packaging>
 

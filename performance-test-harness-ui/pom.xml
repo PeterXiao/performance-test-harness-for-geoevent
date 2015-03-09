@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>com.esri.geoevent.test</groupId>
 		<artifactId>performance-test-harness-parent</artifactId>
-		<version>10.3.1</version>
+		<version>10.3.0</version>
 	</parent>
 	
 	<artifactId>performance-test-harness-ui</artifactId>
@@ -80,7 +80,7 @@
 							<goal>jar</goal>
 						</goals>
 						<configuration>
-							<finalName>Performance-Test-Harness-${project.version}</finalName>
+							<finalName>Performance-Test-Harness-UI-${project.version}</finalName>
 							<outputDirectory>${project.build.directory}/jfx/app</outputDirectory>
 							<archive>
 								<manifest>

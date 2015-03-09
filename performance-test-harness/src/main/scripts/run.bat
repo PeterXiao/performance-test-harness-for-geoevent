@@ -1,1 +1,1 @@
-"%JAVA_HOME%\bin\java" -jar performance-test-10.3.1.jar %*
+"%JAVA_HOME%\bin\java" -jar Performance-Test-Harness-10.3.0.jar %*

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <Fixtures>
 	<Report type="XLSX">
-		<ReportFile>reports\minimal.xlsx</ReportFile>
+		<ReportFile>target/reports/minimal.xlsx</ReportFile>
 	</Report>
 	
 	<DefaultFixture>
