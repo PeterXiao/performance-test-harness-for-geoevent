@@ -16,7 +16,7 @@ and [Apache Maven](http://maven.apache.org/run-maven/index.html).
 - Install GeoEvent Extension for ArcGIS Server 10.3.x
 
 ### Building
-See [Building](doc/1_building.md)
+See [Building](1_building.md)
 
 ### Preparing GeoEvent for Performance testing
 You will need to configure GeoEvent with the appropriate Inputs and Outputs so that the Performance Test Harness can measure the throughput.
@@ -70,7 +70,7 @@ Sample:
 	</Fixture>
 </Fixtures>
 ```
-See [Configuration](doc/2_configuration.md)
+See [Configuration](2_configuration.md)
 Now you're ready to run your first test.
 
 ### Performance Testing
@@ -93,6 +93,6 @@ run.bat -f fixtures\my_fixtures.xml
 ```
 
 ### Reading the Results
-After the tests are finish, a report file will be written out (see [Configuration](doc/2_configuration.md) for more details). 
+After the tests are finish, a report file will be written out (see [Configuration](2_configuration.md) for more details). 
   
 [Next - Building](1_building.md)
