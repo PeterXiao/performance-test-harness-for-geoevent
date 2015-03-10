@@ -99,3 +99,9 @@ Rate, totalEvents, successes, expectedResultCount, failures, avgTotalTime, avgEv
 ```
 
 <b>TODO:</b> Describe the report columns
+
+#### DefaultFixture and  Fixture Configuration
+
+The `<DefaultFixture>` and `<Fixture>` configuration are identical. The reason why there are two seperate tags is to eliminiate verbosity of individual tests. Everything specified in the `<DefaultFixture>` will be copied to all of the other `<Fixture>` configurations. <b>Note:</b> the `<DefaultFixture>` will not override anything specified in the `<Fixture>` configuration, it will simply fill in the missing holes.
+
+There can ony be one `<DefaultFixture>` configuration. There must be at least one `<Fixture>` configuration.
