@@ -79,7 +79,7 @@ Report configuration with all available options:
   - this is a <b>required</b> tag
 - `<ReportColumns>`: the minimum report columns to output
   - a comma seperated list of columns to be outputted
-  - this is an optional tag. When this tag is missing the default columns are used.
+  - this is an optional tag. When this tag is missing the [default columns](#Report Columns) are used.
 - `<AdditionalReportColumns>`: In addition to the default columns (or `<ReportColumns>` when specified), the columns specified here are added to to the report.
   - a comman seperated list of columns to be outputted in addition to the defaults.
   - this is an optional tag.
