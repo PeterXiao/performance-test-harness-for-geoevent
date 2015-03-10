@@ -12,11 +12,11 @@ The Performance Test Harness is an application which measures the throughput per
 * Maven 3.2.x or greater.
 
 ## Building
-See [Building And Artifacts](doc/1_building.md)
+See [Building](doc/1_building.md)
  
 ## Documentation
 - [Quick-start guide](doc/0_quick_start.md)
-- [Building And Artifacts](doc/1_building.md)
+- [Building](doc/1_building.md)
 - [Configuration](doc/2_configuration.md)
 
 ## Resources
