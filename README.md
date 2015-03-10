@@ -1,25 +1,23 @@
 # Performance Test Harness for GeoEvent
 
-The Performance Test Harness is an application which measures the throughput performance for ArcGIS GeoEvent Extension for Server. This application can be run via the command line or as a JavaFX application.
+The Performance Test Harness is an application which measures the throughput performance for ArcGIS GeoEvent Extension for Server. This application can be run via the command line or as a JavaFX application (In progress).
 
-
-
-## Instructions
+## Features
+- Support for TCP client and server.
 
 ## Requirements
 
 * ArcGIS 10.3.x GeoEvent Extension for Server.
 * Java JDK 1.8 or greater.
-* Maven.
+* Maven 3.2.x or greater.
 
-### Building a JAR file
-  1. "mvn clean jfx:jar" which creates a jar file in the ./target/jfx/app folder.
-  2. Now you can run the executable jar file by going to the folder where the jar file is (./target/jfx/app), and running "java -jar <jar-file-name>"
-
-### Building a native executable
-  1. "mvn clean jfx:native", which will place the executable program in "target/jfx/native/bundles"
-  2. This executable can be run directly, if copying it to another location, also copy the subdirectories with the libraries it depends on.
-
+## Building
+See [Building And Artifacts](doc/1_building.md)
+ 
+## Documentation
+- [Quick-start guide](doc/0_quick_start.md)
+- [Building And Artifacts](doc/1_building.md)
+- [Configuration](doc/2_configuration.md)
 
 ## Resources
 
