@@ -20,7 +20,7 @@ See [Building And Artifacts](doc/1_building_and_artifacts.md)
 
 ### Preparing GeoEvent for Performance testing
 You will need to configure GeoEvent with the appropriate Inputs and Outputs so that the Performance Test Harness can measure the throughput.
-As a quick sample, you can Import [this](../performance-test-harness/src/test/resources/GeoEventConfig-TCP.xml) GeoEvent configuration file to create a simple TCP Text Input to TCP Text Output service.
+As a quick sample, you can Import [this](GeoEventConfig-TCP.xml) GeoEvent configuration file to create a simple TCP Text Input to TCP Text Output service.
 
 ### Preparing Testing Fixtures
 Create a ```fixture.xml``` file to configure the Orchestrator on how to run the performance tests.
@@ -75,7 +75,7 @@ Now you're ready to run your first test.
 
 ### Performance Testing
 
-You will need to start the producer and consumer first (the order does not matter), afterwards, start the orchestrator.
+You will need to start the producer and consumer first (the order does not matter), afterwards, start the orchestrator. Navigate to the ```performance-test-harness\target\main\app``` directory.
 
 Start a TCP producer
 ```
