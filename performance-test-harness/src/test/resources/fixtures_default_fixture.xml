@@ -6,13 +6,13 @@
 	
 	<DefaultFixture>
 		<!-- SHARED CONFIGURATION -->
-		<DefaultSharedConfig host="rtrujillo" protocol="TCP" isLocal="true">
+		<DefaultSharedConfig host="rtrujillo" protocol="TCP">
 			<Properties>
 				<Property name="hosts">rtrujillo</Property>
 			</Properties>
 		</DefaultSharedConfig>
 		
-		<ProducerConfig protocol="TCP" commandPort="5010" isLocal="true">
+		<ProducerConfig protocol="TCP" commandPort="5010">
 			<Properties>
 				<Property name="simulationFile">C:\Testing\performance-test-10.3.0\simulations\county_envelopes_1000_points.csv</Property>
 				<Property name="port">5565</Property>
@@ -22,7 +22,7 @@
 			</Producers>
 		</ProducerConfig>
 		
-		<ConsumerConfig protocol="TCP" commandPort="5020" isLocal="true" timeoutInSec="5">
+		<ConsumerConfig protocol="TCP" commandPort="5020" timeoutInSec="5">
 			<Properties>
 				<Property name="port">5565</Property>
 			</Properties>
@@ -32,7 +32,7 @@
 		</ConsumerConfig>
 				
 		<Simulation>
-			<StressTest iterations="10" minEvents="1000" expectedResultCount="989"/>
+			<StressTest iterations="10" numOfEvents="1000" expectedResultCount="989"/>
 		</Simulation>
 	</DefaultFixture>
 	
@@ -46,7 +46,7 @@
 		</ProducerConfig>
 		
 		<Simulation>
-			<StressTest iterations="10" minEvents="81" expectedResultCount="79"/>
+			<StressTest iterations="10" numOfEvents="81" expectedResultCount="79"/>
 		</Simulation>
 	</Fixture>
 	
