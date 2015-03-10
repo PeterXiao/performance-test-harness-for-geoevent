@@ -252,3 +252,91 @@ ConsumerConfig configuration with all available options:
     -  	When this tag is missing the attribute tags `host` and `commandPort` are used to define the default Consumer.
     -  	When this tag is present the attribute tags `host` and `commandPort` are ignored.
   
+#### Simulation Configuration
+
+The simulation configuration is used to define what type of tests will be run. Each `<Fixture>` can run different types of test. 
+
+The supported test types are:
+- Timed Test
+- Stress Test
+- Ramp Test
+
+##### Timed Test
+A time test is used to send a configurable number of events per second to GeoEvent. This is a great way to measure what your GeoEvent environment can successfully withstand. 
+
+Minimal TimeTest Configuration
+``` xml
+<Simulation>
+	<TimeTest eventsPerSec="100" totalTimeInSec="10"/>
+</Simulation>
+```
+
+TimeTest Configuration with all options
+``` xml
+<Simulation>
+	<TimeTest eventsPerSec="100" totalTimeInSec="10" staggeringInterval="10" expectedResultCountPerSec="89" />
+</Simulation>
+```
+
+- `eventsPerSec`: the number of events to send per second.
+   -  This is a <b>required</b>  attribute.
+- `totalTimeInSec`: the total time to run (in seconds).
+   -  This is a <b>required</b>  attribute.
+- `staggeringInterval`: the intervals to chunk up the `eventsPerSec` within a second. This will stagger the events sent versus sending them all at once.
+   -  This is an optional  attribute.
+   -  the default value is `10`
+- `expectedResultCountPerSec`: the number of expected successful events per second.
+   -  This is an optional  attribute.
+   -  the default will be the same as the `eventsPerSec`
+
+##### Stress Test
+A stress test is used to stress GeoEvent with the same number of events for a configurable number of iterations. 
+
+Minimal StressTest Configuration
+``` xml
+<Simulation>
+	<StressTest iterations="10" numOfEvents="1000"/>
+</Simulation>
+```
+
+StressTest Configuration with all options
+``` xml
+<Simulation>
+	<StressTest iterations="10" numOfEvents="1000" expectedResultCount="989"/>
+</Simulation>
+```
+
+- `iterations`: the number of test cycles to run.
+   -  This is a <b>required</b>  attribute.
+- `numOfEvents`: the number of events to send per cycle.
+   -  This is a <b>required</b>  attribute.
+- `expectedResultCount`: the number of expected successful events per cycle.
+   -  This is an optional  attribute.
+   -  the default will be the same as the `numOfEvents`
+   
+##### Ramp Test
+A ramp test is used to gradually increase the number of events to GeoEvent. This is commonly used to find out how many events can GeoEvent handle at different burst intervals.
+
+Minimal RampTest Configuration
+``` xml
+<Simulation>
+	<RampTest minEvents="100" maxEvents="300" eventsToAddPerTest="100" />
+</Simulation>
+```
+
+RampTest Configuration with all options
+``` xml
+<Simulation>
+	<RampTest minEvents="100" maxEvents="300" eventsToAddPerTest="100" expectedResultCountPerTest="89" />
+</Simulation>
+```
+
+- `minEvents`: the initial number of events to send.
+   -  This is a <b>required</b>  attribute.
+- `maxEvents`: the maximum number of events to send.
+   -  This is a <b>required</b>  attribute.
+- `eventsToAddPerTest`: the number of events to increment per test until the `maxEvents` is reached.
+   -  This is a <b>required</b>  attribute.
+- `expectedResultCountPerTest`: the number of expected successful events per test.
+   -  This is an optional  attribute.
+   -  the default will be the same as the `minEvents`
