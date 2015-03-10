@@ -87,13 +87,13 @@
 							</TableColumn>
 						</columns>
 					</TableView>
-		         	<HBox spacing="4" GridPane.columnIndex="0" GridPane.rowIndex="2" GridPane.halignment="LEFT">
-						<TextField fx:id="producerHostName" />
-						<RestrictiveTextField fx:id="producerPort" restrict="[0-9]" maxLength="10" prefWidth="70"/>
-						<Button fx:id="producerAddBtn" onAction="#addProducer">
+		         	<HBox spacing="4" GridPane.columnIndex="0" GridPane.rowIndex="2" GridPane.halignment="LEFT" GridPane.valignment="CENTER">
+						<TextField fx:id="producerHostName" prefWidth="200"/>
+						<RestrictiveTextField fx:id="producerPort" restrict="[0-9]" maxLength="10" prefWidth="80"/>
+						<Button fx:id="producerAddBtn" onAction="#addProducer" styleClass="buttons">
 							<graphic>
 								<ImageView>
-									<Image url="@images/error.png"/>
+									<Image url="@images/add.png"/>
 								</ImageView>
 							</graphic>
 						</Button>
@@ -114,13 +114,13 @@
 							</TableColumn>
 						</columns>
 					</TableView>
-					<HBox spacing="4" GridPane.columnIndex="1" GridPane.rowIndex="2" GridPane.halignment="LEFT">
-						<TextField fx:id="consumerHostName" />
-						<RestrictiveTextField fx:id="consumerPort" restrict="[0-9]" maxLength="10" prefWidth="70"/>
-						<Button fx:id="consumerAddBtn" onAction="#addConsumer">
+					<HBox spacing="4" GridPane.columnIndex="1" GridPane.rowIndex="2" GridPane.halignment="LEFT" GridPane.valignment="CENTER" >
+						<TextField fx:id="consumerHostName" prefWidth="200"/>
+						<RestrictiveTextField fx:id="consumerPort" restrict="[0-9]" maxLength="10" prefWidth="80"/>
+						<Button fx:id="consumerAddBtn" onAction="#addConsumer" styleClass="buttons">
 							<graphic>
 								<ImageView>
-									<Image url="@images/error.png"/>
+									<Image url="@images/add.png"/>
 								</ImageView>
 							</graphic>
 						</Button>
@@ -133,33 +133,52 @@
 	    </VBox>
 	    <VBox fx:id="simulationBox" styleClass="modeBox" GridPane.columnIndex="0" GridPane.rowIndex="3">
 	    	<GridPane alignment="CENTER" hgap="4" vgap="4" styleClass="box">
-         		<columnConstraints>
-            		<ColumnConstraints percentWidth="10" halignment="CENTER"/>
-            		<ColumnConstraints percentWidth="90" halignment="CENTER" hgrow="SOMETIMES" />
-            	</columnConstraints>
             	<children>
-            		<Label fx:id="testTypeLabel" styleClass="labels" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+            		<Label fx:id="testTypeLabel" styleClass="labels,required" GridPane.columnIndex="0" GridPane.rowIndex="0" prefWidth="140" >
+            			<GridPane.margin>
+              				 <Insets bottom="0.0" left="6.0" right="0.0" top="0.0" />
+          				</GridPane.margin>
+            		</Label>
 		         	<ComboBox fx:id="testType" styleClass="buttons" prefWidth="200" onAction="#toggleTestType" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
 		         	
-		         	<HBox fx:id="timeTestGroup" styleClass="box" GridPane.columnIndex="1" GridPane.rowIndex="1" visible="false">	
-		          		<BigDecimalField fx:id="eventsPerSec" styleClass="buttons" minValue="1" maxValue="999999" number="1000"/>
-		          		<BigDecimalField fx:id="totalTimeInSec" styleClass="buttons" minValue="1" maxValue="86400" number="20"/>
-		          		<BigDecimalField fx:id="expectedResultCountPerSec" styleClass="buttons" minValue="1" maxValue="999999" />
-		          		<BigDecimalField fx:id="staggeringInterval" styleClass="buttons" minValue="1" maxValue="1000" number="10"/>
-		          	</HBox>
+		         	<GridPane fx:id="timeTestGroup" hgap="8" vgap="2" styleClass="box" GridPane.columnIndex="0" GridPane.rowIndex="1" visible="false" GridPane.columnSpan="2" GridPane.rowSpan="2" GridPane.halignment="LEFT" >
+		         		<children>
+			          		<Label fx:id="eventsPerSecLabel" styleClass="labels,required" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+			          		<BigDecimalField fx:id="eventsPerSec" styleClass="buttons" minValue="1" maxValue="999999" number="1000" maxWidth="100" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+			          		<Label fx:id="totalTimeInSecLabel" styleClass="labels,required" GridPane.columnIndex="2" GridPane.rowIndex="0"/>
+			          		<BigDecimalField fx:id="totalTimeInSec" styleClass="buttons" minValue="1" maxValue="86400" number="20" maxWidth="100" GridPane.columnIndex="3" GridPane.rowIndex="0"/>
+			          		<Label fx:id="expectedResultCountPerSecLabel" styleClass="labels" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+			          		<BigDecimalField fx:id="expectedResultCountPerSec" styleClass="buttons" minValue="1" maxValue="999999" maxWidth="100" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+			          		<Label fx:id="staggeringIntervalLabel" styleClass="labels" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+			          		<BigDecimalField fx:id="staggeringInterval" styleClass="buttons" minValue="1" maxValue="1000" number="10" maxWidth="100" GridPane.columnIndex="3" GridPane.rowIndex="1"/>
+			          	</children>
+		          	</GridPane>
 		          	
-		          	<HBox fx:id="stressTestGroup" styleClass="box" GridPane.columnIndex="1" GridPane.rowIndex="1" visible="false">	
-		          		<BigDecimalField fx:id="numOfEvents" styleClass="buttons" minValue="1" maxValue="999999" number="1000"/>
-		          		<BigDecimalField fx:id="iterations" styleClass="buttons" minValue="1" maxValue="999999" number="10"/>
-		          		<BigDecimalField fx:id="expectedResultCount" styleClass="buttons" minValue="1" maxValue="999999" />
-		          	</HBox>
+		          	<GridPane fx:id="stressTestGroup" hgap="8" vgap="2" styleClass="box" GridPane.columnIndex="0" GridPane.rowIndex="1" visible="false" GridPane.columnSpan="2" GridPane.rowSpan="2" GridPane.halignment="LEFT" >
+			         	<children>
+			         		<Label fx:id="numOfEventsLabel" styleClass="labels,required" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+			         		<BigDecimalField fx:id="numOfEvents" styleClass="buttons" minValue="1" maxValue="999999" number="1000" maxWidth="100" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+			         		<Label fx:id="iterationsLabel" styleClass="labels,required" GridPane.columnIndex="2" GridPane.rowIndex="0" />
+		          			<BigDecimalField fx:id="iterations" styleClass="buttons" minValue="1" maxValue="999999" number="10" maxWidth="100" GridPane.columnIndex="3" GridPane.rowIndex="0"/>
+		          			<Label fx:id="expectedResultCountLabel" styleClass="labels" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+		          			<BigDecimalField fx:id="expectedResultCount" styleClass="buttons" minValue="1" maxValue="999999" maxWidth="100" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+			         	</children>
+		         	</GridPane>
 		          	
-		          	<HBox fx:id="rampTestGroup" styleClass="box" GridPane.columnIndex="1" GridPane.rowIndex="1" visible="false">	
-		          		<BigDecimalField fx:id="minEvents" styleClass="buttons" minValue="1" maxValue="999999" number="500"/>
-		          		<BigDecimalField fx:id="maxEvents" styleClass="buttons" minValue="1" maxValue="999999" number="1000"/>
-		          		<BigDecimalField fx:id="eventsToAddPerTest" styleClass="buttons" minValue="1" maxValue="999999" number="100"/>
-		          		<BigDecimalField fx:id="expectedResultCountPerTest" styleClass="buttons" minValue="1" maxValue="999999" />
-		          	</HBox>
+		          	<GridPane fx:id="rampTestGroup" hgap="8" vgap="2" styleClass="box" GridPane.columnIndex="0" GridPane.rowIndex="1" visible="false" GridPane.columnSpan="2" GridPane.rowSpan="2" GridPane.halignment="LEFT" >
+				        <children>
+				        	<Label fx:id="minEventsLabel" styleClass="labels,required" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+					        <BigDecimalField fx:id="minEvents" styleClass="buttons" minValue="1" maxValue="999999" number="500" maxWidth="100" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+					        <Label fx:id="maxEventsLabel" styleClass="labels,required" GridPane.columnIndex="2" GridPane.rowIndex="0"/>
+			          		<BigDecimalField fx:id="maxEvents" styleClass="buttons" minValue="1" maxValue="999999" number="1000" maxWidth="100" GridPane.columnIndex="3" GridPane.rowIndex="0"/>
+			          		<Label fx:id="eventsToAddPerTestLabel" styleClass="labels,required" GridPane.columnIndex="4" GridPane.rowIndex="0"/>
+			          		<BigDecimalField fx:id="eventsToAddPerTest" styleClass="buttons" minValue="1" maxValue="999999" number="100" maxWidth="100" GridPane.columnIndex="5" GridPane.rowIndex="0"/>
+			          		<Label fx:id="expectedResultCountPerTestLabel" styleClass="labels" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+			          		<BigDecimalField fx:id="expectedResultCountPerTest" styleClass="buttons" minValue="1" maxValue="999999" maxWidth="100" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+				        </children>
+			        </GridPane>
+			        
+			        <Button fx:id="applySimulationBtn" onAction="#applySimulation" styleClass="buttons" GridPane.columnIndex="0" GridPane.rowIndex="3" GridPane.columnSpan="4" GridPane.halignment="CENTER"/>
             	</children>
          	</GridPane>
 	    </VBox>

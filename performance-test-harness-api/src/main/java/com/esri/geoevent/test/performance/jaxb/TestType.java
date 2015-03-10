@@ -27,20 +27,43 @@ import javax.xml.bind.annotation.XmlEnum;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.esri.geoevent.test.performance.ApiMessages;
+
 @XmlEnum
 public enum TestType
 {
-	RAMP, STRESS, TIME, UNKNOWN;
+	RAMP(ApiMessages.getMessage("TEST_TYPE_RAMP")), 
+	STRESS(ApiMessages.getMessage("TEST_TYPE_STRESS")), 
+	TIME(ApiMessages.getMessage("TEST_TYPE_TIME")), 
+	UNKNOWN(ApiMessages.getMessage("TEST_TYPE_UNKNOWN"));
+	
+	private String label;
+	
+	private TestType(String label)
+	{
+		this.label = label;
+	}
+	
+	private String getLabel()
+	{
+		return label;
+	}
+	
+	@Override
+	public String toString()
+	{
+		return getLabel();
+	}
 	
 	public static TestType fromValue(String valueStr)
 	{
 		if( StringUtils.isBlank(valueStr) )
 			return UNKNOWN;
-		if( RAMP.toString().equalsIgnoreCase(valueStr))
+		if( RAMP.toString().equalsIgnoreCase(valueStr) || RAMP.name().equalsIgnoreCase(valueStr) )
 			return RAMP;
-		else if( STRESS.toString().equalsIgnoreCase(valueStr))
+		else if( STRESS.toString().equalsIgnoreCase(valueStr) || STRESS.name().equalsIgnoreCase(valueStr) )
 			return STRESS;
-		else if( TIME.toString().equalsIgnoreCase(valueStr))
+		else if( TIME.toString().equalsIgnoreCase(valueStr) || TIME.name().equalsIgnoreCase(valueStr) )
 			return TIME;
 		else 
 			return UNKNOWN;

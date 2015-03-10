@@ -49,7 +49,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.InputEvent;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.HBox;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.util.Callback;
 import jfxtras.labs.scene.control.BigDecimalField;
@@ -58,7 +58,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 
 import com.esri.geoevent.test.performance.Mode;
+import com.esri.geoevent.test.performance.jaxb.RampTest;
+import com.esri.geoevent.test.performance.jaxb.StressTest;
+import com.esri.geoevent.test.performance.jaxb.Test;
 import com.esri.geoevent.test.performance.jaxb.TestType;
+import com.esri.geoevent.test.performance.jaxb.TimeTest;
 import com.esri.geoevent.test.performance.ui.controls.RestrictiveTextField;
 
 public class OrchestratorController implements Initializable
@@ -124,34 +128,68 @@ public class OrchestratorController implements Initializable
 	public Label testTypeLabel;
 	@FXML
 	public ComboBox<TestType> testType;
+	
+	// time test
 	@FXML
-	public HBox timeTestGroup;
+	public GridPane timeTestGroup;
+	@FXML
+	public Label eventsPerSecLabel;
 	@FXML
 	public BigDecimalField eventsPerSec;
 	@FXML
+	public Label totalTimeInSecLabel;
+	@FXML
 	public BigDecimalField totalTimeInSec;
+	@FXML
+	public Label expectedResultCountPerSecLabel;
 	@FXML
 	public BigDecimalField expectedResultCountPerSec;
 	@FXML
-	public BigDecimalField staggeringInterval;
+	public Label staggeringIntervalLabel;
 	@FXML
-	public HBox stressTestGroup;
+	public BigDecimalField staggeringInterval;
+	
+	//stress test
+	@FXML
+	public GridPane stressTestGroup;
+	@FXML
+	public Label numOfEventsLabel;
 	@FXML
 	public BigDecimalField numOfEvents;
 	@FXML
+	public Label iterationsLabel;
+	@FXML
 	public BigDecimalField iterations;
 	@FXML
-	public BigDecimalField expectedResultCount;
+	public Label expectedResultCountLabel;
 	@FXML
-	public HBox rampTestGroup;
+	public BigDecimalField expectedResultCount;
+	
+	// ramp test
+	@FXML
+	public GridPane rampTestGroup;
+	@FXML
+	public Label minEventsLabel;
 	@FXML
 	public BigDecimalField minEvents;
 	@FXML
+	public Label maxEventsLabel;
+	@FXML
 	public BigDecimalField maxEvents;
+	@FXML
+	public Label eventsToAddPerTestLabel;
 	@FXML
 	public BigDecimalField eventsToAddPerTest;
 	@FXML
+	public Label expectedResultCountPerTestLabel;
+	@FXML
 	public BigDecimalField expectedResultCountPerTest;
+	
+	@FXML
+	public Button applySimulationBtn;
+	
+	// member vars
+	private Test test;
 	
 	// statics
 	private static final Callback<TableColumn<ConnectableRemoteHost,Boolean>,TableCell<ConnectableRemoteHost,Boolean>> CONNECTABLE_CELL_FACTORY = (p) -> new ConnectedTableCell<>();
@@ -194,8 +232,22 @@ public class OrchestratorController implements Initializable
 		testType.setTooltip(new Tooltip(UIMessages.getMessage("UI_TEST_TYPE_DESC")) );
 		testType.setItems(getTestTypes());
 		testType.setValue(TestType.TIME);
-		//eventsPerSec.setText("");
+		// time
+		eventsPerSecLabel.setText( UIMessages.getMessage("UI_EVENTS_PER_SEC_LABEL") );
+		totalTimeInSecLabel.setText( UIMessages.getMessage("UI_TOTAL_TIME_IN_SEC_LABEL") );
+		expectedResultCountPerSecLabel.setText( UIMessages.getMessage("UI_EXPECTED_EVENTS_PER_SEC_LABEL") );
+		staggeringIntervalLabel.setText( UIMessages.getMessage("UI_STAGGERING_INTERVAL_LABEL") );
+		// stress
+		numOfEventsLabel.setText( UIMessages.getMessage("UI_NUM_OF_EVENTS_LABEL") );
+		iterationsLabel.setText( UIMessages.getMessage("UI_ITERATIONS_LABEL") );
+		expectedResultCountLabel.setText( UIMessages.getMessage("UI_EXPECTED_EVENT_COUNT_LABEL") );
+		// ramp
+		minEventsLabel.setText( UIMessages.getMessage("UI_MIN_EVENTS_LABEL") );
+		maxEventsLabel.setText( UIMessages.getMessage("UI_MAX_EVENTS_LABEL") );
+		eventsToAddPerTestLabel.setText( UIMessages.getMessage("UI_EVENTS_TO_ADD_LABEL") );
+		expectedResultCountPerTestLabel.setText( UIMessages.getMessage("UI_EXPECTED_EVENTS_PER_TEST_LABEL") );
 		
+		applySimulationBtn.setText( UIMessages.getMessage("UI_APPLY_SIMULATION_LABEL") );
 		//set up state
 		toggleTestType(null);
 	}
@@ -282,6 +334,86 @@ public class OrchestratorController implements Initializable
   		default:
   			break;
   	}
+  }
+  
+  @FXML
+  private void applySimulation(final ActionEvent event)
+  {
+  	TestType type = testType.getValue();
+  	if( ! isSimulationValid(type) )
+  	{
+  		//TODO: Display validation message
+  		return;
+  	}
+  	
+  	switch(type)
+  	{
+  		case RAMP:
+  			RampTest rampTest = new RampTest();
+  			rampTest.setEventsToAddPerTest(eventsToAddPerTest.getNumber().intValue());
+  			rampTest.setMaxEvents(maxEvents.getNumber().intValue());
+  			rampTest.setMinEvents(minEvents.getNumber().intValue());
+  			if( expectedResultCountPerTest.getNumber() != null && expectedResultCountPerTest.getNumber().intValue() > 0 )
+  				rampTest.setExpectedResultCountPerTest( expectedResultCountPerTest.getNumber().intValue() );
+  			this.test = rampTest;
+  			break;
+  			
+  		case STRESS:
+  			StressTest stressTest = new StressTest();
+  			if( expectedResultCount.getNumber() != null && expectedResultCount.getNumber().intValue() > 0 )
+  				stressTest.setExpectedResultCount( expectedResultCount.getNumber().intValue() );
+  			stressTest.setIterations(iterations.getNumber().intValue());
+  			stressTest.setNumOfEvents(numOfEvents.getNumber().intValue());
+  			this.test = stressTest;
+  			break;
+  			
+  		case TIME:
+  			TimeTest timeTest = new TimeTest();
+  			if( expectedResultCountPerSec.getNumber() != null && expectedResultCountPerSec.getNumber().intValue() > 0 )
+  				timeTest.setExpectedResultCountPerSec( expectedResultCountPerSec.getNumber().intValue() );
+  			if( staggeringInterval.getNumber() != null && staggeringInterval.getNumber().intValue() > 0 )
+  				timeTest.setExpectedResultCountPerSec( staggeringInterval.getNumber().intValue() );
+  			timeTest.setEventsPerSec(eventsPerSec.getNumber().intValue());
+  			timeTest.setTotalTimeInSec(totalTimeInSec.getNumber().intValue());
+  			this.test = timeTest;
+  			break;
+  			
+  		default:
+  			break;
+  	}
+  }
+  
+  private boolean isSimulationValid(TestType type)
+  {
+  	switch(testType.getValue())
+  	{
+  		case RAMP:
+  			if( eventsToAddPerTest.getNumber().intValue() <= 0)
+  				return false;
+  			if( maxEvents.getNumber().intValue() <= 0)
+  				return false;
+  			if( minEvents.getNumber().intValue() <= 0)
+  				return false;
+  			return true;
+  			
+  		case STRESS:
+  			if( numOfEvents.getNumber().intValue() <= 0)
+  				return false;
+  			if( iterations.getNumber().intValue() <= 0)
+  				return false;
+  			return true;
+  			
+  		case TIME:
+  			if( eventsPerSec.getNumber().intValue() <= 0)
+  				return false;
+  			if( totalTimeInSec.getNumber().intValue() <= 0)
+  				return false;
+  			return true;
+  			
+  		default:
+  			break;
+  	}
+  	return false;
   }
   
   /**

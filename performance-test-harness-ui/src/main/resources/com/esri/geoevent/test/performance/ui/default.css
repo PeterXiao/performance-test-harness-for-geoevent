@@ -1,13 +1,13 @@
 .text-field {
-    -fx-font-size: 12pt;
+    -fx-font-size: 10pt;
 }
 
 .table-view .column-header{
-    -fx-font-size: 14;
+    -fx-font-size: 11;
 }
 
 .table-cell {
-    -fx-font-size: 12px;
+    -fx-font-size: 11px;
 }
 
 .layout { 
@@ -15,19 +15,22 @@
 }
 
 .title {
-	-fx-font-size: 12pt;
+	-fx-font-size: 11pt;
 	-fx-opacity: 1;
     -fx-font-weight: bold;
 }
 
 .labels {
-	-fx-font-size: 11pt;
+	-fx-font-size: 10pt;
     -fx-opacity: 1;
+}
+
+.required {
     -fx-font-weight: bold;
 }
 
 .buttons {
-	-fx-font-size: 11pt;
+	-fx-font-size: 10pt;
     -fx-cursor: hand;
     -fx-opacity: 1;
 }
@@ -48,5 +51,6 @@
 
 .bordered-titled-title {
   -fx-background-color: #f4f4f4;
-  -fx-translate-y: -22; /* play around with this value when changing the title font to get a vertically centered title */
+  -fx-font-size: 10pt;
+  -fx-translate-y: -16; /* play around with this value when changing the title font to get a vertically centered title */
 }
