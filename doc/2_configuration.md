@@ -130,6 +130,16 @@ Minimal DefaultFixture Configuration
 	</Simulation>
 </DefaultFixture>
 ```
+
+Minimal Fixture Configuration
+``` xml
+<Fixture name="100 e/s" />
+```
+
+- `name`: the name of the test. This is used for reporting and display only.
+   -  This is a <b>required</b> attribute for the `<Fixture>` configuration only. This attribute is not used for the `<DefaultFixture>`.
+  
+
 ##### DefaultSharedConfig
 
 This tag is used to share configuration between Producers and Consumers. Everything specified in the `<DefaultSharedConfig>` will be copied to the `<ProducerConfig>` and `<ConsumerConfig>` configurations. <b>Note:</b> the `<DefaultSharedConfig>` will not override anything specified in the `<ProducerConfig>` or `<ConsumerConfig>` configuration, it will simply fill in the missing holes.
