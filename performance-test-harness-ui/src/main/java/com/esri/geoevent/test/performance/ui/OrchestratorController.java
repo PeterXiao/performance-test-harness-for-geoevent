@@ -23,6 +23,7 @@
  */
 package com.esri.geoevent.test.performance.ui;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
@@ -31,8 +32,11 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -49,8 +53,11 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.InputEvent;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import javafx.util.Callback;
 import jfxtras.labs.scene.control.BigDecimalField;
 
@@ -59,6 +66,7 @@ import org.apache.commons.lang3.math.NumberUtils;
 
 import com.esri.geoevent.test.performance.Mode;
 import com.esri.geoevent.test.performance.jaxb.RampTest;
+import com.esri.geoevent.test.performance.jaxb.Report;
 import com.esri.geoevent.test.performance.jaxb.StressTest;
 import com.esri.geoevent.test.performance.jaxb.Test;
 import com.esri.geoevent.test.performance.jaxb.TestType;
@@ -190,9 +198,21 @@ public class OrchestratorController implements Initializable
 	
 	// member vars
 	private Test test;
+	private Report report;
+	private Stage	stage;
 	
 	// statics
 	private static final Callback<TableColumn<ConnectableRemoteHost,Boolean>,TableCell<ConnectableRemoteHost,Boolean>> CONNECTABLE_CELL_FACTORY = (p) -> new ConnectedTableCell<>();
+	
+	/**
+	 * Sets the stage of this controller.
+	 * 
+	 * @param dialogStage
+	 */
+	public void setStage(Stage stage)
+	{
+		this.stage = stage;
+	}
 	
 	@Override
 	public void initialize(URL location, ResourceBundle resources)
@@ -268,6 +288,10 @@ public class OrchestratorController implements Initializable
         {
            provideAboutFunctionality();
         }
+        if (keyEvent.isControlDown() && keyEvent.getCode() == KeyCode.R)
+        {
+           showReportOptionsDialog();
+        }
      }
   }
   
@@ -280,6 +304,19 @@ public class OrchestratorController implements Initializable
   private void handleAboutAction(final ActionEvent event)
   {
      provideAboutFunctionality();
+  }
+  
+  /**
+   * Opens a dialog to edit the report options. If the user clicks OK, 
+   * the changes are saved into the main configuration.
+   * 
+   * @param ActionEvent
+   * @return true if the user clicked OK, false otherwise.
+   */
+  @FXML
+  public void handleReportOptionsAction(final ActionEvent event) 
+  {
+  	showReportOptionsDialog();
   }
   
   @FXML
@@ -383,6 +420,47 @@ public class OrchestratorController implements Initializable
   	}
   }
   
+  /**
+   * Shows the report options dialog
+   */
+  private void showReportOptionsDialog() 
+  {
+    try 
+    {
+      // Load the fxml file and create a new stage for the popup
+      FXMLLoader loader = new FXMLLoader(getClass().getResource("ReportOptions.fxml"));
+      AnchorPane page = (AnchorPane) loader.load();
+      Stage dialogStage = new Stage();
+      dialogStage.setTitle( UIMessages.getMessage( "UI_REPORT_OPTIONS_TITLE" ) );
+      dialogStage.initModality(Modality.APPLICATION_MODAL);
+      dialogStage.initOwner( stage );
+      Scene scene = new Scene(page);
+      dialogStage.setScene(scene);
+
+      // Set the person into the controller
+      ReportOptionsController controller = loader.getController();
+      controller.setDialogStage(dialogStage);
+      controller.setReport(new Report());	//TODO: we need to clone our Report Object Here
+
+      // Show the dialog and wait until the user closes it
+      dialogStage.showAndWait();
+      if( controller.isOkClicked() )
+      {
+      	this.report = controller.getReport();
+      }
+    } 
+    catch (IOException e) 
+    {
+      e.printStackTrace();
+    }
+  }
+  
+  /**
+   * Validates the simulation inputs
+   * 
+   * @param type
+   * @return
+   */
   private boolean isSimulationValid(TestType type)
   {
   	switch(testType.getValue())

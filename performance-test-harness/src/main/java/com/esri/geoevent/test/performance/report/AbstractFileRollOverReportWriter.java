@@ -116,7 +116,7 @@ public abstract class AbstractFileRollOverReportWriter implements ReportWriter
 			return String.format("%02d:%02d.%03d", min, sec, ms);
 	}
 	
-	protected List<String> getAllColumnNames()
+	public static List<String> getAllColumnNames()
 	{
 		String[] columns = new String[] 
 		{
@@ -129,7 +129,7 @@ public abstract class AbstractFileRollOverReportWriter implements ReportWriter
 		return Arrays.asList(columns);
 	}
 	
-	protected List<String> getDefaultColumnNames()
+	public static List<String> getDefaultColumnNames()
 	{
 		String[] columns = new String[] 
 		{

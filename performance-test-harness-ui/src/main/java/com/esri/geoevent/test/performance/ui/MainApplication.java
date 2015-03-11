@@ -100,6 +100,13 @@ public class MainApplication extends Application
 			Parent parent = (Parent) loader.load();
 			Scene scene = new Scene(parent);
 
+			// set the stage on the orchestrator
+			if( loader.getController() instanceof OrchestratorController )
+			{
+				OrchestratorController orchestratorController = loader.getController();
+				orchestratorController.setStage(primaryStage);
+			}
+			
 			primaryStage.setOnCloseRequest(new AppCloser());
 			primaryStage.setTitle( UIMessages.getMessage("UI_TITLE", mode) );
 			primaryStage.setScene(scene);
