@@ -35,6 +35,14 @@ public class ConnectableRemoteHost extends RemoteHost
 	{
 	}
 	
+	public ConnectableRemoteHost(RemoteHost remoteHost)
+	{
+		if( remoteHost == null )
+			return;
+		setHost(remoteHost.getHost());
+		setCommandPort(remoteHost.getCommandPort());
+	}
+	
 	public ConnectableRemoteHost(String host, int commandPort)
 	{
 		setHost(host);

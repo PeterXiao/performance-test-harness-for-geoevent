@@ -42,6 +42,15 @@ public class Fixture implements Applicable<Fixture>
 	private Simulation simulation;
 	private ProvisionerConfig provisionerConfig;
 	
+	public Fixture()
+	{
+	}
+	
+	public Fixture(String name)
+	{
+		this.name = name;
+	}
+	
 	@XmlAttribute
 	public String getName()
 	{
