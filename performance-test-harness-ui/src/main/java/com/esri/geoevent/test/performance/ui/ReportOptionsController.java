@@ -187,8 +187,13 @@ public class ReportOptionsController implements Initializable
 		return this.report;
 	}
 
+	/**
+	 * Toggles the report type and updates the UI state.
+	 * 
+	 * @param event {@link ActionEvent} not used
+	 */
 	@FXML
-	private void toggleReportType(final ActionEvent event)
+	public void toggleReportType(final ActionEvent event)
 	{
 		if (report.getType() != reportType.getValue())
 		{
@@ -198,6 +203,11 @@ public class ReportOptionsController implements Initializable
 		}
 	}
 
+	/**
+	 * Allows the user to select a report file to used when the reporting is done. 
+	 * 
+	 * @param event {@link ActionEvent} not used.
+	 */
 	@FXML
 	private void chooseReportFile(final ActionEvent event)
 	{

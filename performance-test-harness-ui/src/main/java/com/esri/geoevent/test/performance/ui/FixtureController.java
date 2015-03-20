@@ -275,7 +275,7 @@ public class FixtureController implements Initializable
 	}
   
 	@FXML
-	private void onNameFieldKeyPressed(final KeyEvent event)
+	public void onNameFieldKeyPressed(final KeyEvent event)
 	{
 		if( event.getCode() == KeyCode.ENTER )
 		{
@@ -284,7 +284,7 @@ public class FixtureController implements Initializable
 	}
 	
 	@FXML
-  private void toggleEditName(final ActionEvent event)
+	public void toggleEditName(final ActionEvent event)
   {
   	setEditNameState( ! isEditingName);
   }
@@ -310,7 +310,7 @@ public class FixtureController implements Initializable
 	}
 	
   @FXML
-  private void addProducer(final ActionEvent event)
+  public void addProducer(final ActionEvent event)
   {
   	String hostName = producerHostName.getText();
   	int port = NumberUtils.toInt(producerPort.getText(), 0);
@@ -325,7 +325,7 @@ public class FixtureController implements Initializable
   }
   
   @FXML
-  private void addConsumer(final ActionEvent event)
+  public void addConsumer(final ActionEvent event)
   {
   	String hostName = consumerHostName.getText();
   	int port = NumberUtils.toInt(consumerPort.getText(), 0);
@@ -340,7 +340,7 @@ public class FixtureController implements Initializable
   }
   
   @FXML
-  private void toggleTestType(final ActionEvent event)
+  public void toggleTestType(final ActionEvent event)
   {
   	rampTestGroup.setVisible(false);
   	stressTestGroup.setVisible(false);
@@ -356,15 +356,14 @@ public class FixtureController implements Initializable
   			stressTestGroup.setVisible(true);
   			break;
   		case TIME:
+  		default:	
   			timeTestGroup.setVisible(true);
-  			break;
-  		default:
   			break;
   	}
   }
   
   @FXML
-  private void applySimulation(final ActionEvent event)
+  public void applySimulation(final ActionEvent event)
   {
   	TestType type = testType.getValue();
   	if( ! isSimulationValid(type) )
@@ -475,6 +474,10 @@ public class FixtureController implements Initializable
   	fixture.getSimulation().setTest(test);
   }
   
+  /**
+   * Helper method to toggle if we are editing the default fixxture or not.
+   * @param isDefault boolean
+   */
   private void applyIsDefault(boolean isDefault)
   {
   	if( isDefault )
@@ -555,41 +558,62 @@ public class FixtureController implements Initializable
    	producersTable.getItems().addAll(connectableProducers);
    	
    	// set the test
-   	if( fixture.getSimulation() != null && fixture.getSimulation().getTest() != null )
-   	{
-   		Test test = fixture.getSimulation().getTest();
-   		testType.setValue(test.getType());
-   		switch( test.getType() )
-   		{
-   			case RAMP:
-   				RampTest rampTest = (RampTest) test;
-   				eventsToAddPerTest.setNumber(new BigDecimal(rampTest.getEventsToAddPerTest()));
-   				maxEvents.setNumber(new BigDecimal(rampTest.getMaxEvents()));
-   				minEvents.setNumber(new BigDecimal(rampTest.getMinEvents()));
-   				expectedResultCountPerTest.setNumber(new BigDecimal(rampTest.getExpectedResultCountPerTest()));
-   				break;
-    			
-    		case STRESS:
-    			StressTest stressTest = (StressTest) test;
-    			numOfEvents.setNumber(new BigDecimal(stressTest.getNumOfEvents()));
-    			iterations.setNumber(new BigDecimal(stressTest.getIterations()));
-    			expectedResultCount.setNumber(new BigDecimal(stressTest.getExpectedResultCount()));
-    			break;
-    			
-    		case TIME:
-    			TimeTest timeTest = (TimeTest) test;
-    			eventsPerSec.setNumber(new BigDecimal(timeTest.getEventsPerSec()));
-    			totalTimeInSec.setNumber(new BigDecimal(timeTest.getTotalTimeInSec()));
-    			expectedResultCountPerSec.setNumber(new BigDecimal(timeTest.getExpectedResultCountPerSec()));
-    			staggeringInterval.setNumber(new BigDecimal(timeTest.getStaggeringInterval()));
-    			break;
-    			
-    		default:
-    			break;
-   		}
-   	}
+   	if( fixture.getSimulation() == null )
+   		fixture.setSimulation(new Simulation());
+   	if( fixture.getSimulation().getTest() == null )
+   		fixture.getSimulation().setTest(new TimeTest());
+   	
+ 		Test test = fixture.getSimulation().getTest();
+ 		testType.setValue(test.getType());
+ 		switch( test.getType() )
+ 		{
+ 			case RAMP:
+ 				RampTest rampTest = (RampTest) test;
+ 				if( rampTest.getEventsToAddPerTest() > 0 )
+ 					eventsToAddPerTest.setNumber(new BigDecimal(rampTest.getEventsToAddPerTest()));
+ 				if( rampTest.getMaxEvents() > 0 )
+ 					maxEvents.setNumber(new BigDecimal(rampTest.getMaxEvents()));
+ 				if( rampTest.getMinEvents() > 0 )
+ 					minEvents.setNumber(new BigDecimal(rampTest.getMinEvents()));
+ 				if( rampTest.getExpectedResultCountPerTest() > 0 )
+ 					expectedResultCountPerTest.setNumber(new BigDecimal(rampTest.getExpectedResultCountPerTest()));
+ 				break;
+  			
+  		case STRESS:
+  			StressTest stressTest = (StressTest) test;
+  			if( stressTest.getNumOfEvents() > 0 )
+   				numOfEvents.setNumber(new BigDecimal(stressTest.getNumOfEvents()));
+  			if( stressTest.getIterations() > 0 )
+  				iterations.setNumber(new BigDecimal(stressTest.getIterations()));
+  			if( stressTest.getExpectedResultCount() > 0 )
+  				expectedResultCount.setNumber(new BigDecimal(stressTest.getExpectedResultCount()));
+  			break;
+  			
+  		case TIME:
+  			TimeTest timeTest = (TimeTest) test;
+  			if( timeTest.getEventsPerSec() > 0 )
+     			eventsPerSec.setNumber(new BigDecimal(timeTest.getEventsPerSec()));
+  			if( timeTest.getTotalTimeInSec() > 0 )
+  				totalTimeInSec.setNumber(new BigDecimal(timeTest.getTotalTimeInSec()));
+  			if( timeTest.getExpectedResultCountPerSec() > 0 )
+  				expectedResultCountPerSec.setNumber(new BigDecimal(timeTest.getExpectedResultCountPerSec()));
+  			if( timeTest.getStaggeringInterval() > 0 )
+  				staggeringInterval.setNumber(new BigDecimal(timeTest.getStaggeringInterval()));
+  			break;
+  			
+  		default:
+  			break;
+ 		}
+ 		toggleTestType(null);
+   	
   }
   
+  /**
+   * Convert from {@link RemoteHost} to {@link ConnectableRemoteHost}
+   * 
+   * @param remoteHosts
+   * @return
+   */
   private List<ConnectableRemoteHost> convert(List<RemoteHost> remoteHosts)
   {
   	if( remoteHosts == null )
@@ -598,12 +622,22 @@ public class FixtureController implements Initializable
   	return remoteHosts.stream().map(host -> new ConnectableRemoteHost(host)).collect(Collectors.toList());
   }
   
+  private static void connect(final ConnectableRemoteHost remoteHost)
+  {
+  	
+  }
+  
+  private static void disconnect(final ConnectableRemoteHost remoteHost)
+  {
+  	
+  }
+  
   /**
    * Helper static class to create connected/disconnected buttons based on the a boolean property
    * 
    * @param <T>
    */
-  static class ConnectedTableCell<T> extends TableCell<T, Boolean> 
+  static class ConnectedTableCell<T> extends TableCell<ConnectableRemoteHost, Boolean> 
   {	
   	//statics
   	private static final String CONNECTED_IMAGE_SOURCE = "images/connected.png"; 
@@ -620,30 +654,37 @@ public class FixtureController implements Initializable
   			setGraphic(null);
   			return;
   		}
-  		
-  		if(!item)
+
+  		ConnectableRemoteHost remoteHost = (ConnectableRemoteHost) getTableRow().getItem();
+  		if(item)
   		{
-  			setGraphic(getConnectedButton());
+  			setGraphic(getConnectedButton(remoteHost));
   		}
   		else
   		{
-  			setGraphic(getDisconnectedButton());
+  			setGraphic(getDisconnectedButton(remoteHost));
   		}
   	}
   	
-  	private Button getConnectedButton()
+  	private Button getConnectedButton(final ConnectableRemoteHost remoteHost)
   	{
   		Button connectedButton = new Button("", new ImageView(new Image(FixtureController.class.getResourceAsStream(CONNECTED_IMAGE_SOURCE))));
     	connectedButton.getStyleClass().add("buttons");
-    	connectedButton.setTooltip(new Tooltip(UIMessages.getMessage("UI_CONNECT_DESC")));
+    	connectedButton.setTooltip(new Tooltip(UIMessages.getMessage("UI_DISCONNECT_DESC")));
+    	connectedButton.setOnAction(event -> {
+    		connect(remoteHost);
+    	});
     	return connectedButton;
   	}
   	
-  	private Button getDisconnectedButton()
+  	private Button getDisconnectedButton(final ConnectableRemoteHost remoteHost)
   	{
   		Button disconnectedButton = new Button("", new ImageView(new Image(FixtureController.class.getResourceAsStream(DISCONNECTED_IMAGE_SOURCE))));
   		disconnectedButton.getStyleClass().add("buttons");
-    	disconnectedButton.setTooltip(new Tooltip(UIMessages.getMessage("UI_DISCONNECT_DESC")));
+    	disconnectedButton.setTooltip(new Tooltip(UIMessages.getMessage("UI_CONNECT_DESC")));
+    	disconnectedButton.setOnAction(event -> {
+    		disconnect(remoteHost);
+    	});
     	return disconnectedButton;
   	}
   }

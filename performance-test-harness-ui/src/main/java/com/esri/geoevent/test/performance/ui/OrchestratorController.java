@@ -23,9 +23,12 @@
  */
 package com.esri.geoevent.test.performance.ui;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 import javafx.event.ActionEvent;
@@ -34,18 +37,37 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.control.Tooltip;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.InputEvent;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
+import javax.xml.transform.stream.StreamSource;
+
+import org.apache.commons.lang3.StringUtils;
 
 import com.esri.geoevent.test.performance.Mode;
 import com.esri.geoevent.test.performance.jaxb.Fixture;
@@ -79,12 +101,23 @@ public class OrchestratorController implements Initializable
 	// fixtures
 	@FXML
 	public TabPane fixtureTabPane;
+	@FXML
+	public Button addFixtureBtn;
+	@FXML
+	public Button startBtn;
+	@FXML 
+	public Label statusLabel;
 	
 	// member vars
 	private Fixtures fixtures = new Fixtures();
 	private Stage	stage;
+	private boolean	isRunning;
 	
 	// statics
+	private static final String START_IMAGE_SOURCE = "images/play.png"; 
+	private static final String STOP_IMAGE_SOURCE = "images/stop.png"; 
+  
+	public static final String DEFAULT_FIXTURES_FILE = "fixtures.xml";
 	
 	/**
 	 * Set up some defaults
@@ -118,7 +151,10 @@ public class OrchestratorController implements Initializable
 		optionsReportMenuItem.setText( UIMessages.getMessage("UI_OPTIONS_REPORT_MENU_ITEM_LABEL") );
 		helpMenu.setText( UIMessages.getMessage("UI_HELP_MENU_LABEL") );
 		helpAboutMenuItem.setText( UIMessages.getMessage("UI_HELP_ABOUT_MENU_ITEM_LABEL") );
-		
+		addFixtureBtn.setTooltip( new Tooltip(UIMessages.getMessage("UI_ADD_FIXTURE_DESC")) );
+		startBtn.setText( UIMessages.getMessage("UI_START_BTN_LABEL") );
+		startBtn.setTooltip( new Tooltip(UIMessages.getMessage("UI_START_BTN_DESC")) );
+		statusLabel.setText( "This is where the status changes will be placed." );
 		// setup the tabs
 		setupTabs();
 	}
@@ -130,7 +166,7 @@ public class OrchestratorController implements Initializable
    * @param event Input event.
    */
   @FXML
-  private void handleKeyInput(final InputEvent event)
+  public void handleKeyInput(final InputEvent event)
   {
      if (event instanceof KeyEvent)
      {
@@ -139,9 +175,17 @@ public class OrchestratorController implements Initializable
         {
            provideAboutFunctionality();
         }
-        if (keyEvent.isControlDown() && keyEvent.getCode() == KeyCode.R)
+        else if (keyEvent.isControlDown() && keyEvent.getCode() == KeyCode.R)
         {
            showReportOptionsDialog();
+        }
+        else if (keyEvent.isControlDown() && keyEvent.getCode() == KeyCode.O)
+        {
+           openFixturesFile();
+        }
+        else if (keyEvent.isControlDown() && keyEvent.getCode() == KeyCode.S)
+        {
+           saveFixturesFile();
         }
      }
   }
@@ -152,7 +196,7 @@ public class OrchestratorController implements Initializable
    * @param event Event on "About" menu item.
    */
   @FXML
-  private void handleAboutAction(final ActionEvent event)
+  public void handleAboutAction(final ActionEvent event)
   {
      provideAboutFunctionality();
   }
@@ -162,12 +206,165 @@ public class OrchestratorController implements Initializable
    * the changes are saved into the main configuration.
    * 
    * @param ActionEvent
-   * @return true if the user clicked OK, false otherwise.
    */
   @FXML
   public void handleReportOptionsAction(final ActionEvent event) 
   {
   	showReportOptionsDialog();
+  }
+  
+  /**
+   * Opens a file chooser dialog to load a fixtures.xml configuration file.
+   * 
+   * @param event {@link ActionEvent}
+   */
+  @FXML
+  public void handleOpenAction(final ActionEvent event)
+  {
+  	openFixturesFile();
+  }
+  
+  /**
+   * Saves the current configuration as an xml file.
+   * 
+   * @param event {@link ActionEvent}
+   */
+  @FXML
+  public void handleSaveAction(final ActionEvent event)
+  {
+  	saveFixturesFile();
+  }
+  
+  /**
+   * Adds a new fixture to the TabPane and to the fixtures model
+   * 
+   * @param event ActionEvent
+   */
+  @FXML
+  public void addFixture(final ActionEvent event)
+  {
+  	Fixture defaultFixture = fixtures.getDefaultFixture();
+  	Fixture newFixture = new Fixture("NewFixture" + (fixtures.getFixtures().size()+1));
+  	newFixture.apply(defaultFixture);
+  	fixtures.getFixtures().add(newFixture);
+  	addFixtureTab(newFixture, false);
+  }
+  
+  /**
+   * This is the main method which is used to start the simulation test
+   * 
+   * @param event {@link ActionEvent} not used.
+   */
+  @FXML
+  public void startTest(final ActionEvent event)
+  {
+  	toggleRunningState( ! isRunning );
+  }
+  
+  /**
+   * Helper method to toggle the UI running state
+   */
+  private void toggleRunningState(boolean newRunningState)
+  {
+  	isRunning = newRunningState;
+		if( isRunning )
+  	{
+  		startBtn.setText( UIMessages.getMessage("UI_STOP_BTN_LABEL") );
+  		startBtn.setTooltip( new Tooltip( UIMessages.getMessage("UI_STOP_BTN_DESC") ) );
+  		startBtn.setGraphic(new ImageView(new Image(FixtureController.class.getResourceAsStream(STOP_IMAGE_SOURCE))));
+  	}
+  	else
+  	{
+  		startBtn.setText( UIMessages.getMessage("UI_START_BTN_LABEL") );
+  		startBtn.setTooltip( new Tooltip( UIMessages.getMessage("UI_START_BTN_DESC") ) );
+  		startBtn.setGraphic(new ImageView(new Image(FixtureController.class.getResourceAsStream(START_IMAGE_SOURCE))));
+  	}
+  }
+  
+  /**
+   * Displays a file chooser to select a file to open
+   */
+  private void openFixturesFile()
+  {
+  	FileChooser fileChooser = new FileChooser();
+		fileChooser.setTitle(UIMessages.getMessage("UI_OPEN_FILE_CHOOSER_TITLE"));
+		fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
+		fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("XML", "*.xml"));
+		fileChooser.setInitialFileName(DEFAULT_FIXTURES_FILE);
+		File file = fileChooser.showOpenDialog(stage);
+		if (file != null)
+		{
+			try
+			{
+				loadFile(file);
+				setupTabs();
+			} 
+			catch( Exception error )
+			{
+				//TODO: Improve error handling and reporting
+				error.printStackTrace();
+			}
+		}
+  }
+  
+  /**
+   * Helper method to load a file and unmarshall it using JAXB
+   * 
+   * @param file File to load
+   * @throws JAXBException if there is a unmarshalling problem
+   */
+  private void loadFile(File file) throws JAXBException
+  {
+ 		JAXBContext jaxbContext = JAXBContext.newInstance(Fixtures.class);
+		Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+		StreamSource xml = new StreamSource(file.getAbsolutePath());
+		this.fixtures = (Fixtures) unmarshaller.unmarshal(xml);
+  }
+  
+  /**
+   * Displays a file chooser to select a file location to save the configuration file.
+   */
+  private void saveFixturesFile()
+  {
+  	FileChooser fileChooser = new FileChooser();
+		fileChooser.setTitle(UIMessages.getMessage("UI_SAVE_FILE_CHOOSER_TITLE"));
+		fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
+		fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("XML", "*.xml"));
+		fileChooser.setInitialFileName(DEFAULT_FIXTURES_FILE);
+		File file = fileChooser.showSaveDialog(stage);
+		if (file != null)
+		{
+			try
+			{
+				saveFile(file);
+			} 
+			catch( Exception error )
+			{
+				//TODO: Improve error handling and reporting
+				error.printStackTrace();
+			}
+		}
+  }
+  
+  /**
+   * Saves the current fixtures file to disk.
+   * 
+   * @param file File where to save the configuration file.
+   * @throws JAXBException
+   * @throws XMLStreamException
+   * @throws IOException
+   */
+  private void saveFile(File file) throws JAXBException, XMLStreamException, IOException
+  {
+  	JAXBContext jaxbContext = JAXBContext.newInstance(Fixtures.class);
+		Marshaller marshaller = jaxbContext.createMarshaller();
+		marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+		FileWriter fileWriter = new FileWriter(file);
+		XMLOutputFactory factory = XMLOutputFactory.newFactory();
+		XMLStreamWriter xmlWritter = factory.createXMLStreamWriter(fileWriter);
+		marshaller.marshal(fixtures, xmlWritter);
+		fileWriter.flush();
+		fileWriter.close();
   }
   
   /**
@@ -210,14 +407,22 @@ public class OrchestratorController implements Initializable
    */
   private void provideAboutFunctionality()
   {
+  	//TODO: We need to add a dialog for the "About" menu
      System.out.println("You clicked on About!");      
   }
   
   private void setupTabs()
   {
+  	//clear them all out
+  	fixtureTabPane.getTabs().clear();
+  	
   	// setup the tabs
  		if( fixtures.getDefaultFixture() != null )
+ 		{
+ 			if( StringUtils.isEmpty(fixtures.getDefaultFixture().getName()) )
+ 				fixtures.getDefaultFixture().setName("Default");
  			addFixtureTab( fixtures.getDefaultFixture(), true );
+ 		}
  		if( fixtures.getFixtures() != null )
  		{
  			for( Fixture fixture : fixtures.getFixtures() )
@@ -225,7 +430,7 @@ public class OrchestratorController implements Initializable
  		}
   }
   
-  private void addFixtureTab(Fixture fixture, boolean isDefault)
+  private void addFixtureTab(final Fixture fixture, boolean isDefault)
   {
   	try
   	{
@@ -234,11 +439,29 @@ public class OrchestratorController implements Initializable
 
 	  	FixtureController controller = loader.getController();
 	  	controller.setFixture(fixture);
-	  	controller.setIsDefault( isDefault );
+	  	controller.setIsDefault(isDefault);
 
 	  	Tab newTab = new Tab( fixture.getName() );
 	  	newTab.setContent( fixtureTab );
 	  	newTab.closableProperty().setValue(!isDefault);
+	  	newTab.setOnCloseRequest(event->
+	  	{
+	  		Alert alert = new Alert(AlertType.CONFIRMATION);
+	  		alert.setTitle( UIMessages.getMessage("UI_CLOSE_TAB_TITLE") );
+	  		alert.setHeaderText( UIMessages.getMessage("UI_CLOSE_TAB_LABEL", fixture.getName()) );
+	  		
+	  		Optional<ButtonType> result = alert.showAndWait();
+	  		if (result.get() != ButtonType.OK)
+	  		{
+	  			event.consume();
+	  		}
+	  		else
+	  		{
+	  			fixtures.getFixtures().remove(fixture);
+	  		}
+
+	  		//TODO: Style the dialog
+	  	});
 			fixtureTabPane.getTabs().add(newTab);
   	}
 		catch (IOException e)

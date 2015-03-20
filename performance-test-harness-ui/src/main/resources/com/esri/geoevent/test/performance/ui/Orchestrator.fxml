@@ -38,14 +38,16 @@
 	<rowConstraints>
 		<RowConstraints minHeight="10" valignment="CENTER" percentHeight="3" />
 		<RowConstraints minHeight="10" valignment="CENTER" percentHeight="3" />
-		<RowConstraints vgrow="SOMETIMES" percentHeight="94" valignment="CENTER" />
+		<RowConstraints vgrow="SOMETIMES" percentHeight="87" valignment="CENTER" />
+		<RowConstraints minHeight="20" valignment="CENTER" percentHeight="5" />
+		<RowConstraints minHeight="10" valignment="CENTER" percentHeight="2" />
 	</rowConstraints>
    	<children>
    		<MenuBar fx:id="menuBar" onKeyPressed="#handleKeyInput" styleClass="buttons" GridPane.columnIndex="0" GridPane.rowIndex="0">
    			<Menu fx:id="fileMenu" >
 	            <items>
-	               <MenuItem fx:id="fileOpenMenuItem" styleClass="buttons"/>
-	               <MenuItem fx:id="fileSaveMenuItem" styleClass="buttons"/>
+	               <MenuItem fx:id="fileOpenMenuItem" styleClass="buttons" onAction="#handleOpenAction"/>
+	               <MenuItem fx:id="fileSaveMenuItem" styleClass="buttons" onAction="#handleSaveAction"/>
 	            </items>
          	</Menu>
          	<Menu fx:id="optionsMenu">
@@ -64,6 +66,28 @@
                <Insets bottom="0.0" left="4.0" right="0.0" top="4.0" />
           	</GridPane.margin>
    		</Label>
-   		<TabPane fx:id="fixtureTabPane" GridPane.columnIndex="0" GridPane.rowIndex="2" styleClass="labels"/>   			
+   		<TabPane fx:id="fixtureTabPane" GridPane.columnIndex="0" GridPane.rowIndex="2" styleClass="labels"/>
+   		<Button fx:id="addFixtureBtn" onAction="#addFixture" styleClass="buttons" GridPane.columnIndex="0" GridPane.rowIndex="2" GridPane.halignment="RIGHT" GridPane.valignment="TOP" alignment="TOP_RIGHT">
+ 			<graphic>
+				<ImageView>
+					<Image url="@images/add.png"/>
+				</ImageView>
+			</graphic>
+			<GridPane.margin>
+               <Insets bottom="0.0" left="0.0" right="2.0" top="2.0" />
+          	</GridPane.margin>
+		</Button>
+		<HBox spacing="10" GridPane.columnIndex="0" GridPane.rowIndex="3" alignment="CENTER">
+			<Button fx:id="startBtn" onAction="#startTest" styleClass="buttons">
+	 			<graphic>
+					<ImageView>
+						<Image url="@images/play.png"/>
+					</ImageView>
+				</graphic>
+			</Button>
+		</HBox>
+		<HBox spacing="8" styleClass="statusBar" GridPane.columnIndex="0" GridPane.rowIndex="4" alignment="CENTER_RIGHT">
+			<Label fx:id="statusLabel" styleClass="statusLabel" />
+		</HBox>
 	</children>	
 </GridPane>
