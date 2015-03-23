@@ -25,6 +25,7 @@ package com.esri.geoevent.test.performance.ui;
 
 import java.io.File;
 import java.net.URL;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -83,7 +84,7 @@ public class ReportOptionsController implements Initializable
 	private Button									cancelBtn;
 
 	// statics
-	private static final String			DEFAULT_REPORT_FILE_LOCATION		= ReportOptionsController.class.getResource(".").getFile() + "reports";
+	private static final String			DEFAULT_REPORT_FILE_LOCATION		= Paths.get("").toAbsolutePath().toFile() + "/reports";
 	private static final String			DEFAULT_REPORT_FILE_NAME				= "report";
 	private static final ReportType	DEFAULT_REPORT_TYPE							= ReportType.XLSX;
 	private static final int				DEFAULT_MAX_NUM_OF_REPORT_FILES	= 10;
@@ -211,10 +212,11 @@ public class ReportOptionsController implements Initializable
 	@FXML
 	private void chooseReportFile(final ActionEvent event)
 	{
+		File currentDir = Paths.get("").toAbsolutePath().toFile();
 		String reportTypeStr = report.getType().toString();
 		FileChooser fileChooser = new FileChooser();
 		fileChooser.setTitle(UIMessages.getMessage("UI_REPORT_FILE_CHOOSER_TITLE"));
-		fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
+		fileChooser.setInitialDirectory(currentDir);
 		fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter(reportTypeStr, "*." + reportTypeStr.toLowerCase()));
 		fileChooser.setInitialFileName(DEFAULT_REPORT_FILE_NAME + "." + reportTypeStr.toLowerCase());
 		File file = fileChooser.showSaveDialog(dialogStage);

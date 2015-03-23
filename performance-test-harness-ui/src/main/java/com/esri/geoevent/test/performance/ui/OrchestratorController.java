@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.net.URL;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 
@@ -339,9 +340,10 @@ public class OrchestratorController implements Initializable, RunningStateListen
    */
   private void openFixturesFile()
   {
+  	File currentDir = Paths.get("").toAbsolutePath().toFile();
   	FileChooser fileChooser = new FileChooser();
 		fileChooser.setTitle(UIMessages.getMessage("UI_OPEN_FILE_CHOOSER_TITLE"));
-		fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
+		fileChooser.setInitialDirectory(currentDir);
 		fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("XML", "*.xml"));
 		fileChooser.setInitialFileName(DEFAULT_FIXTURES_FILE);
 		File file = fileChooser.showOpenDialog(stage);
@@ -379,9 +381,10 @@ public class OrchestratorController implements Initializable, RunningStateListen
    */
   private void saveFixturesFile()
   {
+  	File currentDir = Paths.get("").toAbsolutePath().toFile();
   	FileChooser fileChooser = new FileChooser();
 		fileChooser.setTitle(UIMessages.getMessage("UI_SAVE_FILE_CHOOSER_TITLE"));
-		fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
+		fileChooser.setInitialDirectory(currentDir);
 		fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("XML", "*.xml"));
 		fileChooser.setInitialFileName(DEFAULT_FIXTURES_FILE);
 		File file = fileChooser.showSaveDialog(stage);
