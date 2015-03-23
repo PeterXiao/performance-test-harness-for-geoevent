@@ -7,7 +7,7 @@
 	<DefaultFixture>
 		<DefaultSharedConfig protocol="TCP">
 			<Properties>
-				<Property name="hosts">rtrujillo</Property>
+				<Property name="hosts">ricardot</Property>
 			</Properties>
 		</DefaultSharedConfig>
 		<ProducerConfig commandPort="5010">

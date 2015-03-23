@@ -35,7 +35,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 public class RemoteHost
 {
 	private String host;
-	private int commandPort;
+	private int commandPort = -1;
 	
 	public RemoteHost()
 	{

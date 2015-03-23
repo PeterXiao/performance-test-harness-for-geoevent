@@ -35,8 +35,8 @@
 	</columnConstraints>
 	<rowConstraints>
 		<RowConstraints minHeight="20" valignment="CENTER" percentHeight="8" />
-		<RowConstraints minHeight="40" valignment="CENTER" percentHeight="34" />
-		<RowConstraints vgrow="SOMETIMES" percentHeight="58" valignment="CENTER" />
+		<RowConstraints minHeight="200" valignment="CENTER" percentHeight="62" />
+		<RowConstraints vgrow="SOMETIMES" percentHeight="30" valignment="CENTER" />
 	</rowConstraints>
    	<children>
    		<HBox spacing="8" GridPane.columnIndex="0" GridPane.rowIndex="0" alignment="CENTER_LEFT">
@@ -67,14 +67,15 @@
 						    	<cellValueFactory>
 						        	<PropertyValueFactory property="label"/>
 						    	</cellValueFactory>
-						    	<cellFactory>
-						    	</cellFactory>
 							</TableColumn>
+							
+							<!-- 
 							<TableColumn fx:id="producersConnectedColumn" sortable="false">
 						    	<cellValueFactory>
 						    		<PropertyValueFactory  property="connected"/>
 						    	</cellValueFactory>
 							</TableColumn>
+							-->
 						</columns>
 					</TableView>
 		         	<HBox spacing="4" GridPane.columnIndex="0" GridPane.rowIndex="2" GridPane.halignment="LEFT" GridPane.valignment="CENTER">
@@ -89,6 +90,26 @@
 						</Button>
 					</HBox>
 					
+					<HBox spacing="4" GridPane.columnIndex="0" GridPane.rowIndex="3" GridPane.halignment="LEFT" GridPane.valignment="CENTER" >
+						<Label fx:id="producersProtocolLabel" styleClass="labels"/>
+						<ComboBox fx:id="producersProtocolType" styleClass="buttons" onAction="#toggleProducerProtocolType" prefWidth="200"/>
+					</HBox>
+					<Label fx:id="producersPropsLabel" styleClass="labels" GridPane.columnIndex="0" GridPane.rowIndex="4" GridPane.halignment="LEFT"/>
+		           	<TableView fx:id="producersPropsTable" styleClass="tables" GridPane.columnIndex="0" GridPane.rowIndex="5">
+  						<columns>
+    						<TableColumn fx:id="producersPropNameColumn">
+						    	<cellValueFactory>
+						        	<PropertyValueFactory property="name" />
+						    	</cellValueFactory>
+							</TableColumn>
+							<TableColumn fx:id="producersPropValueColumn">
+						    	<cellValueFactory>
+						    		<PropertyValueFactory  property="value"/>
+						    	</cellValueFactory>
+							</TableColumn>
+						</columns>
+					</TableView>
+					
 		           	<Label fx:id="consumersLabel" styleClass="labels" GridPane.columnIndex="1" GridPane.rowIndex="0" GridPane.halignment="LEFT"/>
 		           	<TableView fx:id="consumersTable" styleClass="tables" GridPane.columnIndex="1" GridPane.rowIndex="1">
   						<columns>
@@ -97,11 +118,14 @@
 						        	<PropertyValueFactory property="label" />
 						    	</cellValueFactory>
 							</TableColumn>
+							
+							<!-- 
 							<TableColumn fx:id="consumersConnectedColumn">
 						    	<cellValueFactory>
 						    		<PropertyValueFactory  property="connected"/>
 						    	</cellValueFactory>
 							</TableColumn>
+							-->
 						</columns>
 					</TableView>
 					<HBox spacing="4" GridPane.columnIndex="1" GridPane.rowIndex="2" GridPane.halignment="LEFT" GridPane.valignment="CENTER" >
@@ -115,14 +139,34 @@
 							</graphic>
 						</Button>
 					</HBox>
-		          </children>
+					
+					<HBox spacing="4" GridPane.columnIndex="1" GridPane.rowIndex="3" GridPane.halignment="LEFT" GridPane.valignment="CENTER" >
+						<Label fx:id="consumersProtocolLabel" styleClass="labels"/>
+						<ComboBox fx:id="consumersProtocolType" styleClass="buttons" onAction="#toggleConsumerProtocolType" prefWidth="200"/>
+					</HBox>
+					<Label fx:id="consumersPropsLabel" styleClass="labels" GridPane.columnIndex="1" GridPane.rowIndex="4" GridPane.halignment="LEFT"/>
+		           	<TableView fx:id="consumersPropsTable" styleClass="tables" GridPane.columnIndex="1" GridPane.rowIndex="5">
+  						<columns>
+    						<TableColumn fx:id="consumersPropNameColumn">
+						    	<cellValueFactory>
+						        	<PropertyValueFactory property="name" />
+						    	</cellValueFactory>
+							</TableColumn>
+							<TableColumn fx:id="consumersPropValueColumn">
+						    	<cellValueFactory>
+						    		<PropertyValueFactory  property="value"/>
+						    	</cellValueFactory>
+							</TableColumn>
+						</columns>
+					</TableView>
+		        </children>
 			</GridPane>
 			<GridPane.margin>
                <Insets bottom="0.0" left="0.0" right="0.0" top="0.0" />
           	</GridPane.margin>
 	    </VBox>
 	    <VBox fx:id="simulationBox" styleClass="modeBox" GridPane.columnIndex="0" GridPane.rowIndex="2">
-	    	<GridPane alignment="CENTER" hgap="4" vgap="4" styleClass="box">
+	    	<GridPane alignment="CENTER" hgap="4" vgap="2" styleClass="box">
             	<children>
             		<Label fx:id="testTypeLabel" styleClass="labels,required" GridPane.columnIndex="0" GridPane.rowIndex="0" prefWidth="140" >
             			<GridPane.margin>

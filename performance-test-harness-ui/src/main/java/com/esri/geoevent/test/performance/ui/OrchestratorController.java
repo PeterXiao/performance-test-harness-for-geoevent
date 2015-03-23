@@ -70,11 +70,15 @@ import javax.xml.transform.stream.StreamSource;
 import org.apache.commons.lang3.StringUtils;
 
 import com.esri.geoevent.test.performance.Mode;
+import com.esri.geoevent.test.performance.RunningException;
+import com.esri.geoevent.test.performance.RunningState;
+import com.esri.geoevent.test.performance.RunningStateListener;
+import com.esri.geoevent.test.performance.TestHarnessExecutor;
 import com.esri.geoevent.test.performance.jaxb.Fixture;
 import com.esri.geoevent.test.performance.jaxb.Fixtures;
 import com.esri.geoevent.test.performance.jaxb.Report;
 
-public class OrchestratorController implements Initializable
+public class OrchestratorController implements Initializable, RunningStateListener
 {
 	//UI Elements
 	@FXML
@@ -112,6 +116,7 @@ public class OrchestratorController implements Initializable
 	private Fixtures fixtures = new Fixtures();
 	private Stage	stage;
 	private boolean	isRunning;
+	private TestHarnessExecutor executor = null; 
 	
 	// statics
 	private static final String START_IMAGE_SOURCE = "images/play.png"; 
@@ -269,12 +274,39 @@ public class OrchestratorController implements Initializable
   	isRunning = newRunningState;
 		if( isRunning )
   	{
+			// start the executor
+			try
+			{
+				this.executor = new TestHarnessExecutor(fixtures);
+		  	this.executor.start();
+		  	this.executor.setRunningStateListener(this);
+			} 
+			catch( RunningException error )
+			{
+				//TODO: error handling
+				error.printStackTrace();
+			}
+	  	
+			// toggle the ui
   		startBtn.setText( UIMessages.getMessage("UI_STOP_BTN_LABEL") );
   		startBtn.setTooltip( new Tooltip( UIMessages.getMessage("UI_STOP_BTN_DESC") ) );
   		startBtn.setGraphic(new ImageView(new Image(FixtureController.class.getResourceAsStream(STOP_IMAGE_SOURCE))));
   	}
   	else
   	{
+  		// stop execution
+  		if( this.executor != null )
+  		{
+  			if( this.executor.isRunning() )
+  			{
+  				this.executor.stop();
+  			}
+  			else
+  			{
+  				this.executor = null;
+  			}
+  		}
+  		
   		startBtn.setText( UIMessages.getMessage("UI_START_BTN_LABEL") );
   		startBtn.setTooltip( new Tooltip( UIMessages.getMessage("UI_START_BTN_DESC") ) );
   		startBtn.setGraphic(new ImageView(new Image(FixtureController.class.getResourceAsStream(START_IMAGE_SOURCE))));
@@ -360,7 +392,7 @@ public class OrchestratorController implements Initializable
 		Marshaller marshaller = jaxbContext.createMarshaller();
 		marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 		FileWriter fileWriter = new FileWriter(file);
-		XMLOutputFactory factory = XMLOutputFactory.newFactory();
+		XMLOutputFactory factory = XMLOutputFactory.newInstance();
 		XMLStreamWriter xmlWritter = factory.createXMLStreamWriter(fileWriter);
 		marshaller.marshal(fixtures, xmlWritter);
 		fileWriter.flush();
@@ -426,7 +458,10 @@ public class OrchestratorController implements Initializable
  		if( fixtures.getFixtures() != null )
  		{
  			for( Fixture fixture : fixtures.getFixtures() )
+ 			{
+ 				fixture.apply(fixtures.getDefaultFixture());
  				addFixtureTab( fixture, false );
+ 			}
  		}
   }
   
@@ -468,5 +503,22 @@ public class OrchestratorController implements Initializable
 		{
 			e.printStackTrace();
 		}
+  }
+  
+  /**
+   * Running State Listener - this is used so we get notified when the orchestration is complete
+   */
+  @Override
+  public void onStateChange(RunningState newState)
+  {
+  	switch( newState.getType() )
+  	{
+  		case STOPPED:
+  			toggleRunningState(false);
+  			break;
+  			
+			default:
+				break;
+  	}
   }
 }

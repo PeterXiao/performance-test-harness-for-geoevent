@@ -29,6 +29,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -73,15 +74,187 @@ import com.esri.geoevent.test.performance.websocket.WebsocketEventConsumer;
 import com.esri.geoevent.test.performance.websocket.WebsocketEventProducer;
 import com.esri.geoevent.test.performance.websocket.server.WebsocketServerEverntProducer;
 
-public class TestHarnessExecutor
+public class TestHarnessExecutor implements RunnableComponent
 {
-	private static Fixtures fixtures;
-	private static List<String> testNames;
-	private static boolean reportComplete;
-	private static long startTime;
-	
 	public static boolean DEBUG = false;
 	
+	// member vars
+	private List<String> testNames;
+	private boolean reportComplete;
+	private long startTime;	
+	private Fixtures fixtures;
+	
+	// Runnable
+	private RunningStateListener	listener;
+	protected AtomicBoolean					running						= new AtomicBoolean(false);
+	
+	//-------------------------------------------------------
+	// Constructor
+	// ------------------------------------------------------
+	
+	public TestHarnessExecutor(Fixtures fixtures)
+	{
+		this.fixtures = fixtures;
+	}
+	
+	//-------------------------------------------------------
+	// Public methods
+	// ------------------------------------------------------
+	
+	@Override
+	public void start() throws RunningException
+	{
+		running = new AtomicBoolean(true);
+		run();
+		if( listener != null )
+			listener.onStateChange(new RunningState(RunningStateType.STARTED));
+	}
+
+	@Override
+	public void stop()
+	{
+		running.set(false);
+		if( listener != null )
+			listener.onStateChange(new RunningState(RunningStateType.STOPPED));
+	}
+	
+	@Override
+	public boolean isRunning()
+	{
+		return running.get();
+	}
+	
+	@Override
+	public RunningStateType getRunningState()
+	{
+		return running.get() ? RunningStateType.STARTED : RunningStateType.STOPPED;
+	}
+
+	@Override
+	public void setRunningStateListener(RunningStateListener listener)
+	{
+		this.listener = listener;
+	}
+	
+	/**
+	 * Main Test Harness Orchestrator Method
+	 */
+	public void run()
+	{
+		// parse the xml file
+		testNames = new ArrayList<String>();
+
+		// add this runtime hook to write out whatever results we have to a report in case of exit or failures
+		Runtime.getRuntime().addShutdownHook(new Thread()
+			{
+				@Override
+				public void run()
+				{
+					long totalTime = System.currentTimeMillis() - startTime;
+					writeReport(fixtures, testNames, totalTime);
+				}
+			});
+
+		// Check the master fixtures configuration to see if we need to provision all of the test
+		ProvisionerFactory provisionerFactory = new DefaultProvisionerFactory();
+		try
+		{
+			ProvisionerConfig masterProvisionerConfig = fixtures.getProvisionerConfig();
+			if (masterProvisionerConfig != null)
+			{
+				Provisioner provisioner = provisionerFactory.createProvisioner(masterProvisionerConfig);
+				if (provisioner != null)
+					provisioner.provision();
+			}
+		}
+		catch (ProvisionException error)
+		{
+			System.err.println(ImplMessages.getMessage("TEST_HARNESS_EXECUTOR_PROVISIONING_ERROR"));
+			error.printStackTrace();
+			return;
+		}
+
+		// start
+		startTime = System.currentTimeMillis();
+
+		// process all fixtures in sequence/series
+		final Fixture defaultFixture = fixtures.getDefaultFixture();
+		Queue<Fixture> processingQueue = new ConcurrentLinkedQueue<Fixture>(fixtures.getFixtures());
+		while (!processingQueue.isEmpty() && isRunning())
+		{
+			Fixture fixture = processingQueue.remove();
+			fixture.apply(defaultFixture);
+			try
+			{
+				ProvisionerConfig fixtureProvisionerConfig = fixture.getProvisionerConfig();
+				if (fixtureProvisionerConfig != null)
+				{
+					Provisioner provisioner = provisionerFactory.createProvisioner(fixtureProvisionerConfig);
+					if (provisioner != null)
+						provisioner.provision();
+				}
+			}
+			catch (Exception error)
+			{
+				System.err.println(ImplMessages.getMessage("TEST_HARNESS_EXECUTOR_FIXTURE_PROVISIONING_ERROR", fixture.getName()));
+				error.printStackTrace();
+				continue;
+			}
+
+			testNames.add(fixture.getName());
+			TestHarness testHarness = new ThroughputPerformanceTestHarness(fixture);
+			try
+			{
+				testHarness.init();
+				testHarness.runTest();
+			}
+			catch (Exception error)
+			{
+				error.printStackTrace();
+				testHarness.destroy();
+				testHarness = null;
+				continue;
+			}
+
+			// check if we are running and sleep accordingly
+			while (testHarness.isRunning() && isRunning())
+			{
+				try
+				{
+					Thread.sleep(100);
+				}
+				catch (InterruptedException e)
+				{
+					e.printStackTrace();
+				}
+			}
+			testHarness = null;
+
+			// pause for 1/2 second before continuing with the next test
+			try
+			{
+				Thread.sleep(500);
+			}
+			catch (InterruptedException e)
+			{
+				e.printStackTrace();
+			}
+		}
+		long totalTime = System.currentTimeMillis() - startTime;
+		// write out the report
+		writeReport(fixtures, testNames, totalTime);
+		//notify
+		stop();
+	}
+	
+	//-------------------------------------------------------
+	// Statics Methods
+	// ------------------------------------------------------
+	
+	/**
+	 * Main method - this is used to when running from command line
+	 * @param args
+	 */
 	@SuppressWarnings("static-access")
 	public static void main(String[] args)
 	{
@@ -131,7 +304,7 @@ public class TestHarnessExecutor
 			}
 
 			// parse the xml file
-			testNames = new ArrayList<String>();
+			final Fixtures fixtures;
 			try
 			{
 				fixtures = fromXML(fixturesFilePath);
@@ -143,103 +316,16 @@ public class TestHarnessExecutor
 				return;
 			}
 			
-			// add this runtime hook to write out whatever results we have to a report in case of exit or failures
-			Runtime.getRuntime().addShutdownHook(new Thread() {
-				@Override
-				public void run()
-				{
-					long totalTime = System.currentTimeMillis() - startTime;
-					writeReport(fixtures,testNames,totalTime);
-				}
-			});
-			
-			// Check the master fixtures configuration to see if we need to provision all of the test
-			ProvisionerFactory provisionerFactory = new DefaultProvisionerFactory();
+			// run the test harness
 			try
 			{
-				ProvisionerConfig masterProvisionerConfig = fixtures.getProvisionerConfig();
-				if( masterProvisionerConfig != null )
-				{
-					Provisioner provisioner = provisionerFactory.createProvisioner(masterProvisionerConfig);
-					if( provisioner != null )
-						provisioner.provision();
-				}
+				TestHarnessExecutor executor = new TestHarnessExecutor(fixtures);
+				executor.start();
 			} 
-			catch( ProvisionException error )
+			catch( RunningException error )
 			{
-				System.err.println( ImplMessages.getMessage("TEST_HARNESS_EXECUTOR_PROVISIONING_ERROR") );
 				error.printStackTrace();
-				return;
 			}
-			
-			// start
-			startTime = System.currentTimeMillis();
-			
-			//process all fixtures in sequence/series
-			final Fixture defaultFixture = fixtures.getDefaultFixture();
-			Queue<Fixture> processingQueue = new ConcurrentLinkedQueue<Fixture>(fixtures.getFixtures());
-			while( ! processingQueue.isEmpty() )
-			{
-				Fixture fixture = processingQueue.remove();
-				fixture.apply(defaultFixture);
-				try
-				{
-					ProvisionerConfig fixtureProvisionerConfig = fixture.getProvisionerConfig();
-					if( fixtureProvisionerConfig != null )
-					{
-						Provisioner provisioner = provisionerFactory.createProvisioner(fixtureProvisionerConfig);
-						if( provisioner != null )
-							provisioner.provision();
-					}
-				} catch( Exception error )
-				{
-					System.err.println( ImplMessages.getMessage("TEST_HARNESS_EXECUTOR_FIXTURE_PROVISIONING_ERROR", fixture.getName()) );
-					error.printStackTrace();
-					continue;
-				}
-				
-				testNames.add( fixture.getName() );
-				TestHarness testHarness = new ThroughputPerformanceTestHarness(fixture);
-				try
-				{
-					testHarness.init();
-					testHarness.runTest();
-				}
-				catch (Exception error)
-				{
-					error.printStackTrace();
-					testHarness.destroy();
-					testHarness = null;
-					continue;
-				}
-				
-				// check if we are running and sleep accordingly
-				while( testHarness.isRunning() )
-				{
-					try
-					{
-						Thread.sleep(100);
-					}
-					catch (InterruptedException e)
-					{
-						e.printStackTrace();
-					}
-				}
-				testHarness = null;
-				
-				//pause for 1/2 second before continuing with the next test
-				try
-				{
-					Thread.sleep(500);
-				}
-				catch (InterruptedException e)
-				{
-					e.printStackTrace();
-				}
-			}
-			long totalTime = System.currentTimeMillis() - startTime;			
-			// write out the report
-			writeReport(fixtures, testNames,totalTime);
 		}
 		// check if we have performer options
 		else
@@ -369,7 +455,7 @@ public class TestHarnessExecutor
 		}
 	}
 	
-	private static void writeReport(final Fixtures fixtures, final List<String> testNames, long totalTestingTime)
+	private void writeReport(final Fixtures fixtures, final List<String> testNames, long totalTestingTime)
 	{
 		if( fixtures == null || testNames.size() == 0 || reportComplete)
 			return;

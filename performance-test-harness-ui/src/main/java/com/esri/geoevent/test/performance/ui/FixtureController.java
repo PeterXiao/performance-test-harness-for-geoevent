@@ -26,7 +26,9 @@ package com.esri.geoevent.test.performance.ui;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
@@ -50,13 +52,16 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
-import javafx.util.Callback;
 import jfxtras.labs.scene.control.BigDecimalField;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 
+import com.esri.geoevent.test.performance.Protocol;
+import com.esri.geoevent.test.performance.jaxb.ConsumerConfig;
 import com.esri.geoevent.test.performance.jaxb.Fixture;
+import com.esri.geoevent.test.performance.jaxb.ProducerConfig;
+import com.esri.geoevent.test.performance.jaxb.Property;
 import com.esri.geoevent.test.performance.jaxb.RampTest;
 import com.esri.geoevent.test.performance.jaxb.RemoteHost;
 import com.esri.geoevent.test.performance.jaxb.Simulation;
@@ -83,14 +88,26 @@ public class FixtureController implements Initializable
 	public TableView<ConnectableRemoteHost> producersTable;
 	@FXML
 	public TableColumn<ConnectableRemoteHost,String> producersNameColumn;
-	@FXML
-	public TableColumn<ConnectableRemoteHost,Boolean> producersConnectedColumn;
+//	@FXML
+//	public TableColumn<ConnectableRemoteHost,Boolean> producersConnectedColumn;
 	@FXML
 	public TextField producerHostName;
 	@FXML
 	public RestrictiveTextField producerPort;
 	@FXML
 	public Button producerAddBtn;
+	@FXML
+	public Label producersProtocolLabel;
+	@FXML
+	public ComboBox<Protocol> producersProtocolType;
+	@FXML
+	public Label producersPropsLabel;
+	@FXML
+	public TableView<Property> producersPropsTable;
+	@FXML
+	public TableColumn<Property,String> producersPropNameColumn;
+	@FXML
+	public TableColumn<Property,String> producersPropValueColumn;
 	
 	// consumers
 	@FXML
@@ -99,14 +116,26 @@ public class FixtureController implements Initializable
 	public TableView<ConnectableRemoteHost> consumersTable;
 	@FXML
 	public TableColumn<ConnectableRemoteHost,String> consumersNameColumn;
-	@FXML
-	public TableColumn<ConnectableRemoteHost,Boolean> consumersConnectedColumn;
+//	@FXML
+//	public TableColumn<ConnectableRemoteHost,Boolean> consumersConnectedColumn;
 	@FXML
 	public TextField consumerHostName;
 	@FXML
 	public RestrictiveTextField consumerPort;
 	@FXML
 	public Button consumerAddBtn;
+	@FXML
+	public Label consumersProtocolLabel;
+	@FXML
+	public ComboBox<Protocol> consumersProtocolType;
+	@FXML
+	public Label consumersPropsLabel;
+	@FXML
+	public TableView<Property> consumersPropsTable;
+	@FXML
+	public TableColumn<Property,String> consumersPropNameColumn;
+	@FXML
+	public TableColumn<Property,String> consumersPropValueColumn;
 	
 	// simulation
 	@FXML
@@ -179,9 +208,11 @@ public class FixtureController implements Initializable
 	private Fixture fixture;
 	private boolean isDefault;
 	private boolean isEditingName;
+	private Map<Protocol, ObservableList<Property>> producerPropertiesCache;
+	private Map<Protocol, ObservableList<Property>> consumerPropertiesCache;
 	
 	// statics
-	private static final Callback<TableColumn<ConnectableRemoteHost,Boolean>,TableCell<ConnectableRemoteHost,Boolean>> CONNECTABLE_CELL_FACTORY = (p) -> new ConnectedTableCell<>();
+	//private static final Callback<TableColumn<ConnectableRemoteHost,Boolean>,TableCell<ConnectableRemoteHost,Boolean>> CONNECTABLE_CELL_FACTORY = (p) -> new ConnectedTableCell<>();
 	private static final String SAVE_IMAGE_SOURCE = "images/save.png"; 
 	private static final String EDIT_IMAGE_SOURCE = "images/pencil.png"; 
   
@@ -222,6 +253,8 @@ public class FixtureController implements Initializable
 	@Override
 	public void initialize(URL location, ResourceBundle resources)
 	{
+		initPropertiesCache();
+		
 		nameLabel.setText( UIMessages.getMessage("UI_FIXTURE_NAME_LABEL")  );
 		nameField.setText( fixture != null ? fixture.getName() : "" );
 		editNameBtn.setTooltip( new Tooltip( UIMessages.getMessage("UI_FIXTURE_EDIT_NAME_DESC") ) );
@@ -230,22 +263,40 @@ public class FixtureController implements Initializable
 		//producers
 		producersLabel.setText( UIMessages.getMessage("UI_PRODUCERS_LABEL") );
 		producersNameColumn.setText( UIMessages.getMessage("UI_PRODUCERS_NAME_COL_LABEL") );
-		producersNameColumn.prefWidthProperty().bind(producersTable.widthProperty().multiply(0.83));
-		producersConnectedColumn.prefWidthProperty().bind(producersTable.widthProperty().multiply(0.16));
-		producersConnectedColumn.setCellFactory(CONNECTABLE_CELL_FACTORY);
+		producersNameColumn.prefWidthProperty().bind(producersTable.widthProperty().multiply(0.99));
+//		producersConnectedColumn.prefWidthProperty().bind(producersTable.widthProperty().multiply(0.16));
+//		producersConnectedColumn.setCellFactory(CONNECTABLE_CELL_FACTORY);
 		producerHostName.setPromptText( UIMessages.getMessage("UI_PRODUCER_HOST_NAME_DESC") );
 		producerPort.setPromptText( UIMessages.getMessage("UI_PRODUCER_PORT_DESC") );
 		producerAddBtn.setTooltip( new Tooltip(UIMessages.getMessage("UI_PRODUCER_ADD_BTN_DESC")));
+		producersProtocolLabel.setText( UIMessages.getMessage("UI_PROTOCOL_LABEL") );
+		producersProtocolType.setItems(getProducerProtocolList());
+		producersProtocolType.setValue(Protocol.TCP);
+		producersPropsLabel.setText( UIMessages.getMessage("UI_PROPERTY_LABEL") );
+		producersPropNameColumn.setText( UIMessages.getMessage("UI_PROPERTY_NAME_COL_LABEL") );
+		producersPropNameColumn.prefWidthProperty().bind(producersPropsTable.widthProperty().multiply(0.48));
+		producersPropValueColumn.setText( UIMessages.getMessage("UI_PROPERTY_VALUE_COL_LABEL") );
+		producersPropValueColumn.prefWidthProperty().bind(producersPropsTable.widthProperty().multiply(0.5));
+		producersPropValueColumn.setEditable(true);
 		
 		//consumers
 		consumersLabel.setText( UIMessages.getMessage("UI_CONSUMERS_LABEL") );
 		consumersNameColumn.setText( UIMessages.getMessage("UI_CONSUMERS_NAME_COL_LABEL") );
-		consumersNameColumn.prefWidthProperty().bind(consumersTable.widthProperty().multiply(0.83));
-		consumersConnectedColumn.prefWidthProperty().bind(consumersTable.widthProperty().multiply(0.16));
-		consumersConnectedColumn.setCellFactory(CONNECTABLE_CELL_FACTORY);
+		consumersNameColumn.prefWidthProperty().bind(consumersTable.widthProperty().multiply(0.99));
+//		consumersConnectedColumn.prefWidthProperty().bind(consumersTable.widthProperty().multiply(0.16));
+//		consumersConnectedColumn.setCellFactory(CONNECTABLE_CELL_FACTORY);
 		consumerHostName.setPromptText( UIMessages.getMessage("UI_CONSUMER_HOST_NAME_DESC") );
 		consumerPort.setPromptText( UIMessages.getMessage("UI_CONSUMER_PORT_DESC") );
 		consumerAddBtn.setTooltip( new Tooltip(UIMessages.getMessage("UI_CONSUMER_ADD_BTN_DESC")));
+		consumersProtocolLabel.setText( UIMessages.getMessage("UI_PROTOCOL_LABEL") );
+		consumersProtocolType.setItems(getConsumerProtocolList());
+		consumersProtocolType.setValue(Protocol.TCP);
+		consumersPropsLabel.setText( UIMessages.getMessage("UI_PROPERTY_LABEL") );
+		consumersPropNameColumn.setText( UIMessages.getMessage("UI_PROPERTY_NAME_COL_LABEL") );
+		consumersPropNameColumn.prefWidthProperty().bind(consumersPropsTable.widthProperty().multiply(0.48));
+		consumersPropValueColumn.setText( UIMessages.getMessage("UI_PROPERTY_VALUE_COL_LABEL") );
+		consumersPropValueColumn.prefWidthProperty().bind(consumersPropsTable.widthProperty().multiply(0.5));
+		consumersPropValueColumn.setEditable(true);
 		
 		// simulation
 		testTypeLabel.setText( UIMessages.getMessage("UI_TEST_TYPE_LABEL") );
@@ -272,6 +323,8 @@ public class FixtureController implements Initializable
 		//set up state
 		toggleEditName(null);
 		setEditNameState(isEditingName);
+		toggleProducerProtocolType(null);
+		toggleConsumerProtocolType(null);
 	}
   
 	@FXML
@@ -321,6 +374,7 @@ public class FixtureController implements Initializable
   	else
   	{
   		producersTable.getItems().add(new ConnectableRemoteHost(hostName, port));
+  		//TODO: Add to fixtures
   	}
   }
   
@@ -336,7 +390,26 @@ public class FixtureController implements Initializable
   	else
   	{
   		consumersTable.getItems().add(new ConnectableRemoteHost(hostName, port));
+  	//TODO: Add to fixtures
   	}
+  }
+  
+  @FXML 
+  public void toggleProducerProtocolType(final ActionEvent event)
+  {
+  	Protocol protocol = producersProtocolType.getValue();
+  	ObservableList<Property> props = producerPropertiesCache.get(protocol);
+  	producersPropsTable.setItems(props);  	
+  	setProducerProtocol(protocol);
+  }
+  
+  @FXML 
+  public void toggleConsumerProtocolType(final ActionEvent event)
+  {
+  	Protocol protocol = consumersProtocolType.getValue();
+  	ObservableList<Property> props = consumerPropertiesCache.get(protocol);
+  	consumersPropsTable.setItems(props);
+  	setConsumerProtocol(protocol);
   }
   
   @FXML
@@ -475,6 +548,40 @@ public class FixtureController implements Initializable
   }
   
   /**
+   * Helper method used to set the Protocol on the Producer Config object
+   * @param protocol {@link Protocol}
+   */
+  private void setProducerProtocol(Protocol protocol)
+  {
+  	if( fixture == null )
+  	{
+  		fixture = new Fixture();
+  	}
+  	if( fixture.getProducerConfig() == null )
+  	{
+  		fixture.setProducerConfig( new ProducerConfig() );
+  	}
+  	fixture.getProducerConfig().setProtocol(protocol);
+  }
+
+  /**
+   * Helper method used to set the Protocol on the Consumer Config object
+   * @param protocol {@link Protocol}
+   */
+  private void setConsumerProtocol(Protocol protocol)
+  {
+  	if( fixture == null )
+  	{
+  		fixture = new Fixture();
+  	}
+  	if( fixture.getConsumerConfig() == null )
+  	{
+  		fixture.setConsumerConfig( new ConsumerConfig() );
+  	}
+  	fixture.getConsumerConfig().setProtocol(protocol);
+  }
+  
+  /**
    * Helper method to toggle if we are editing the default fixxture or not.
    * @param isDefault boolean
    */
@@ -513,20 +620,28 @@ public class FixtureController implements Initializable
   		nameField.setEditable(true);
   		editNameBtn.setVisible(true);  		
   	}
-  	//populate the configs
-  	if( fixture.getDefaultConfig() != null )
-  	{
-  		// apply if necessary
-  		if( fixture.getConsumerConfig() != null )
-  			fixture.getConsumerConfig().apply(fixture.getDefaultConfig());
-  		if( fixture.getProducerConfig() != null )
-  			fixture.getProducerConfig().apply(fixture.getDefaultConfig());
-  	}
+  	
+		// apply if necessary
+		if( fixture.getConsumerConfig() != null )
+			fixture.getConsumerConfig().apply(fixture.getDefaultConfig());
+		if( fixture.getProducerConfig() != null )
+			fixture.getProducerConfig().apply(fixture.getDefaultConfig());
   	
   	// get the consumers
   	List<RemoteHost> consumers = new ArrayList<RemoteHost>();
   	if( fixture.getConsumerConfig() != null )
   	{
+  		if( fixture.getConsumerConfig().getProtocol() != null && fixture.getConsumerConfig().getProtocol() != Protocol.UNKNOWN)
+  		{
+  			consumersProtocolType.setValue(fixture.getConsumerConfig().getProtocol());
+  			if( fixture.getConsumerConfig().getProperties() != null )
+  			{
+  				ObservableList<Property> propsInCache = consumerPropertiesCache.get(fixture.getConsumerConfig().getProtocol());
+  				propsInCache.stream().forEach(prop-> {
+  					prop.setValue( fixture.getConsumerConfig().getPropertyValue(prop.getName()) );
+  				});
+  			}
+  		}
   		if( fixture.getConsumerConfig().getConsumers() != null )
   		{
   			consumers = fixture.getConsumerConfig().getConsumers();
@@ -544,6 +659,18 @@ public class FixtureController implements Initializable
    	List<RemoteHost> producers = new ArrayList<RemoteHost>();
    	if( fixture.getProducerConfig() != null )
    	{
+  		if( fixture.getProducerConfig().getProtocol() != null && fixture.getProducerConfig().getProtocol() != Protocol.UNKNOWN)
+  		{
+  			producersProtocolType.setValue(fixture.getProducerConfig().getProtocol());
+  			if( fixture.getProducerConfig().getProperties() != null )
+  			{
+  				ObservableList<Property> propsInCache = producerPropertiesCache.get(fixture.getProducerConfig().getProtocol());
+  				propsInCache.stream().forEach(prop-> {
+  					prop.setValue( fixture.getProducerConfig().getPropertyValue(prop.getName()) );
+  				});
+  			}
+  		}
+  		
    		if( fixture.getProducerConfig().getProducers() != null )
    		{
    			producers = fixture.getProducerConfig().getProducers();
@@ -622,14 +749,165 @@ public class FixtureController implements Initializable
   	return remoteHosts.stream().map(host -> new ConnectableRemoteHost(host)).collect(Collectors.toList());
   }
   
+  /**
+   * TODO: More finite control of when we connect to producers and consumers
+   * @param remoteHost
+   */
   private static void connect(final ConnectableRemoteHost remoteHost)
   {
   	
   }
   
+  /**
+   * TODO: More finite control of when we connect to producers and consumers
+   * @param remoteHost
+   */
   private static void disconnect(final ConnectableRemoteHost remoteHost)
   {
   	
+  }
+  
+  private ObservableList<Protocol> getProducerProtocolList()
+	{
+		ArrayList<Protocol> list = new ArrayList<Protocol>();
+		list.add(Protocol.ACTIVE_MQ);
+		list.add(Protocol.KAFKA);
+		list.add(Protocol.RABBIT_MQ);
+		list.add(Protocol.STREAM_SERVICE);
+		list.add(Protocol.TCP);
+		list.add(Protocol.TCP_SERVER);
+		list.add(Protocol.WEBSOCKETS);
+		list.add(Protocol.WEBSOCKET_SERVER);
+		return FXCollections.observableList(list);
+	}
+  
+  private ObservableList<Protocol> getConsumerProtocolList()
+	{
+		ArrayList<Protocol> list = new ArrayList<Protocol>();
+		list.add(Protocol.ACTIVE_MQ);
+		list.add(Protocol.RABBIT_MQ);
+		list.add(Protocol.STREAM_SERVICE);
+		list.add(Protocol.TCP);
+		list.add(Protocol.TCP_SERVER);
+		list.add(Protocol.WEBSOCKETS);
+		return FXCollections.observableList(list);
+	}
+  
+  /**
+   * FIXME: This is a hardcoding method - we need to get rid oof this and introspec the
+   * Producer or Consumer for its individual properties
+   */
+  private void initPropertiesCache()
+  {
+  	// Producers
+  	producerPropertiesCache = new HashMap<Protocol, ObservableList<Property>>();
+  	Property simulationFile = new Property("simulationFile", "");
+  	
+  	// TCP
+  	ArrayList<Property> props = new ArrayList<Property>();
+  	props.add(simulationFile);
+  	props.add(new Property("hosts", "localhost"));
+  	props.add(new Property("port", "5565"));
+  	producerPropertiesCache.put(Protocol.TCP, FXCollections.observableList(props));
+  	
+  	// TCP SERVER
+   	props = new ArrayList<Property>();
+   	props.add(simulationFile);
+   	props.add(new Property("hosts", "localhost"));
+   	props.add(new Property("port", "5565"));
+   	producerPropertiesCache.put(Protocol.TCP_SERVER, FXCollections.observableList(props));
+   	
+   	// ACTIVE_MQ
+   	props = new ArrayList<Property>();
+   	props.add(simulationFile);
+   	props.add(new Property("providerUrl", ""));
+   	props.add(new Property("destinationType", ""));
+   	props.add(new Property("destinationName", ""));
+   	producerPropertiesCache.put(Protocol.ACTIVE_MQ, FXCollections.observableList(props));
+   	
+   	// KAFKA
+   	props = new ArrayList<Property>();
+   	props.add(simulationFile);
+   	props.add(new Property("brokerList", "localhost:9092"));
+   	props.add(new Property("topic", "default-topic"));
+   	props.add(new Property("requiredAcks", "1"));
+   	producerPropertiesCache.put(Protocol.KAFKA, FXCollections.observableList(props));
+   	
+   	// RABBIT_MQ
+   	props = new ArrayList<Property>();
+   	props.add(simulationFile);
+   	props.add(new Property("uri", ""));
+   	props.add(new Property("exchangeName", ""));
+   	props.add(new Property("queueName", ""));
+   	props.add(new Property("routingKey", ""));
+   	producerPropertiesCache.put(Protocol.RABBIT_MQ, FXCollections.observableList(props));
+   	
+   	// STREAM_SERVICE
+   	props = new ArrayList<Property>();
+   	props.add(simulationFile);
+   	props.add(new Property("hosts", "localhost"));
+   	props.add(new Property("port", "6180"));
+   	props.add(new Property("serviceName", "vehicles"));
+   	props.add(new Property("connectionCount", "1"));
+   	producerPropertiesCache.put(Protocol.STREAM_SERVICE, FXCollections.observableList(props));
+   	
+   	// WEBSOCKETS
+   	props = new ArrayList<Property>();
+   	props.add(simulationFile);
+   	props.add(new Property("hosts", "localhost"));
+   	props.add(new Property("port", "6180"));
+   	props.add(new Property("connectionCount", "1"));
+   	producerPropertiesCache.put(Protocol.WEBSOCKETS, FXCollections.observableList(props));
+   	
+   	// WEBSOCKETS_SERVER
+   	props = new ArrayList<Property>();
+   	props.add(simulationFile);
+   	props.add(new Property("port", "5565"));
+   	producerPropertiesCache.put(Protocol.WEBSOCKET_SERVER, FXCollections.observableList(props));
+   	
+   	// Producers
+   	consumerPropertiesCache = new HashMap<Protocol, ObservableList<Property>>();
+   	
+   	// TCP
+   	props = new ArrayList<Property>();
+   	props.add(new Property("hosts", "localhost"));
+   	props.add(new Property("port", "5565"));
+   	consumerPropertiesCache.put(Protocol.TCP, FXCollections.observableList(props));
+   	
+   	//TCP_SERVER
+   	props = new ArrayList<Property>();
+   	props.add(new Property("port", "5775"));
+   	consumerPropertiesCache.put(Protocol.TCP_SERVER, FXCollections.observableList(props));
+   	
+  	// ACTIVE_MQ
+  	props = new ArrayList<Property>();
+  	props.add(new Property("providerUrl", ""));
+  	props.add(new Property("destinationType", ""));
+  	props.add(new Property("destinationName", ""));
+  	consumerPropertiesCache.put(Protocol.ACTIVE_MQ, FXCollections.observableList(props));
+  	
+  	// RABBIT_MQ
+  	props = new ArrayList<Property>();
+  	props.add(new Property("uri", ""));
+  	props.add(new Property("exchangeName", ""));
+  	props.add(new Property("queueName", ""));
+  	props.add(new Property("routingKey", ""));
+  	consumerPropertiesCache.put(Protocol.RABBIT_MQ, FXCollections.observableList(props));
+  	
+  	// STREAM_SERVICE
+  	props = new ArrayList<Property>();
+  	props.add(new Property("hosts", "localhost"));
+  	props.add(new Property("port", "6180"));
+  	props.add(new Property("serviceName", "vehicles"));
+  	props.add(new Property("connectionCount", "1"));
+  	consumerPropertiesCache.put(Protocol.STREAM_SERVICE, FXCollections.observableList(props));
+  	
+  	// WEBSOCKETS
+  	props = new ArrayList<Property>();
+  	props.add(new Property("hosts", "localhost"));
+  	props.add(new Property("port", "6180"));
+  	props.add(new Property("connectionCount", "1"));
+  	consumerPropertiesCache.put(Protocol.WEBSOCKETS, FXCollections.observableList(props));
   }
   
   /**
