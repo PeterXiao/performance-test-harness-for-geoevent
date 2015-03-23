@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.layout.RowConstraints?>
+
+<AnchorPane 
+	prefHeight="300" prefWidth="340" 
+	stylesheets="@default.css"
+	xmlns:fx="http://javafx.com/fxml" 
+	fx:controller="com.esri.geoevent.test.performance.ui.AboutDialogController">
+  <children>
+  	<GridPane AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0" vgap="4" hgap="4">
+    	<rowConstraints>
+    		<RowConstraints prefHeight="100" percentHeight="40"/>
+    		<RowConstraints valignment="BOTTOM" vgrow="SOMETIMES" percentHeight="60"/>
+    	</rowConstraints>
+    	<children>
+        	<Label fx:id="aboutLabel" styleClass="labels,required" GridPane.columnIndex="0" GridPane.rowIndex="0" GridPane.halignment="CENTER" wrapText="true" textAlignment="CENTER"/>	
+	    	<HBox id="HBox" alignment="BOTTOM_CENTER" minWidth="-1.0" spacing="5.0" GridPane.columnIndex="0" GridPane.rowIndex="1" GridPane.valignment="BOTTOM">
+		      <children>
+		        <Button fx:id="okBtn" onAction="#handleOk" prefWidth="80.0" styleClass="buttons" />
+		      </children>
+		    </HBox>
+    	</children>
+    </GridPane>
+  </children>
+</AnchorPane>

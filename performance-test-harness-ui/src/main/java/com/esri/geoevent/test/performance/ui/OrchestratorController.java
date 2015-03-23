@@ -28,7 +28,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Optional;
 import java.util.ResourceBundle;
 
 import javafx.event.ActionEvent;
@@ -37,10 +36,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
@@ -435,12 +431,66 @@ public class OrchestratorController implements Initializable, RunningStateListen
   }
   
   /**
+   * Shows the confirmation dialog
+   */
+  private boolean showConfirmationDialog(String msg) 
+  {
+    try 
+    {
+      // Load the fxml file and create a new stage for the popup
+      FXMLLoader loader = new FXMLLoader(getClass().getResource("ConfirmationDialog.fxml"));
+      Parent page = (Parent) loader.load();
+      Stage dialogStage = new Stage();
+      dialogStage.setTitle( UIMessages.getMessage( "UI_CLOSE_TAB_TITLE" ) );
+      dialogStage.initModality(Modality.APPLICATION_MODAL);
+      dialogStage.initOwner( stage );
+      Scene scene = new Scene(page);
+      dialogStage.setScene(scene);
+
+      // Set the person into the controller
+      ConfirmationDialogController controller = loader.getController();
+      controller.setDialogStage(dialogStage);
+      controller.setConfirmationMsg( msg );
+      
+      // Show the dialog and wait until the user closes it
+      dialogStage.showAndWait();
+      return controller.isOkClicked();
+    } 
+    catch (IOException e) 
+    {
+      e.printStackTrace();
+    }
+    return false;
+  }
+  
+  /**
    * Perform functionality associated with "About" menu selection or CTRL-A.
    */
   private void provideAboutFunctionality()
   {
-  	//TODO: We need to add a dialog for the "About" menu
-     System.out.println("You clicked on About!");      
+  	try 
+    {
+      // Load the fxml file and create a new stage for the popup
+      FXMLLoader loader = new FXMLLoader(getClass().getResource("AboutDialog.fxml"));
+      Parent page = (Parent) loader.load();
+      Stage dialogStage = new Stage();
+      dialogStage.setTitle( UIMessages.getMessage( "UI_HELP_ABOUT_MENU_ITEM_LABEL" ) );
+      dialogStage.initModality(Modality.APPLICATION_MODAL);
+      dialogStage.initOwner( stage );
+      Scene scene = new Scene(page);
+      dialogStage.setScene(scene);
+
+      // Set the person into the controller
+      AboutDialogController controller = loader.getController();
+      controller.setDialogStage(dialogStage);
+      
+      // Show the dialog and wait until the user closes it
+      dialogStage.showAndWait();
+    } 
+    catch (IOException e) 
+    {
+      e.printStackTrace();
+    }     
   }
   
   private void setupTabs()
@@ -481,12 +531,8 @@ public class OrchestratorController implements Initializable, RunningStateListen
 	  	newTab.closableProperty().setValue(!isDefault);
 	  	newTab.setOnCloseRequest(event->
 	  	{
-	  		Alert alert = new Alert(AlertType.CONFIRMATION);
-	  		alert.setTitle( UIMessages.getMessage("UI_CLOSE_TAB_TITLE") );
-	  		alert.setHeaderText( UIMessages.getMessage("UI_CLOSE_TAB_LABEL", fixture.getName()) );
-	  		
-	  		Optional<ButtonType> result = alert.showAndWait();
-	  		if (result.get() != ButtonType.OK)
+	  		boolean isOkClicked = showConfirmationDialog(UIMessages.getMessage("UI_CLOSE_TAB_LABEL", fixture.getName()));
+	  		if ( ! isOkClicked)
 	  		{
 	  			event.consume();
 	  		}
