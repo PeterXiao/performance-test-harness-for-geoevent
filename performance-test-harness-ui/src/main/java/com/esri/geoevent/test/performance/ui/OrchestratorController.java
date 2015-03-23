@@ -26,10 +26,13 @@ package com.esri.geoevent.test.performance.ui;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -94,6 +97,8 @@ public class OrchestratorController implements Initializable, RunningStateListen
 	@FXML
 	public MenuItem optionsReportMenuItem;
 	@FXML
+	public MenuItem optionsLoggerMenuItem;
+	@FXML
 	public Menu helpMenu;
 	@FXML
 	public MenuItem helpAboutMenuItem;
@@ -113,6 +118,7 @@ public class OrchestratorController implements Initializable, RunningStateListen
 	private Stage	stage;
 	private boolean	isRunning;
 	private TestHarnessExecutor executor = null; 
+	private StringBuffer outputBuffer = new StringBuffer();
 	
 	// statics
 	private static final String START_IMAGE_SOURCE = "images/play.png"; 
@@ -149,15 +155,19 @@ public class OrchestratorController implements Initializable, RunningStateListen
 		fileOpenMenuItem.setText( UIMessages.getMessage("UI_FILE_OPEN_MENU_ITEM_LABEL") );
 		fileSaveMenuItem.setText( UIMessages.getMessage("UI_FILE_SAVE_MENU_ITEM_LABEL") );
 		optionsMenu.setText( UIMessages.getMessage("UI_OPTIONS_MENU_LABEL") );
+		optionsLoggerMenuItem.setText( UIMessages.getMessage("UI_OPTIONS_LOGGER_MENU_ITEM_LABEL") );
 		optionsReportMenuItem.setText( UIMessages.getMessage("UI_OPTIONS_REPORT_MENU_ITEM_LABEL") );
 		helpMenu.setText( UIMessages.getMessage("UI_HELP_MENU_LABEL") );
 		helpAboutMenuItem.setText( UIMessages.getMessage("UI_HELP_ABOUT_MENU_ITEM_LABEL") );
 		addFixtureBtn.setTooltip( new Tooltip(UIMessages.getMessage("UI_ADD_FIXTURE_DESC")) );
 		startBtn.setText( UIMessages.getMessage("UI_START_BTN_LABEL") );
 		startBtn.setTooltip( new Tooltip(UIMessages.getMessage("UI_START_BTN_DESC")) );
+		//TODO: We need use this to show status messages
 		statusLabel.setText( "This is where the status changes will be placed." );
-		// setup the tabs
+		
+		// setup
 		setupTabs();
+		redirectSystemOutAndErrToTextArea();
 	}
 	
 	/**
@@ -188,6 +198,10 @@ public class OrchestratorController implements Initializable, RunningStateListen
         {
            saveFixturesFile();
         }
+        else if (keyEvent.isControlDown() && keyEvent.getCode() == KeyCode.L)
+        {
+        	showLoggerDialog();
+        }
      }
   }
   
@@ -200,6 +214,17 @@ public class OrchestratorController implements Initializable, RunningStateListen
   public void handleAboutAction(final ActionEvent event)
   {
      provideAboutFunctionality();
+  }
+  
+  /**
+   * Opens a dialog to display the current output. 
+   * 
+   * @param ActionEvent
+   */
+  @FXML
+  public void handleLoggerOptionsAction(final ActionEvent event) 
+  {
+  	showLoggerDialog();
   }
   
   /**
@@ -443,14 +468,14 @@ public class OrchestratorController implements Initializable, RunningStateListen
       Stage dialogStage = new Stage();
       dialogStage.setTitle( UIMessages.getMessage( "UI_CLOSE_TAB_TITLE" ) );
       dialogStage.initModality(Modality.APPLICATION_MODAL);
-      dialogStage.initOwner( stage );
+      dialogStage.initOwner(stage);
       Scene scene = new Scene(page);
       dialogStage.setScene(scene);
 
       // Set the person into the controller
       ConfirmationDialogController controller = loader.getController();
       controller.setDialogStage(dialogStage);
-      controller.setConfirmationMsg( msg );
+      controller.setConfirmationMsg(msg);
       
       // Show the dialog and wait until the user closes it
       dialogStage.showAndWait();
@@ -486,6 +511,38 @@ public class OrchestratorController implements Initializable, RunningStateListen
       
       // Show the dialog and wait until the user closes it
       dialogStage.showAndWait();
+    } 
+    catch (IOException e) 
+    {
+      e.printStackTrace();
+    }     
+  }
+  
+  /**
+   * Perform functionality associated with "About" menu selection or CTRL-A.
+   */
+  private void showLoggerDialog()
+  {
+  	try 
+    {
+      // Load the fxml file and create a new stage for the popup
+      FXMLLoader loader = new FXMLLoader(getClass().getResource("LoggerDialog.fxml"));
+      Parent page = (Parent) loader.load();
+      Stage dialogStage = new Stage();
+      dialogStage.setTitle( UIMessages.getMessage( "UI_LOGGER_BOX_LABEL" ) );
+      dialogStage.initModality(Modality.NONE);
+      dialogStage.initOwner(stage);
+      Scene scene = new Scene(page);
+      dialogStage.setScene(scene);
+
+      // Set the person into the controller
+      LoggerDialogController controller = loader.getController();
+      controller.setDialogStage(dialogStage);
+      controller.setOutputBuffer(outputBuffer.toString());
+      controller.onClearLoggerEvent(() -> outputBuffer = new StringBuffer());
+      
+      // Show the dialog
+      dialogStage.show();
     } 
     catch (IOException e) 
     {
@@ -540,8 +597,6 @@ public class OrchestratorController implements Initializable, RunningStateListen
 	  		{
 	  			fixtures.getFixtures().remove(fixture);
 	  		}
-
-	  		//TODO: Style the dialog
 	  	});
 			fixtureTabPane.getTabs().add(newTab);
   	}
@@ -567,4 +622,22 @@ public class OrchestratorController implements Initializable, RunningStateListen
 				break;
   	}
   }
+  
+  private void redirectSystemOutAndErrToTextArea()
+	{
+		OutputStream out = new OutputStream() {
+	      @Override
+	      public void write(int b) throws IOException {
+	      		Platform.runLater(() -> outputBuffer.append(String.valueOf((char) b)));
+	      }
+	  };
+	  System.setOut(new PrintStream(out, true));
+		OutputStream err = new OutputStream() {
+	      @Override
+	      public void write(int b) throws IOException {
+	      		Platform.runLater(() -> outputBuffer.append(String.valueOf((char) b)));
+	      }
+	  };
+	  System.setErr(new PrintStream(err, true));
+	}
 }

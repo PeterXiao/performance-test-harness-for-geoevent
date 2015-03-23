@@ -52,6 +52,7 @@
          	</Menu>
          	<Menu fx:id="optionsMenu">
          		<items>
+         			<MenuItem fx:id="optionsLoggerMenuItem" styleClass="buttons" onAction="#handleLoggerOptionsAction"/>
          			<MenuItem fx:id="optionsReportMenuItem" styleClass="buttons" onAction="#handleReportOptionsAction"/>
          		</items>
          	</Menu>
