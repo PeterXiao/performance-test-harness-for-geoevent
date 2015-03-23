@@ -22,11 +22,12 @@
 <?import javafx.scene.control.cell.PropertyValueFactory?>
 <?import javafx.scene.layout.VBox?>
 <?import jfxtras.labs.scene.control.BigDecimalField?>
+<?import javafx.scene.control.Separator?>
 
 <GridPane 
 	xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" 
 	fx:controller="com.esri.geoevent.test.performance.ui.FixtureController"
-	prefHeight="640" prefWidth="660" 
+	prefHeight="680" prefWidth="660" 
 	stylesheets="@default.css" 
 	hgap="10"
 	vgap="4">
@@ -68,19 +69,16 @@
 						        	<PropertyValueFactory property="label"/>
 						    	</cellValueFactory>
 							</TableColumn>
-							
-							<!-- 
-							<TableColumn fx:id="producersConnectedColumn" sortable="false">
+							<TableColumn fx:id="producersDeleteColumn" sortable="false">
 						    	<cellValueFactory>
-						    		<PropertyValueFactory  property="connected"/>
+						    		<PropertyValueFactory/>
 						    	</cellValueFactory>
 							</TableColumn>
-							-->
 						</columns>
 					</TableView>
 		         	<HBox spacing="4" GridPane.columnIndex="0" GridPane.rowIndex="2" GridPane.halignment="LEFT" GridPane.valignment="CENTER">
-						<TextField fx:id="producerHostName" prefWidth="200"/>
-						<RestrictiveTextField fx:id="producerPort" restrict="[0-9]" maxLength="10" prefWidth="80"/>
+						<TextField fx:id="producerHostName" prefWidth="200" onKeyPressed="#onAddProducerKeyPressed"/>
+						<RestrictiveTextField fx:id="producerPort" restrict="[0-9]" maxLength="10" prefWidth="80" onKeyPressed="#onAddProducerKeyPressed"/>
 						<Button fx:id="producerAddBtn" onAction="#addProducer" styleClass="buttons">
 							<graphic>
 								<ImageView>
@@ -89,20 +87,20 @@
 							</graphic>
 						</Button>
 					</HBox>
-					
-					<HBox spacing="4" GridPane.columnIndex="0" GridPane.rowIndex="3" GridPane.halignment="LEFT" GridPane.valignment="CENTER" >
+					<Separator prefHeight="20" GridPane.columnIndex="0" GridPane.rowIndex="3"/> 
+					<HBox spacing="4" GridPane.columnIndex="0" GridPane.rowIndex="4" GridPane.halignment="LEFT" GridPane.valignment="CENTER" >
 						<Label fx:id="producersProtocolLabel" styleClass="labels"/>
 						<ComboBox fx:id="producersProtocolType" styleClass="buttons" onAction="#toggleProducerProtocolType" prefWidth="200"/>
 					</HBox>
-					<Label fx:id="producersPropsLabel" styleClass="labels" GridPane.columnIndex="0" GridPane.rowIndex="4" GridPane.halignment="LEFT"/>
-		           	<TableView fx:id="producersPropsTable" styleClass="tables" GridPane.columnIndex="0" GridPane.rowIndex="5">
+					<Label fx:id="producersPropsLabel" styleClass="labels" GridPane.columnIndex="0" GridPane.rowIndex="5" GridPane.halignment="LEFT"/>
+		           	<TableView fx:id="producersPropsTable" styleClass="tables" GridPane.columnIndex="0" GridPane.rowIndex="6" editable="true">
   						<columns>
-    						<TableColumn fx:id="producersPropNameColumn">
+    						<TableColumn fx:id="producersPropNameColumn" editable="false">
 						    	<cellValueFactory>
 						        	<PropertyValueFactory property="name" />
 						    	</cellValueFactory>
 							</TableColumn>
-							<TableColumn fx:id="producersPropValueColumn">
+							<TableColumn fx:id="producersPropValueColumn" editable="true">
 						    	<cellValueFactory>
 						    		<PropertyValueFactory  property="value"/>
 						    	</cellValueFactory>
@@ -118,19 +116,16 @@
 						        	<PropertyValueFactory property="label" />
 						    	</cellValueFactory>
 							</TableColumn>
-							
-							<!-- 
-							<TableColumn fx:id="consumersConnectedColumn">
+							<TableColumn fx:id="consumersDeleteColumn">
 						    	<cellValueFactory>
-						    		<PropertyValueFactory  property="connected"/>
+						    		<PropertyValueFactory/>
 						    	</cellValueFactory>
 							</TableColumn>
-							-->
 						</columns>
 					</TableView>
 					<HBox spacing="4" GridPane.columnIndex="1" GridPane.rowIndex="2" GridPane.halignment="LEFT" GridPane.valignment="CENTER" >
-						<TextField fx:id="consumerHostName" prefWidth="200"/>
-						<RestrictiveTextField fx:id="consumerPort" restrict="[0-9]" maxLength="10" prefWidth="80"/>
+						<TextField fx:id="consumerHostName" prefWidth="200" onKeyPressed="#onAddConsumerKeyPressed"/>
+						<RestrictiveTextField fx:id="consumerPort" restrict="[0-9]" maxLength="10" prefWidth="80" onKeyPressed="#onAddConsumerKeyPressed"/>
 						<Button fx:id="consumerAddBtn" onAction="#addConsumer" styleClass="buttons">
 							<graphic>
 								<ImageView>
@@ -139,20 +134,20 @@
 							</graphic>
 						</Button>
 					</HBox>
-					
-					<HBox spacing="4" GridPane.columnIndex="1" GridPane.rowIndex="3" GridPane.halignment="LEFT" GridPane.valignment="CENTER" >
+					<Separator prefHeight="20" GridPane.columnIndex="1" GridPane.rowIndex="3"/> 
+					<HBox spacing="4" GridPane.columnIndex="1" GridPane.rowIndex="4" GridPane.halignment="LEFT" GridPane.valignment="CENTER" >
 						<Label fx:id="consumersProtocolLabel" styleClass="labels"/>
 						<ComboBox fx:id="consumersProtocolType" styleClass="buttons" onAction="#toggleConsumerProtocolType" prefWidth="200"/>
 					</HBox>
-					<Label fx:id="consumersPropsLabel" styleClass="labels" GridPane.columnIndex="1" GridPane.rowIndex="4" GridPane.halignment="LEFT"/>
-		           	<TableView fx:id="consumersPropsTable" styleClass="tables" GridPane.columnIndex="1" GridPane.rowIndex="5">
+					<Label fx:id="consumersPropsLabel" styleClass="labels" GridPane.columnIndex="1" GridPane.rowIndex="5" GridPane.halignment="LEFT"/>
+		           	<TableView fx:id="consumersPropsTable" styleClass="tables" GridPane.columnIndex="1" GridPane.rowIndex="6" editable="true">
   						<columns>
-    						<TableColumn fx:id="consumersPropNameColumn">
+    						<TableColumn fx:id="consumersPropNameColumn" editable="false">
 						    	<cellValueFactory>
 						        	<PropertyValueFactory property="name" />
 						    	</cellValueFactory>
 							</TableColumn>
-							<TableColumn fx:id="consumersPropValueColumn">
+							<TableColumn fx:id="consumersPropValueColumn" editable="true">
 						    	<cellValueFactory>
 						    		<PropertyValueFactory  property="value"/>
 						    	</cellValueFactory>

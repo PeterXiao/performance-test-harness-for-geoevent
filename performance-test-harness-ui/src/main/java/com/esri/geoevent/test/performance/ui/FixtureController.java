@@ -46,6 +46,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
+import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
@@ -88,8 +89,8 @@ public class FixtureController implements Initializable
 	public TableView<ConnectableRemoteHost> producersTable;
 	@FXML
 	public TableColumn<ConnectableRemoteHost,String> producersNameColumn;
-//	@FXML
-//	public TableColumn<ConnectableRemoteHost,Boolean> producersConnectedColumn;
+	@FXML
+	public TableColumn<ConnectableRemoteHost,Boolean> producersDeleteColumn;
 	@FXML
 	public TextField producerHostName;
 	@FXML
@@ -116,8 +117,8 @@ public class FixtureController implements Initializable
 	public TableView<ConnectableRemoteHost> consumersTable;
 	@FXML
 	public TableColumn<ConnectableRemoteHost,String> consumersNameColumn;
-//	@FXML
-//	public TableColumn<ConnectableRemoteHost,Boolean> consumersConnectedColumn;
+	@FXML
+	public TableColumn<ConnectableRemoteHost,Boolean> consumersDeleteColumn;
 	@FXML
 	public TextField consumerHostName;
 	@FXML
@@ -263,9 +264,9 @@ public class FixtureController implements Initializable
 		//producers
 		producersLabel.setText( UIMessages.getMessage("UI_PRODUCERS_LABEL") );
 		producersNameColumn.setText( UIMessages.getMessage("UI_PRODUCERS_NAME_COL_LABEL") );
-		producersNameColumn.prefWidthProperty().bind(producersTable.widthProperty().multiply(0.99));
-//		producersConnectedColumn.prefWidthProperty().bind(producersTable.widthProperty().multiply(0.16));
-//		producersConnectedColumn.setCellFactory(CONNECTABLE_CELL_FACTORY);
+		producersNameColumn.prefWidthProperty().bind(producersTable.widthProperty().multiply(0.83));
+		producersDeleteColumn.prefWidthProperty().bind(producersTable.widthProperty().multiply(0.16));
+		producersDeleteColumn.setCellFactory(callback->new DeleteableTableCell<ConnectableRemoteHost>());
 		producerHostName.setPromptText( UIMessages.getMessage("UI_PRODUCER_HOST_NAME_DESC") );
 		producerPort.setPromptText( UIMessages.getMessage("UI_PRODUCER_PORT_DESC") );
 		producerAddBtn.setTooltip( new Tooltip(UIMessages.getMessage("UI_PRODUCER_ADD_BTN_DESC")));
@@ -277,14 +278,20 @@ public class FixtureController implements Initializable
 		producersPropNameColumn.prefWidthProperty().bind(producersPropsTable.widthProperty().multiply(0.48));
 		producersPropValueColumn.setText( UIMessages.getMessage("UI_PROPERTY_VALUE_COL_LABEL") );
 		producersPropValueColumn.prefWidthProperty().bind(producersPropsTable.widthProperty().multiply(0.5));
-		producersPropValueColumn.setEditable(true);
+		producersPropValueColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+		producersPropValueColumn.setOnEditCommit(event->
+			{
+				Property property = (Property) event.getTableView().getItems().get(event.getTablePosition().getRow());
+				property.setValue( event.getNewValue() );
+			}
+	  );
 		
 		//consumers
 		consumersLabel.setText( UIMessages.getMessage("UI_CONSUMERS_LABEL") );
 		consumersNameColumn.setText( UIMessages.getMessage("UI_CONSUMERS_NAME_COL_LABEL") );
-		consumersNameColumn.prefWidthProperty().bind(consumersTable.widthProperty().multiply(0.99));
-//		consumersConnectedColumn.prefWidthProperty().bind(consumersTable.widthProperty().multiply(0.16));
-//		consumersConnectedColumn.setCellFactory(CONNECTABLE_CELL_FACTORY);
+		consumersNameColumn.prefWidthProperty().bind(consumersTable.widthProperty().multiply(0.83));
+		consumersDeleteColumn.prefWidthProperty().bind(consumersTable.widthProperty().multiply(0.16));
+		consumersDeleteColumn.setCellFactory(callback->new DeleteableTableCell<ConnectableRemoteHost>());
 		consumerHostName.setPromptText( UIMessages.getMessage("UI_CONSUMER_HOST_NAME_DESC") );
 		consumerPort.setPromptText( UIMessages.getMessage("UI_CONSUMER_PORT_DESC") );
 		consumerAddBtn.setTooltip( new Tooltip(UIMessages.getMessage("UI_CONSUMER_ADD_BTN_DESC")));
@@ -296,7 +303,13 @@ public class FixtureController implements Initializable
 		consumersPropNameColumn.prefWidthProperty().bind(consumersPropsTable.widthProperty().multiply(0.48));
 		consumersPropValueColumn.setText( UIMessages.getMessage("UI_PROPERTY_VALUE_COL_LABEL") );
 		consumersPropValueColumn.prefWidthProperty().bind(consumersPropsTable.widthProperty().multiply(0.5));
-		consumersPropValueColumn.setEditable(true);
+		consumersPropValueColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+		consumersPropValueColumn.setOnEditCommit(event->
+			{
+				Property property = (Property) event.getTableView().getItems().get(event.getTablePosition().getRow());
+				property.setValue( event.getNewValue() );
+			}
+	  );
 		
 		// simulation
 		testTypeLabel.setText( UIMessages.getMessage("UI_TEST_TYPE_LABEL") );
@@ -362,6 +375,16 @@ public class FixtureController implements Initializable
 		}
 	}
 	
+	@FXML
+	public void onAddProducerKeyPressed(final KeyEvent event)
+	{
+		if( event.getCode() == KeyCode.ENTER )
+		{
+			ActionEvent actionEvent = null;
+			addProducer( actionEvent );
+		}
+	}
+	
   @FXML
   public void addProducer(final ActionEvent event)
   {
@@ -373,10 +396,21 @@ public class FixtureController implements Initializable
   	}
   	else
   	{
-  		producersTable.getItems().add(new ConnectableRemoteHost(hostName, port));
-  		//TODO: Add to fixtures
+  		ConnectableRemoteHost remoteHost = new ConnectableRemoteHost(hostName, port);
+  		producersTable.getItems().add(remoteHost);
+  		addProducer(remoteHost);
   	}
   }
+  
+  @FXML
+	public void onAddConsumerKeyPressed(final KeyEvent event)
+	{
+		if( event.getCode() == KeyCode.ENTER )
+		{
+			ActionEvent actionEvent = null;
+			addConsumer( actionEvent );
+		}
+	}
   
   @FXML
   public void addConsumer(final ActionEvent event)
@@ -389,8 +423,9 @@ public class FixtureController implements Initializable
   	}
   	else
   	{
-  		consumersTable.getItems().add(new ConnectableRemoteHost(hostName, port));
-  	//TODO: Add to fixtures
+  		ConnectableRemoteHost remoteHost = new ConnectableRemoteHost(hostName, port);
+  		consumersTable.getItems().add(remoteHost);
+  		addConsumer(remoteHost);
   	}
   }
   
@@ -582,6 +617,64 @@ public class FixtureController implements Initializable
   }
   
   /**
+   * Helper method used to add producers to the Producer Config object
+   * @param remoteHost {@link ConnectableRemoteHost}
+   */
+  private void addProducer(ConnectableRemoteHost remoteHost)
+  {
+  	if( fixture == null )
+  	{
+  		fixture = new Fixture();
+  	}
+  	if( fixture.getProducerConfig() == null )
+  	{
+  		fixture.setProducerConfig( new ProducerConfig() );
+  	}
+  	fixture.getProducerConfig().getProducers().add(new RemoteHost(remoteHost.getHost(), remoteHost.getCommandPort()));
+  }
+  
+  /**
+   * Helper method used to add producers to the Consumer Config object
+   * @param remoteHost {@link ConnectableRemoteHost}
+   */
+  private void addConsumer(ConnectableRemoteHost remoteHost)
+  {
+  	if( fixture == null )
+  	{
+  		fixture = new Fixture();
+  	}
+  	if( fixture.getConsumerConfig() == null )
+  	{
+  		fixture.setConsumerConfig( new ConsumerConfig() );
+  	}
+  	fixture.getConsumerConfig().getConsumers().add(new RemoteHost(remoteHost.getHost(), remoteHost.getCommandPort()));
+  }
+  
+  /**
+   * Helper methods to delete producer from the model
+   * @param remoteHost {@link ConnectableRemoteHost}
+   */
+  private void deleteProducer(ConnectableRemoteHost remoteHost)
+  {
+  	if( fixture == null || fixture.getProducerConfig() == null || fixture.getProducerConfig().getProducers() == null )
+  		return;
+  	
+  	fixture.getProducerConfig().getProducers().remove(new RemoteHost(remoteHost.getHost(), remoteHost.getCommandPort()));
+  }
+  
+  /**
+   * Helper methods to delete consumer from the model
+   * @param remoteHost {@link ConnectableRemoteHost}
+   */
+  private void deleteConsumer(ConnectableRemoteHost remoteHost)
+  {
+  	if( fixture == null || fixture.getConsumerConfig() == null || fixture.getConsumerConfig().getConsumers() == null )
+  		return;
+  	
+  	fixture.getConsumerConfig().getConsumers().remove(new RemoteHost(remoteHost.getHost(), remoteHost.getCommandPort()));
+  }
+  
+  /**
    * Helper method to toggle if we are editing the default fixxture or not.
    * @param isDefault boolean
    */
@@ -732,7 +825,6 @@ public class FixtureController implements Initializable
   			break;
  		}
  		toggleTestType(null);
-   	
   }
   
   /**
@@ -753,19 +845,19 @@ public class FixtureController implements Initializable
    * TODO: More finite control of when we connect to producers and consumers
    * @param remoteHost
    */
-  private static void connect(final ConnectableRemoteHost remoteHost)
-  {
-  	
-  }
+//  private void connect(final ConnectableRemoteHost remoteHost)
+//  {
+//  	
+//  }
   
   /**
    * TODO: More finite control of when we connect to producers and consumers
    * @param remoteHost
    */
-  private static void disconnect(final ConnectableRemoteHost remoteHost)
-  {
-  	
-  }
+//  private void disconnect(final ConnectableRemoteHost remoteHost)
+//  {
+//  	
+//  }
   
   private ObservableList<Protocol> getProducerProtocolList()
 	{
@@ -911,15 +1003,14 @@ public class FixtureController implements Initializable
   }
   
   /**
-   * Helper static class to create connected/disconnected buttons based on the a boolean property
+   * Helper static class to create delete button
    * 
    * @param <T>
    */
-  static class ConnectedTableCell<T> extends TableCell<ConnectableRemoteHost, Boolean> 
+  private class DeleteableTableCell<T> extends TableCell<ConnectableRemoteHost, Boolean> 
   {	
   	//statics
-  	private static final String CONNECTED_IMAGE_SOURCE = "images/connected.png"; 
-  	private static final String DISCONNECTED_IMAGE_SOURCE = "images/disconnected.png"; 
+  	private static final String DELETE_IMAGE_SOURCE = "images/delete.png"; 
     
   	@Override
   	protected void updateItem(Boolean item, boolean empty)
@@ -927,43 +1018,86 @@ public class FixtureController implements Initializable
   		super.updateItem(item, empty);
   		setAlignment(Pos.CENTER);
   		
-  		if( empty || item == null )
+  		if( empty )
   		{
   			setGraphic(null);
   			return;
   		}
 
-  		ConnectableRemoteHost remoteHost = (ConnectableRemoteHost) getTableRow().getItem();
-  		if(item)
-  		{
-  			setGraphic(getConnectedButton(remoteHost));
-  		}
-  		else
-  		{
-  			setGraphic(getDisconnectedButton(remoteHost));
-  		}
-  	}
-  	
-  	private Button getConnectedButton(final ConnectableRemoteHost remoteHost)
-  	{
-  		Button connectedButton = new Button("", new ImageView(new Image(FixtureController.class.getResourceAsStream(CONNECTED_IMAGE_SOURCE))));
-    	connectedButton.getStyleClass().add("buttons");
-    	connectedButton.setTooltip(new Tooltip(UIMessages.getMessage("UI_DISCONNECT_DESC")));
-    	connectedButton.setOnAction(event -> {
-    		connect(remoteHost);
+  		final ConnectableRemoteHost remoteHost = (ConnectableRemoteHost) getTableRow().getItem();
+  		final TableView<ConnectableRemoteHost> table = getTableView();
+  		Button deleteButton = new Button("", new ImageView(new Image(FixtureController.class.getResourceAsStream(DELETE_IMAGE_SOURCE))));
+    	deleteButton.getStyleClass().add("buttons");
+    	deleteButton.setTooltip(new Tooltip(UIMessages.getMessage("UI_DELETE_DESC")));
+    	deleteButton.setOnAction(event -> {
+    		table.getItems().remove(remoteHost);
+    		 if( table.getId().contains("producers") )
+    		 {
+    			 deleteProducer(remoteHost);
+    		 }
+    		 else
+    		 {
+    			 deleteConsumer(remoteHost);
+    		 }
     	});
-    	return connectedButton;
-  	}
-  	
-  	private Button getDisconnectedButton(final ConnectableRemoteHost remoteHost)
-  	{
-  		Button disconnectedButton = new Button("", new ImageView(new Image(FixtureController.class.getResourceAsStream(DISCONNECTED_IMAGE_SOURCE))));
-  		disconnectedButton.getStyleClass().add("buttons");
-    	disconnectedButton.setTooltip(new Tooltip(UIMessages.getMessage("UI_CONNECT_DESC")));
-    	disconnectedButton.setOnAction(event -> {
-    		disconnect(remoteHost);
-    	});
-    	return disconnectedButton;
+  		setGraphic(deleteButton);
   	}
   }
+  
+  /**
+   * Helper static class to create connected/disconnected buttons based on the a boolean property
+   * 
+   * @param <T>
+   */
+//  private class ConnectedTableCell<T> extends TableCell<ConnectableRemoteHost, Boolean> 
+//  {	
+//  	//statics
+//  	private static final String CONNECTED_IMAGE_SOURCE = "images/connected.png"; 
+//  	private static final String DISCONNECTED_IMAGE_SOURCE = "images/disconnected.png"; 
+//    
+//  	@Override
+//  	protected void updateItem(Boolean item, boolean empty)
+//  	{
+//  		super.updateItem(item, empty);
+//  		setAlignment(Pos.CENTER);
+//  		
+//  		if( empty || item == null )
+//  		{
+//  			setGraphic(null);
+//  			return;
+//  		}
+//
+//  		ConnectableRemoteHost remoteHost = (ConnectableRemoteHost) getTableRow().getItem();
+//  		if(item)
+//  		{
+//  			setGraphic(getConnectedButton(remoteHost));
+//  		}
+//  		else
+//  		{
+//  			setGraphic(getDisconnectedButton(remoteHost));
+//  		}
+//  	}
+//  	
+//  	private Button getConnectedButton(final ConnectableRemoteHost remoteHost)
+//  	{
+//  		Button connectedButton = new Button("", new ImageView(new Image(FixtureController.class.getResourceAsStream(CONNECTED_IMAGE_SOURCE))));
+//    	connectedButton.getStyleClass().add("buttons");
+//    	connectedButton.setTooltip(new Tooltip(UIMessages.getMessage("UI_DISCONNECT_DESC")));
+//    	connectedButton.setOnAction(event -> {
+//    		connect(remoteHost);
+//    	});
+//    	return connectedButton;
+//  	}
+//  	
+//  	private Button getDisconnectedButton(final ConnectableRemoteHost remoteHost)
+//  	{
+//  		Button disconnectedButton = new Button("", new ImageView(new Image(FixtureController.class.getResourceAsStream(DISCONNECTED_IMAGE_SOURCE))));
+//  		disconnectedButton.getStyleClass().add("buttons");
+//    	disconnectedButton.setTooltip(new Tooltip(UIMessages.getMessage("UI_CONNECT_DESC")));
+//    	disconnectedButton.setOnAction(event -> {
+//    		disconnect(remoteHost);
+//    	});
+//    	return disconnectedButton;
+//  	}
+//  }
 }
