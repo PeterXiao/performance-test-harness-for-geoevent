@@ -34,8 +34,9 @@ import org.eclipse.jetty.servlet.ServletHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.resource.Resource;
 
-import com.esri.geoevent.test.performance.PerformanceCollectorBase;
+import com.esri.geoevent.test.performance.ImplMessages;
 import com.esri.geoevent.test.performance.Mode;
+import com.esri.geoevent.test.performance.PerformanceCollectorBase;
 import com.esri.geoevent.test.performance.RunningState;
 import com.esri.geoevent.test.performance.RunningStateType;
 import com.esri.geoevent.test.performance.TestException;
@@ -103,10 +104,9 @@ public class WebsocketServerEventProducer extends PerformanceCollectorBase
 			eventsPerSec = Integer.parseInt(config.getPropertyValue("eventsPerSec", "-1"));
 			staggeringInterval = Integer.parseInt(config.getPropertyValue("staggeringInterval", "1"));
 		}
-		catch (Throwable e)
+		catch (Throwable error)
 		{
-			e.printStackTrace();
-			throw new TestException(e.getMessage());
+			throw new TestException( ImplMessages.getMessage("INIT_FAILURE", getClass().getName(), error.getMessage()), error );
 		}
 	}
 

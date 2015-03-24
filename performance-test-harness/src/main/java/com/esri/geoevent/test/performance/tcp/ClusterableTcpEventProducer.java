@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
+import com.esri.geoevent.test.performance.ImplMessages;
 import com.esri.geoevent.test.performance.PerformanceCollectorBase;
 import com.esri.geoevent.test.performance.Mode;
 import com.esri.geoevent.test.performance.RunningState;
@@ -101,10 +102,9 @@ public class ClusterableTcpEventProducer extends PerformanceCollectorBase
 			// init the workers
 			initWorkers();
 		}
-		catch (Throwable e)
+		catch (Throwable error)
 		{
-			e.printStackTrace();
-			throw new TestException(e.getMessage());
+			throw new TestException( ImplMessages.getMessage("INIT_FAILURE", getClass().getName(), error.getMessage()), error );
 		}
 	}
 

@@ -32,6 +32,7 @@ import org.eclipse.jetty.websocket.WebSocketClient;
 import org.eclipse.jetty.websocket.WebSocketClientFactory;
 
 import com.esri.geoevent.test.performance.ConsumerBase;
+import com.esri.geoevent.test.performance.ImplMessages;
 import com.esri.geoevent.test.performance.TestException;
 import com.esri.geoevent.test.performance.jaxb.Config;
 
@@ -96,10 +97,9 @@ public class StreamServiceEventConsumer extends ConsumerBase
 			}
 			System.out.println("Successfully connected to the Websocket Server.");
 		}
-		catch (Throwable e)
+		catch (Throwable error)
 		{
-			e.printStackTrace();
-			throw new TestException(e.getMessage());
+			throw new TestException( ImplMessages.getMessage("INIT_FAILURE", getClass().getName(), error.getMessage()), error );
 		}
 	}
 

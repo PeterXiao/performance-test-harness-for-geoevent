@@ -34,6 +34,7 @@ import javax.jms.Session;
 import org.apache.activemq.ActiveMQConnection;
 import org.apache.activemq.ActiveMQConnectionFactory;
 
+import com.esri.geoevent.test.performance.ImplMessages;
 import com.esri.geoevent.test.performance.ProducerBase;
 import com.esri.geoevent.test.performance.TestException;
 import com.esri.geoevent.test.performance.jaxb.Config;
@@ -75,9 +76,9 @@ public class ActiveMQEventProducer extends ProducerBase
       Destination destination = (destinationType.equals("Queue")) ? session.createQueue(destinationName) : session.createTopic(destinationName);
       producer = session.createProducer(destination);
     }
-    catch (JMSException e)
+    catch (JMSException error)
     {
-      throw new TestException("Problem Setting up JMS Connection " + e.getMessage());
+			throw new TestException( ImplMessages.getMessage("INIT_FAILURE", getClass().getName(), error.getMessage()), error );
     }
   }
 

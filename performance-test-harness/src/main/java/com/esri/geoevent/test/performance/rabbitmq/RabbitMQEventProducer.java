@@ -25,6 +25,7 @@ package com.esri.geoevent.test.performance.rabbitmq;
 
 import java.io.IOException;
 
+import com.esri.geoevent.test.performance.ImplMessages;
 import com.esri.geoevent.test.performance.ProducerBase;
 import com.esri.geoevent.test.performance.TestException;
 import com.esri.geoevent.test.performance.jaxb.Config;
@@ -67,9 +68,9 @@ public class RabbitMQEventProducer extends ProducerBase
 			channel.queueDeclare(queueName, false, false, true, null);
 			channel.queueBind(queueName, exchangeName, routingKey);
 		}
-		catch (Exception e)
+		catch (Exception error)
 		{
-			throw new TestException("RabbitMQ event producer initialization: problem setting up connection to RabbitMQ: " + e.getMessage());
+			throw new TestException( ImplMessages.getMessage("INIT_FAILURE", getClass().getName(), error.getMessage()), error );
 		}
 	}
 

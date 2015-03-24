@@ -32,6 +32,7 @@ import org.eclipse.jetty.websocket.WebSocket;
 import org.eclipse.jetty.websocket.WebSocketClient;
 import org.eclipse.jetty.websocket.WebSocketClientFactory;
 
+import com.esri.geoevent.test.performance.ImplMessages;
 import com.esri.geoevent.test.performance.ProducerBase;
 import com.esri.geoevent.test.performance.TestException;
 import com.esri.geoevent.test.performance.jaxb.Config;
@@ -87,10 +88,9 @@ public class StreamServiceEventProducer extends ProducerBase
 				connections[i].setConnection(client.open(uri, connections[i], 10, TimeUnit.SECONDS));
 			}
 		}
-		catch (Throwable e)
+		catch (Throwable error)
 		{
-			e.printStackTrace();
-			throw new TestException(e.getMessage());
+			throw new TestException( ImplMessages.getMessage("INIT_FAILURE", getClass().getName(), error.getMessage()), error );
 		}
 	}
 

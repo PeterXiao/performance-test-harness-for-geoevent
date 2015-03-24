@@ -31,6 +31,7 @@ import kafka.javaapi.producer.Producer;
 import kafka.producer.KeyedMessage;
 import kafka.producer.ProducerConfig;
 
+import com.esri.geoevent.test.performance.ImplMessages;
 import com.esri.geoevent.test.performance.ProducerBase;
 import com.esri.geoevent.test.performance.TestException;
 import com.esri.geoevent.test.performance.jaxb.Config;
@@ -65,10 +66,9 @@ public class KafkaEventProducer extends ProducerBase
       
       producer = new Producer<String, String>(producerConfig);
     }
-    catch (Throwable e)
+    catch (Throwable error)
     {
-      e.printStackTrace();
-      throw new TestException(e.getMessage());
+			throw new TestException( ImplMessages.getMessage("INIT_FAILURE", getClass().getName(), error.getMessage()), error );
     }
   } 
 

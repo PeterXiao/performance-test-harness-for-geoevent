@@ -24,6 +24,7 @@
 package com.esri.geoevent.test.performance.tcp;
 
 import com.esri.geoevent.test.performance.ConsumerBase;
+import com.esri.geoevent.test.performance.ImplMessages;
 import com.esri.geoevent.test.performance.TestException;
 import com.esri.geoevent.test.performance.jaxb.Config;
 
@@ -50,9 +51,9 @@ public class ClusterableTcpEventConsumer extends ConsumerBase implements Message
 				socketServer.setPort(port);
 			}
 		}
-		catch (Throwable e)
+		catch (Throwable error)
 		{
-			throw new TestException(e.getMessage());
+			throw new TestException( ImplMessages.getMessage("INIT_FAILURE", getClass().getName(), error.getMessage()), error );
 		}
 	}
 
