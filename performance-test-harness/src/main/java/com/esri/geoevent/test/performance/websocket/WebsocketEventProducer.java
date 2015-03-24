@@ -23,7 +23,6 @@
  */
 package com.esri.geoevent.test.performance.websocket;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.util.concurrent.TimeUnit;
@@ -47,6 +46,7 @@ public class WebsocketEventProducer extends ProducerBase
 	@Override
 	public void init(Config config) throws TestException
 	{
+		super.init(config);
 		try
 		{
 			if( factory == null )
@@ -62,7 +62,6 @@ public class WebsocketEventProducer extends ProducerBase
 				client.setProtocol("input");
 			}
 
-			loadEvents(new File(config.getPropertyValue("simulationFile", "")));
 			connectionCount = Integer.parseInt(config.getPropertyValue("connectionCount", "1"));
 			url = config.getPropertyValue("url");
 			URI uri = new URI(url);
