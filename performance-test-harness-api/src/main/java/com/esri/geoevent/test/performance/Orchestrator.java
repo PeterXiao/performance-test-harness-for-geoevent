@@ -23,7 +23,7 @@
  */
 package com.esri.geoevent.test.performance;
 
-public interface TestHarness
+public interface Orchestrator
 {
 	public void init() throws TestException;
   public void runTest() throws TestException;

@@ -273,7 +273,7 @@ public abstract class PerformanceCollectorBase implements PerformanceCollector, 
 					Socket commandSocket = server.accept();
 					try
 					{
-						commandSocket.setSoTimeout(50);
+						commandSocket.setSoTimeout(100);
 						in = new BufferedReader(new InputStreamReader(commandSocket.getInputStream()));
 						out = new PrintWriter(commandSocket.getOutputStream());
 						while (isRunning.get() && in != null)

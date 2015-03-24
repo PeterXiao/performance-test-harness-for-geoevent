@@ -61,7 +61,7 @@ public class ClockSync implements Runnable
 			ByteBuffer bb = ByteBuffer.allocate(8);  
 			DatagramPacket outgoingPacket = new DatagramPacket(bb.array(), 0, 8, null, port);
 			socket = new DatagramSocket( port );
-			socket.setSoTimeout(50);
+			socket.setSoTimeout(100);
 			while(isRunning.get())
 			{
 				try

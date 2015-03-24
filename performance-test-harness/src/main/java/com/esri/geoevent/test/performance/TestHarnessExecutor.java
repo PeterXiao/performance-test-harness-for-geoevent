@@ -202,22 +202,22 @@ public class TestHarnessExecutor implements RunnableComponent
 			}
 
 			testNames.add(fixture.getName());
-			TestHarness testHarness = new ThroughputPerformanceTestHarness(fixture);
+			Orchestrator orchestrator = new PerformanceTestHarness(fixture);
 			try
 			{
-				testHarness.init();
-				testHarness.runTest();
+				orchestrator.init();
+				orchestrator.runTest();
 			}
 			catch (Exception error)
 			{
 				error.printStackTrace();
-				testHarness.destroy();
-				testHarness = null;
+				orchestrator.destroy();
+				orchestrator = null;
 				continue;
 			}
 
 			// check if we are running and sleep accordingly
-			while (testHarness.isRunning() && isRunning())
+			while (orchestrator.isRunning() && isRunning())
 			{
 				try
 				{
@@ -228,7 +228,7 @@ public class TestHarnessExecutor implements RunnableComponent
 					e.printStackTrace();
 				}
 			}
-			testHarness = null;
+			orchestrator = null;
 
 			// pause for 1/2 second before continuing with the next test
 			try

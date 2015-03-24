@@ -45,7 +45,7 @@ import com.esri.geoevent.test.performance.statistics.Statistics;
 /**
  * <b>NOTE:</b> This class is not Thread-safe
  */
-public class ThroughputPerformanceTestHarness implements TestHarness, RunningStateListener
+public class PerformanceTestHarness implements Orchestrator, RunningStateListener
 {
 	private PerformanceCollector					eventProducer;
 	private PerformanceCollector					eventConsumer;
@@ -71,7 +71,7 @@ public class ThroughputPerformanceTestHarness implements TestHarness, RunningSta
 	private Fixture												fixture;
 	private Map<String, RunningState>	runningStateMap			= new ConcurrentHashMap<String, RunningState>();
 
-	public ThroughputPerformanceTestHarness(Fixture fixture)
+	public PerformanceTestHarness(Fixture fixture)
 	{
 		this.fixture = fixture;
 		runningStateMap = new ConcurrentHashMap<String, RunningState>();
