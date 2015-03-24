@@ -40,7 +40,7 @@ import com.esri.geoevent.test.performance.activemq.ActiveMQEventProducer;
 import com.esri.geoevent.test.performance.kafka.KafkaEventProducer;
 import com.esri.geoevent.test.performance.rabbitmq.RabbitMQEventProducer;
 import com.esri.geoevent.test.performance.streamservice.StreamServiceEventProducer;
-import com.esri.geoevent.test.performance.tcp.ClusterableTcpEventProducer;
+import com.esri.geoevent.test.performance.tcp.TcpServerEventProducer;
 import com.esri.geoevent.test.performance.tcp.TcpEventProducer;
 import com.esri.geoevent.test.performance.websocket.WebsocketEventProducer;
 import com.esri.geoevent.test.performance.websocket.server.WebsocketServerEventProducer;
@@ -81,7 +81,7 @@ public class ProducerController extends PerformanceCollectorController
 				break;
 			case TCP_SERVER:
 				int connectionPort = NumberUtils.toInt(serverPort.getText(), DEFAULT_SERVER_PORT);
-				producer = new ClusterableTcpEventProducer(connectionPort);
+				producer = new TcpServerEventProducer(connectionPort);
 			break;
 			case WEBSOCKETS:
 				producer = new WebsocketEventProducer();

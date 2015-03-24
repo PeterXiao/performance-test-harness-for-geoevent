@@ -21,9 +21,17 @@
 
   email: contracts@esri.com
  */
-package com.esri.geoevent.test.performance.tcp;
+package com.esri.geoevent.test.performance;
 
+/** 
+ * Simple Message Listener interface to be used as a callback whenever a message consumer/producers
+ * needs something else to react to a received message.
+ */
 public interface MessageListener
 {
-	public void receive(String message);
+	/**
+	 * Simple call back method. Sends the message when it has been received. 
+	 * @param message as String
+	 */
+	public void handleMessage(String message);
 }

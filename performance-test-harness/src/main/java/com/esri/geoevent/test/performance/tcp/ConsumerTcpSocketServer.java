@@ -41,48 +41,49 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.esri.geoevent.test.performance.ImplMessages;
+import com.esri.geoevent.test.performance.MessageListener;
 import com.esri.geoevent.test.performance.RunnableComponent;
 import com.esri.geoevent.test.performance.RunningState;
 import com.esri.geoevent.test.performance.RunningStateType;
 import com.esri.geoevent.test.performance.RunningStateListener;
 
-public class TcpSocketServer implements RunnableComponent, Runnable
+public class ConsumerTcpSocketServer implements RunnableComponent, Runnable
 {
-	private static final String LF = "\n";
+	private static final String												LF										= "\n";
 
-	private Selector selector = null;
-	private ServerSocketChannel socketChannel = null;
-	private SocketChannel channel = null;
+	private Selector																	selector							= null;
+	private ServerSocketChannel												socketChannel					= null;
+	private SocketChannel															channel								= null;
 
-	private final Map<SocketChannel, ConnectionData> socketMap = new ConcurrentHashMap<SocketChannel, ConnectionData>();
-	private long nextChannelId = 1;
-	private Charset charset = StandardCharsets.UTF_8;
+	private final Map<SocketChannel, ConnectionData>	socketMap							= new ConcurrentHashMap<SocketChannel, ConnectionData>();
+	private long																			nextChannelId					= 1;
+	private Charset																		charset								= StandardCharsets.UTF_8;
 
-	private Thread thread;
-	private int port = 5775;
-	private String handshake = "";
+	private Thread																		thread;
+	private int																				port									= 5775;
+	private String																		handshake							= "";
 
-	private RunningStateType runningState = RunningStateType.STOPPED;
-	private String stateSemaphore = "stateSemaphore";
-	private RunningStateListener runningStateListener = null;
-	private String errorMessage;
+	private RunningStateType													runningState					= RunningStateType.STOPPED;
+	private String																		stateSemaphore				= "stateSemaphore";
+	private RunningStateListener											runningStateListener	= null;
+	private String																		errorMessage;
 
-	private String messageSeparator = LF;
-	private MessageListener messageListener;
+	private String																		messageSeparator			= LF;
+	private MessageListener														messageListener;
 
-	public TcpSocketServer(MessageListener messageListener)
+	public ConsumerTcpSocketServer(MessageListener messageListener)
 	{
 		this.messageListener = messageListener;
 	}
 
 	public void setPort(int port)
 	{
-		if( this.port != port )
+		if (this.port != port)
 		{
 			this.port = port;
 
-			//reinitialize if started
-			if( getRunningState() == RunningStateType.STARTED )
+			// reinitialize if started
+			if (getRunningState() == RunningStateType.STARTED)
 			{
 				stop();
 				start();
@@ -98,11 +99,12 @@ public class TcpSocketServer implements RunnableComponent, Runnable
 		socketChannel.configureBlocking(false);
 		socketChannel.socket().bind(new InetSocketAddress(port));
 		socketChannel.register(selector, SelectionKey.OP_ACCEPT);
-		System.out.println( ImplMessages.getMessage("TCP_SERVER_START_MSG", String.valueOf(port)) );
+		System.out.println(ImplMessages.getMessage("TCP_SERVER_START_MSG", String.valueOf(port)));
 	}
 
 	private synchronized void reset()
 	{
+		stop();
 		thread = null;
 	}
 
@@ -147,11 +149,11 @@ public class TcpSocketServer implements RunnableComponent, Runnable
 	{
 		switch (getRunningState())
 		{
-		case STARTING:
-		case STARTED:
-			return;
-		default:
-			;
+			case STARTING:
+			case STARTED:
+				return;
+			default:
+				;
 		}
 		setRunningState(RunningStateType.STARTING);
 		thread = new Thread(null, this, "Tcp Socket Server");
@@ -164,11 +166,11 @@ public class TcpSocketServer implements RunnableComponent, Runnable
 		errorMessage = null;
 		switch (getRunningState())
 		{
-		case STARTING:
-		case STARTED:
-			setRunningState(RunningStateType.STOPPING);
-		default:
-			;
+			case STARTING:
+			case STARTED:
+				setRunningState(RunningStateType.STOPPING);
+			default:
+				;
 		}
 	}
 
@@ -254,10 +256,10 @@ public class TcpSocketServer implements RunnableComponent, Runnable
 	{
 		try
 		{
-			if(selector != null )
+			if (selector != null)
 			{
 				selector.select(100);
-				if( selector.isOpen() )
+				if (selector.isOpen())
 				{
 					for (Iterator<SelectionKey> iterator = selector.selectedKeys().iterator(); iterator.hasNext();)
 					{
@@ -269,7 +271,7 @@ public class TcpSocketServer implements RunnableComponent, Runnable
 						}
 						catch (Exception ex)
 						{
-							//ex.printStackTrace();
+							// ex.printStackTrace();
 							selectionKey.cancel();
 						}
 					}
@@ -403,13 +405,13 @@ public class TcpSocketServer implements RunnableComponent, Runnable
 
 		try
 		{
-			String rawString = getNextString(stringBuilder);
-			while (rawString != null)
+			String message = getNextString(stringBuilder);
+			while (message != null)
 			{
 				// hit();
-				if (rawString != null && messageListener != null)
-					messageListener.receive(rawString);
-				rawString = getNextString(stringBuilder);
+				if (message != null && messageListener != null)
+					messageListener.handleMessage(message);
+				message = getNextString(stringBuilder);
 			}
 		}
 		catch (Exception e)

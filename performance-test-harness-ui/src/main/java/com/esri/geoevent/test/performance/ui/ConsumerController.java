@@ -39,7 +39,7 @@ import com.esri.geoevent.test.performance.Protocol;
 import com.esri.geoevent.test.performance.activemq.ActiveMQEventConsumer;
 import com.esri.geoevent.test.performance.rabbitmq.RabbitMQEventConsumer;
 import com.esri.geoevent.test.performance.streamservice.StreamServiceEventConsumer;
-import com.esri.geoevent.test.performance.tcp.ClusterableTcpEventConsumer;
+import com.esri.geoevent.test.performance.tcp.TcpServerEventConsumer;
 import com.esri.geoevent.test.performance.tcp.TcpEventConsumer;
 import com.esri.geoevent.test.performance.websocket.WebsocketEventConsumer;
 
@@ -79,7 +79,7 @@ public class ConsumerController extends PerformanceCollectorController
 				break;
 			case TCP_SERVER:
 				int connectionPort = NumberUtils.toInt(serverPort.getText(), DEFAULT_SERVER_PORT);
-				consumer = new ClusterableTcpEventConsumer(connectionPort);
+				consumer = new TcpServerEventConsumer(connectionPort);
 			break;
 			case WEBSOCKETS:
 				consumer = new WebsocketEventConsumer();

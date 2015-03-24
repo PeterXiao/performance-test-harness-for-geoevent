@@ -85,7 +85,8 @@ public class WebsocketServerEventProducer extends PerformanceCollectorBase
 		try
 		{
 			server.start();
-			// server.join();
+			// add the shutdown hook
+			Runtime.getRuntime().addShutdownHook(new Thread(()->shutdown()));
 		}
 		catch (Exception e)
 		{

@@ -27,6 +27,7 @@ import java.io.IOException;
 
 import org.eclipse.jetty.websocket.WebSocket;
 
+import com.esri.geoevent.test.performance.MessageListener;
 import com.esri.geoevent.test.performance.TestException;
 
 /**
@@ -104,17 +105,5 @@ public class WebSocketConnection implements WebSocket.OnTextMessage
 	public void setConnection(Connection connection)
 	{
 		this.connection = connection;
-	}
-	
-	/** 
-	 * Simple Message Listener interface to be used as a callback whenever this connection class receives a message
-	 */
-	interface MessageListener
-	{
-		/**
-		 * Simple call back method. Sends the message when it has been received. 
-		 * @param message as String
-		 */
-		void handleMessage(String message);
 	}
 }

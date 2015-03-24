@@ -24,107 +24,144 @@
 package com.esri.geoevent.test.performance.tcp;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Deque;
-import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.ArrayList;
+import java.util.List;
 
-public class SimpleSocketServer
+import org.apache.commons.io.IOUtils;
+
+import com.esri.geoevent.test.performance.ImplMessages;
+
+public class ProducerTcpSocketServer
 {
-	ServerSocket serverSocket;
-	int port;
-	private ConnectionListener listenerThread;
-	private Deque<Socket> clients = new ConcurrentLinkedDeque<>();
-	
-	public SimpleSocketServer() 
+	private int									port;
+	private ConnectionListener	listenerThread;
+	private List<Socket>				clients	= new ArrayList<>();
+
+	public ProducerTcpSocketServer()
 	{
 		port = -1;
 	}
-	
-	public synchronized void setPort( int port )
+
+	public synchronized void setPort(int port)
 	{
-		if( this.port == port )
+		if (this.port == port)
 			return;
-		
+
 		this.port = port;
-		
-		if( listenerThread != null )
+
+		if (listenerThread != null)
 		{
 			stop();
 			start();
 		}
-		
 	}
-	
+
 	public synchronized void start()
 	{
-		if( listenerThread != null )  // the server is already running.
-			return;  
-		
+		if (listenerThread != null) // the server is already running.
+			return;
+
 		listenerThread = new ConnectionListener();
 		listenerThread.start();
 	}
-	
+
 	public synchronized void stop()
 	{
-		if( listenerThread == null )
+		if (listenerThread == null)
 			return;
-		
+
 		listenerThread.interrupt();
 	}
+
+	public void clearClientList()
+	{
+		if( ! clients.isEmpty() )
+		{
+			clients.stream().forEach(client->IOUtils.closeQuietly(client));
+		}
+		clients.clear();
+	}
 	
+	public void sendEvent(String message)
+	{
+		for( Socket socket : clients )
+		{
+			try
+			{
+				OutputStream out = socket.getOutputStream();
+				out.write(message.getBytes());
+				out.flush();
+			}
+			catch( Exception error )
+			{
+				error.printStackTrace();
+			}
+		}
+	}
+
+	public void destroy()
+	{
+		stop();
+		clearClientList();
+	}
+	
+	/**
+	 * Helper class used to listen to connections
+	 *
+	 */
 	private class ConnectionListener extends Thread
 	{
-		private volatile boolean running = true;
-		
+		private volatile boolean	running	= true;
+
 		public ConnectionListener()
 		{
 			setName("SimpleSocketServer Connection Listener");
 		}
-		
+
 		@Override
 		public void interrupt()
 		{
 			running = false;
 			super.interrupt();
 		}
-		
+
 		public void run()
 		{
 			ServerSocket serverSocket = null;
-			try {
+			try
+			{
 				serverSocket = new ServerSocket(port);
-			} catch (IOException e1) {
-				System.err.println("Error while trying to bind to port "+port+" : "+e1.getMessage());
+				System.out.println( ImplMessages.getMessage("TCP_SERVER_START_MSG", String.valueOf(port)) );
+			}
+			catch (IOException e1)
+			{
+				System.err.println("Error while trying to bind to port " + port + " : " + e1.getMessage());
 				return;
 			}
-			while(running)
+			while (running)
 			{
-				try {
+				try
+				{
 					Socket client = serverSocket.accept();
 					System.out.println("New client connected.");
 					clients.add(client);
-				} catch (IOException e) 
+				}
+				catch (IOException e)
 				{
 				}
 			}
-			try {
-				serverSocket.close();
-			} catch (IOException e)
+			try
 			{
-				System.err.println("Error while trying to close the server bound to port "+port+" : "+e.getMessage());
+				serverSocket.close();
+			}
+			catch (IOException e)
+			{
+				System.err.println("Error while trying to close the server bound to port " + port + " : " + e.getMessage());
 				return;
 			}
 		}
-	}
-
-	public Socket peekClient() 
-	{
-		return clients.peekLast();
-	}
-
-	public void clearClientList() 
-	{
-		clients.clear();
 	}
 }

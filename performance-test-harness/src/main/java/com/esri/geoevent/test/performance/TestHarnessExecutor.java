@@ -66,8 +66,8 @@ import com.esri.geoevent.test.performance.report.XLSXReportWriter;
 import com.esri.geoevent.test.performance.statistics.FixturesStatistics;
 import com.esri.geoevent.test.performance.streamservice.StreamServiceEventConsumer;
 import com.esri.geoevent.test.performance.streamservice.StreamServiceEventProducer;
-import com.esri.geoevent.test.performance.tcp.ClusterableTcpEventConsumer;
-import com.esri.geoevent.test.performance.tcp.ClusterableTcpEventProducer;
+import com.esri.geoevent.test.performance.tcp.TcpServerEventConsumer;
+import com.esri.geoevent.test.performance.tcp.TcpServerEventProducer;
 import com.esri.geoevent.test.performance.tcp.TcpEventConsumer;
 import com.esri.geoevent.test.performance.tcp.TcpEventProducer;
 import com.esri.geoevent.test.performance.websocket.WebsocketEventConsumer;
@@ -145,15 +145,10 @@ public class TestHarnessExecutor implements RunnableComponent
 		testNames = new ArrayList<String>();
 
 		// add this runtime hook to write out whatever results we have to a report in case of exit or failures
-		Runtime.getRuntime().addShutdownHook(new Thread()
-			{
-				@Override
-				public void run()
-				{
-					long totalTime = System.currentTimeMillis() - startTime;
-					writeReport(fixtures, testNames, totalTime);
-				}
-			});
+		Runtime.getRuntime().addShutdownHook(new Thread(()->{
+			long totalTime = System.currentTimeMillis() - startTime;
+			writeReport(fixtures, testNames, totalTime);
+		}));
 
 		// Check the master fixtures configuration to see if we need to provision all of the test
 		ProvisionerFactory provisionerFactory = new DefaultProvisionerFactory();
@@ -269,8 +264,7 @@ public class TestHarnessExecutor implements RunnableComponent
 		performerOptions.addOption(OptionBuilder.withLongOpt("type").withDescription("[TCP(default) | WEBSOCKETS | ACTIVE_MQ | RABBIT_MQ]").hasArg().isRequired().create("t"));
 		performerOptions.addOption(OptionBuilder.withLongOpt("mode").withDescription("[producer|consumer]").hasArg().isRequired().create("m"));
 		performerOptions.addOption(OptionBuilder.withLongOpt("commandListenerPort").withDescription("The TCP Port where this diagnostic tool will listen for commands from the orchestrator, e.g. 5010. It can be set to \"local\" to be run locally (port 5010 for \"producer\" and port 5020 for \"consumer\"").hasArg().isRequired().create("p"));
-		performerOptions.addOption(OptionBuilder.withLongOpt("consumerServerPort").withDescription("The TCP Port where the consumer will listen for TCP connections to consume events, e.g. 5775. (Default value is 5775").hasArg().create("cp"));
-		performerOptions.addOption("s", "server", false, "Indicates that the producer/consumer should be running as a server, listening for connections from the GEP connector.");
+		performerOptions.addOption(OptionBuilder.withLongOpt("serverPort").withDescription("The TCP Port where the server will listen for TCP connections to produce/consume events, e.g. 5665. (Default value is 5665 for producer and 5775 for consumer").hasArg().create("sp"));
 		performerOptions.addOption("h", "help", false, "print the help message");
 
 		// parse the command line
@@ -380,8 +374,8 @@ public class TestHarnessExecutor implements RunnableComponent
 						producer = new TcpEventProducer();
 						break;
 					case TCP_SERVER:
-						int connectionPort = NumberUtils.toInt(cmd.getOptionValue("cp"), 5775);
-						producer = new ClusterableTcpEventProducer(connectionPort);
+						int connectionPort = NumberUtils.toInt(cmd.getOptionValue("sp"), 5665);
+						producer = new TcpServerEventProducer(connectionPort);
 						break;
 					case WEBSOCKETS:
 						producer = new WebsocketEventProducer();
@@ -401,13 +395,6 @@ public class TestHarnessExecutor implements RunnableComponent
 					case WEBSOCKET_SERVER:
             final WebsocketServerEventProducer wsProducer = new WebsocketServerEventProducer();
             producer = wsProducer;
-            Runtime.getRuntime().addShutdownHook(new Thread() {
-              @Override
-              public void run()
-              {
-                wsProducer.shutdown();
-              }
-            });
             break;
 					default:
 						return;
@@ -423,17 +410,9 @@ public class TestHarnessExecutor implements RunnableComponent
 						consumer = new TcpEventConsumer();
 						break;
 					case TCP_SERVER:
-						int consumerServerPort = NumberUtils.toInt(cmd.getOptionValue("cp"), 5775);
-						final ClusterableTcpEventConsumer clusterableTcpEventConsumer = new ClusterableTcpEventConsumer(consumerServerPort);
+						int consumerServerPort = NumberUtils.toInt(cmd.getOptionValue("sp"), 5775);
+						TcpServerEventConsumer clusterableTcpEventConsumer = new TcpServerEventConsumer(consumerServerPort);
 						consumer = clusterableTcpEventConsumer;
-						// add this runtime hook - cleanup after we shutdown
-						Runtime.getRuntime().addShutdownHook(new Thread() {
-							@Override
-							public void run()
-							{
-								clusterableTcpEventConsumer.shutdown();
-							}
-						});
 						break;
 					case WEBSOCKETS:
 						consumer = new WebsocketEventConsumer();

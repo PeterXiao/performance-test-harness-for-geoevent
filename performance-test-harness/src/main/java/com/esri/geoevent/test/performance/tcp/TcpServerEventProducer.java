@@ -23,60 +23,77 @@
  */
 package com.esri.geoevent.test.performance.tcp;
 
-import com.esri.geoevent.test.performance.ConsumerBase;
 import com.esri.geoevent.test.performance.ImplMessages;
+import com.esri.geoevent.test.performance.ProducerBase;
 import com.esri.geoevent.test.performance.TestException;
 import com.esri.geoevent.test.performance.jaxb.Config;
 
-public class ClusterableTcpEventConsumer extends ConsumerBase implements MessageListener
+public class TcpServerEventProducer extends ProducerBase
 {
-	private int port = 5775;
-	private TcpSocketServer socketServer;
-			
-	public ClusterableTcpEventConsumer(int port)
+	private int											port	= 5665;
+	private ProducerTcpSocketServer	socketServer;
+
+	public TcpServerEventProducer(int port)
 	{
-		super();
 		this.port = port;
+		if (socketServer == null)
+		{
+			socketServer = new ProducerTcpSocketServer();
+			socketServer.setPort(port);
+			socketServer.start();
+			// add the shutdown hook
+			Runtime.getRuntime().addShutdownHook(new Thread(() -> shutdown()));
+		}
 	}
-	
+
 	@Override
 	public synchronized void init(Config config) throws TestException
 	{
 		super.init(config);
 		try
 		{
-			port = Integer.valueOf(config.getPropertyValue("port", String.valueOf(port)));
-			if( socketServer != null )
+			port = Integer.parseInt(config.getPropertyValue("port", "5565"));
+			if (socketServer != null)
 			{
 				socketServer.setPort(port);
 			}
 		}
 		catch (Throwable error)
 		{
-			throw new TestException( ImplMessages.getMessage("INIT_FAILURE", getClass().getName(), error.getMessage()), error );
+			throw new TestException(ImplMessages.getMessage("INIT_FAILURE", getClass().getName(), error.getMessage()), error);
 		}
 	}
 
 	@Override
-	public void listenOnCommandPort(int commandPort, boolean isLocal)
-	{
-		super.listenOnCommandPort(commandPort, isLocal);
-		
-		socketServer = new TcpSocketServer(this);
-		socketServer.setPort(port);
-		socketServer.start();
-	}
-	
-	@Override
 	public void validate() throws TestException
 	{
+		super.validate();
 		if (socketServer == null)
-			throw new TestException("Socket connection is not established. Please initialize TcpEventConsumer before it starts collecting diagnostics.");
+			throw new TestException("Socket connection is not established. Please initialize TcpServerEventProducer before it starts collecting diagnostics.");
 	}
-	
+
+	@Override
+	public int sendEvents(int index, int numEventsToSend)
+	{
+		int eventIndex = index;
+		for (int i = 0; i < numEventsToSend; i++)
+		{
+			if (eventIndex == events.size())
+				eventIndex = 0;
+
+			// send the events
+			String message = events.get(eventIndex++);
+			socketServer.sendEvent(message);
+			messageSent(message);
+			if (running.get() == false)
+				break;
+		}
+		return eventIndex;
+	}
+
 	public void shutdown()
 	{
-		if( socketServer != null )
+		if (socketServer != null)
 		{
 			socketServer.destroy();
 			socketServer = null;
