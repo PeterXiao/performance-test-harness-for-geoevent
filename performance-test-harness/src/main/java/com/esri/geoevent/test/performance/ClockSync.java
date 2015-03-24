@@ -30,12 +30,14 @@ import java.net.DatagramSocket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.io.IOUtils;
 
 public class ClockSync implements Runnable
 {
 	int port = 7720;
+	AtomicBoolean isRunning = new AtomicBoolean(false);
 	
 	public ClockSync(int clockPort)
 	{
@@ -44,6 +46,7 @@ public class ClockSync implements Runnable
 
 	public ClockSync()
 	{
+		isRunning.set(true);
 	}
 	
 	@Override
@@ -59,7 +62,7 @@ public class ClockSync implements Runnable
 			DatagramPacket outgoingPacket = new DatagramPacket(bb.array(), 0, 8, null, port);
 			socket = new DatagramSocket( port );
 			socket.setSoTimeout(50);
-			while(true)
+			while(isRunning.get())
 			{
 				try
 				{
@@ -95,5 +98,10 @@ public class ClockSync implements Runnable
 		{
 			IOUtils.closeQuietly(socket);
 		}
+	}
+	
+	public void stop()
+	{
+		isRunning.set(false);
 	}
 }

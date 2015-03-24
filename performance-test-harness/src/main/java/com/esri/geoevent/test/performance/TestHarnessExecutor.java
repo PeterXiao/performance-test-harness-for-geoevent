@@ -412,7 +412,7 @@ public class TestHarnessExecutor implements RunnableComponent
 					default:
 						return;
 				}
-				producer.listenOnCommandPort((isLocal ? 5010 : commandListenerPort), isLocal);
+				producer.listenOnCommandPort((isLocal ? 5010 : commandListenerPort), true);
 			}
 			else if (mode == Mode.Consumer)
 			{
@@ -450,7 +450,7 @@ public class TestHarnessExecutor implements RunnableComponent
 					default:
 						return;
 				}
-				consumer.listenOnCommandPort((isLocal ? 5020 : commandListenerPort), isLocal);
+				consumer.listenOnCommandPort((isLocal ? 5020 : commandListenerPort), true);
 			}
 		}
 	}

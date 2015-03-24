@@ -65,7 +65,8 @@ public abstract class PerformanceCollectorBase implements PerformanceCollector, 
 	protected final Mode						mode;
 	private Integer									commandPort;
 	private Boolean									isLocal;
-
+	private ClockSync 							clockSync = null;
+	
 	public PerformanceCollectorBase(Mode mode)
 	{
 		this.mode = mode;
@@ -199,13 +200,31 @@ public abstract class PerformanceCollectorBase implements PerformanceCollector, 
 			this.isLocal = isLocal;
 		
 		System.out.println(ImplMessages.getMessage("PERFORMANCE_COLLECTOR_LISTENING_CMD_PORT_MSG", String.valueOf(commandPort)));
+		if( commandInterpreter != null )
+		{
+			commandInterpreter.stop();
+			commandInterpreter.destroy();
+			commandInterpreter = null;
+		}
 		commandInterpreter = new CommandInterpreter(commandPort);
 		setRunningStateListener(commandInterpreter);
+		if( commandInterpreterThread != null )
+		{
+			commandInterpreterThread.interrupt();
+			commandInterpreterThread = null;
+		}
 		commandInterpreterThread = new Thread(commandInterpreter);
 		commandInterpreterThread.start();
+		
 		if (!isLocal)
 		{
-			Thread thread = new Thread(new ClockSync());
+			if( clockSync != null )
+			{
+				clockSync.stop();
+				clockSync = null;
+			}
+			clockSync = new ClockSync();
+			Thread thread = new Thread(clockSync);
 			thread.start();
 		}
 	}
@@ -213,9 +232,19 @@ public abstract class PerformanceCollectorBase implements PerformanceCollector, 
 	@Override
 	public void disconnectCommandPort()
 	{
+		commandInterpreter.stop();
 		commandInterpreter.destroy();
+		commandInterpreter = null;
+		
 		commandInterpreterThread.interrupt();
 		commandInterpreterThread = null;
+		
+		if( clockSync != null )
+		{
+			clockSync.stop();
+			clockSync = null;
+		}
+		
 		System.out.println(ImplMessages.getMessage("PERFORMANCE_COLLECTOR_DISCONNECTED_CMD_PORT_MSG"));
 	}
 
@@ -225,10 +254,12 @@ public abstract class PerformanceCollectorBase implements PerformanceCollector, 
 		private BufferedReader	in;
 		private PrintWriter			out;
 		private ServerSocket		server;
-
+		private AtomicBoolean 	isRunning = new AtomicBoolean(false);
+		
 		public CommandInterpreter(int commandPort)
 		{
 			this.port = commandPort;
+			isRunning = new AtomicBoolean(true);
 		}
 
 		public void run()
@@ -236,16 +267,16 @@ public abstract class PerformanceCollectorBase implements PerformanceCollector, 
 			try
 			{
 				server = new ServerSocket(port);
-				while (true)
+				while (isRunning.get())
 				{
 					// System.out.println("Listening for a connection from the orchestrator.");
 					Socket commandSocket = server.accept();
 					try
 					{
-						// commandSocket.setSoTimeout(50);
+						commandSocket.setSoTimeout(50);
 						in = new BufferedReader(new InputStreamReader(commandSocket.getInputStream()));
 						out = new PrintWriter(commandSocket.getOutputStream());
-						while (in != null)
+						while (isRunning.get() && in != null)
 						{
 							String command = null;
 							try
@@ -503,7 +534,12 @@ public abstract class PerformanceCollectorBase implements PerformanceCollector, 
 			else
 				System.err.println("Failed to send the response: \"" + response + "\". The Output stream is NULL!");
 		}
-
+		
+		public void stop()
+		{
+			isRunning.set(false);
+		}
+		
 		private void destroy()
 		{
 			IOUtils.closeQuietly(in);
