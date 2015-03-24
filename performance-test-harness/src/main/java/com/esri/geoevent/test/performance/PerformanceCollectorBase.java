@@ -418,6 +418,7 @@ public abstract class PerformanceCollectorBase implements PerformanceCollector, 
 									response = new Response(ResponseType.OK);
 									respond(response);
 									destroy();
+									PerformanceCollectorBase.this.destroy();
 									listenOnCommandPort(commandPort, isLocal);
 									break;
 

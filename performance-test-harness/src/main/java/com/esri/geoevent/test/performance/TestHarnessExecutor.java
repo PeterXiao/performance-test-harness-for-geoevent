@@ -72,7 +72,7 @@ import com.esri.geoevent.test.performance.tcp.TcpEventConsumer;
 import com.esri.geoevent.test.performance.tcp.TcpEventProducer;
 import com.esri.geoevent.test.performance.websocket.WebsocketEventConsumer;
 import com.esri.geoevent.test.performance.websocket.WebsocketEventProducer;
-import com.esri.geoevent.test.performance.websocket.server.WebsocketServerEverntProducer;
+import com.esri.geoevent.test.performance.websocket.server.WebsocketServerEventProducer;
 
 public class TestHarnessExecutor implements RunnableComponent
 {
@@ -399,7 +399,7 @@ public class TestHarnessExecutor implements RunnableComponent
 					  producer = new KafkaEventProducer();
 					  break;
 					case WEBSOCKET_SERVER:
-            final WebsocketServerEverntProducer wsProducer = new WebsocketServerEverntProducer();
+            final WebsocketServerEventProducer wsProducer = new WebsocketServerEventProducer();
             producer = wsProducer;
             Runtime.getRuntime().addShutdownHook(new Thread() {
               @Override

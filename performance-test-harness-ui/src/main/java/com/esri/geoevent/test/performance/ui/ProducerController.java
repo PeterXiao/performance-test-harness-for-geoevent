@@ -43,7 +43,7 @@ import com.esri.geoevent.test.performance.streamservice.StreamServiceEventProduc
 import com.esri.geoevent.test.performance.tcp.ClusterableTcpEventProducer;
 import com.esri.geoevent.test.performance.tcp.TcpEventProducer;
 import com.esri.geoevent.test.performance.websocket.WebsocketEventProducer;
-import com.esri.geoevent.test.performance.websocket.server.WebsocketServerEverntProducer;
+import com.esri.geoevent.test.performance.websocket.server.WebsocketServerEventProducer;
 
 public class ProducerController extends PerformanceCollectorController
 {
@@ -99,7 +99,7 @@ public class ProducerController extends PerformanceCollectorController
 			  producer = new KafkaEventProducer();
 			  break;
 			case WEBSOCKET_SERVER:
-        final WebsocketServerEverntProducer wsProducer = new WebsocketServerEverntProducer();
+        final WebsocketServerEventProducer wsProducer = new WebsocketServerEventProducer();
         producer = wsProducer;
         Runtime.getRuntime().addShutdownHook(new Thread() {
           @Override

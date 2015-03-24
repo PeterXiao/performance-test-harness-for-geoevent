@@ -118,8 +118,7 @@ public class StreamServiceEventProducer extends ProducerBase
 				String message = events.get(eventIndex++);
 				for (ConnectionHandler conn : connections)
 					conn.getConnection().sendMessage(message);
-				successfulEvents.incrementAndGet();
-				successfulEventBytes.addAndGet(message.getBytes().length);
+				messageSent(message);
 				if (running.get() == false)
 					break;
 			}

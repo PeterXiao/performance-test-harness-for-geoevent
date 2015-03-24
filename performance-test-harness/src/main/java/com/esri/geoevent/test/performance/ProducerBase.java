@@ -137,6 +137,14 @@ public abstract class ProducerBase extends PerformanceCollectorBase implements P
 	}
 	
 	@Override
+	public void messageSent(String message)
+	{
+		successfulEvents.incrementAndGet();
+		if( message != null )
+			successfulEventBytes.addAndGet(message.getBytes().length);
+	}
+	
+	@Override
 	public void destroy()
 	{
 		super.destroy();

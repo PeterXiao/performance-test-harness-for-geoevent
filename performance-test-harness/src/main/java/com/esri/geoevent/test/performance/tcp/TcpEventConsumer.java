@@ -30,6 +30,7 @@ import java.net.Socket;
 import org.apache.commons.io.IOUtils;
 
 import com.esri.geoevent.test.performance.ConsumerBase;
+import com.esri.geoevent.test.performance.ImplMessages;
 import com.esri.geoevent.test.performance.TestException;
 import com.esri.geoevent.test.performance.jaxb.Config;
 
@@ -58,9 +59,9 @@ public class TcpEventConsumer extends ConsumerBase
 			socket.setSoTimeout(50);
 			is = new BufferedReader( new InputStreamReader( socket.getInputStream() ) );			
 		}
-		catch (Throwable e)
+		catch (Throwable error)
 		{
-			throw new TestException(e.getMessage());
+			throw new TestException( ImplMessages.getMessage("INIT_FAILURE", getClass().getName(), error.getMessage()), error );
 		}
 	}
 

@@ -41,8 +41,7 @@ import com.esri.geoevent.test.performance.RunningStateType;
 import com.esri.geoevent.test.performance.TestException;
 import com.esri.geoevent.test.performance.jaxb.Config;
 
-/* ------------------------------------------------------------ */
-public class WebsocketServerEverntProducer extends PerformanceCollectorBase
+public class WebsocketServerEventProducer extends PerformanceCollectorBase
 {
 	private static final String				STREAM_SERVICE				= "/streamservice";
 	private static final String				INBOUND								= "/inbound";
@@ -63,7 +62,7 @@ public class WebsocketServerEverntProducer extends PerformanceCollectorBase
 	// private WebSocketClient client;
 	// private int connectionCount;
 
-	public WebsocketServerEverntProducer()
+	public WebsocketServerEventProducer()
 	{
 		super(Mode.Producer);
 		server = new Server(8089);
@@ -116,7 +115,7 @@ public class WebsocketServerEverntProducer extends PerformanceCollectorBase
 	{
 
 		if (events.isEmpty())
-			throw new TestException(WebsocketServerEverntProducer.class.getName() + " is missing events to produce.");
+			throw new TestException(WebsocketServerEventProducer.class.getName() + " is missing events to produce.");
 	}
 
 	@Override

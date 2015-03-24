@@ -102,10 +102,9 @@ public class ActiveMQEventProducer extends ProducerBase
 				eventIndex = 0;
 			try
 			{
-				String eventMessage = events.get(eventIndex++);
-				producer.send(session.createTextMessage(eventMessage), DeliveryMode.NON_PERSISTENT, Message.DEFAULT_PRIORITY, messageLifespan);
-				successfulEvents.incrementAndGet();
-				successfulEventBytes.addAndGet(eventMessage.getBytes().length);
+				String message = events.get(eventIndex++);
+				producer.send(session.createTextMessage(message), DeliveryMode.NON_PERSISTENT, Message.DEFAULT_PRIORITY, messageLifespan);
+				messageSent(message);
 				if (running.get() == false)
 					break;
 			}

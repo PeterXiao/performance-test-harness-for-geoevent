@@ -91,13 +91,12 @@ public class RabbitMQEventProducer extends ProducerBase
 		{
 			if (eventIndex == events.size())
 				eventIndex = 0;
-			String thisEvent = events.get(eventIndex++);
+			String message = events.get(eventIndex++);
 			try
 			{
-				byte[] bytes = thisEvent.getBytes();
+				byte[] bytes = message.getBytes();
 				channel.basicPublish(exchangeName, routingKey, null, bytes);
-				successfulEvents.incrementAndGet();
-				successfulEventBytes.addAndGet(thisEvent.getBytes().length);
+				messageSent(message);
 				if (running.get() == false)
 					break;
 			}

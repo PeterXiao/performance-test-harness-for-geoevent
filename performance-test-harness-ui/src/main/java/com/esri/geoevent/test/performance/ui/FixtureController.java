@@ -946,8 +946,7 @@ public class FixtureController implements Initializable
    	// WEBSOCKETS
    	props = new ArrayList<Property>();
    	props.add(simulationFile);
-   	props.add(new Property("hosts", "localhost"));
-   	props.add(new Property("port", "6180"));
+   	props.add(new Property("url", ""));
    	props.add(new Property("connectionCount", "1"));
    	producerPropertiesCache.put(Protocol.WEBSOCKETS, FXCollections.observableList(props));
    	
@@ -996,8 +995,7 @@ public class FixtureController implements Initializable
   	
   	// WEBSOCKETS
   	props = new ArrayList<Property>();
-  	props.add(new Property("hosts", "localhost"));
-  	props.add(new Property("port", "6180"));
+  	props.add(new Property("url", ""));
   	props.add(new Property("connectionCount", "1"));
   	consumerPropertiesCache.put(Protocol.WEBSOCKETS, FXCollections.observableList(props));
   }

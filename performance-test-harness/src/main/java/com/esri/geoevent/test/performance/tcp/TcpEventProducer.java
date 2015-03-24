@@ -29,6 +29,7 @@ import java.net.Socket;
 
 import org.apache.commons.io.IOUtils;
 
+import com.esri.geoevent.test.performance.ImplMessages;
 import com.esri.geoevent.test.performance.ProducerBase;
 import com.esri.geoevent.test.performance.TestException;
 import com.esri.geoevent.test.performance.jaxb.Config;
@@ -51,10 +52,9 @@ public class TcpEventProducer extends ProducerBase
 			socket = new Socket(host, port);
 			os = socket.getOutputStream();
 		}
-		catch (Throwable e)
+		catch (Throwable error)
 		{
-			e.printStackTrace();
-			throw new TestException(e.getMessage());
+			throw new TestException( ImplMessages.getMessage("INIT_FAILURE", getClass().getName(), error.getMessage()), error );
 		}
 	}
 
@@ -79,8 +79,7 @@ public class TcpEventProducer extends ProducerBase
 				String message = events.get(eventIndex++);
 				os.write(message.getBytes());
 				os.flush();
-				successfulEvents.incrementAndGet();
-				successfulEventBytes.addAndGet(message.getBytes().length);
+				messageSent(message);
 				if (running.get() == false)
 					break;
 			}

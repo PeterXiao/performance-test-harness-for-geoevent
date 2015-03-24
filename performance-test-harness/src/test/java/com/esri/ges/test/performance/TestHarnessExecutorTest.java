@@ -39,7 +39,7 @@ import org.junit.Test;
 
 import com.esri.geoevent.test.performance.TestHarnessExecutor;
 
-public class TestHarnessLoaderTest
+public class TestHarnessExecutorTest
 {
 
 	// ---------------------------------------------------------
@@ -153,6 +153,22 @@ public class TestHarnessLoaderTest
 		
 		// run the test
 		args = "-f src/test/resources/fixtures_provisioning_per_fixture_tcp.xml";
+		TestHarnessExecutor.main(args.split(" "));
+	}
+	
+	@Test
+	public void testPerformanceTestHarnessMode_WS_SANITY() throws InterruptedException
+	{
+		// setup consumer
+		String args = "-m consumer -t websockets -p local";
+		TestHarnessExecutor.main(args.split(" "));
+		
+		// setup producer
+		args = "-m producer -t websockets -p local";
+		TestHarnessExecutor.main(args.split(" "));
+		
+		// run the test
+		args = "-f src/test/resources/fixtures_simple_ws.xml";
 		TestHarnessExecutor.main(args.split(" "));
 	}
 	
