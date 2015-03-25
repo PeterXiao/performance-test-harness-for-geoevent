@@ -30,7 +30,7 @@ Sample:
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <Fixtures>
 	<Report type="CSV">
-		<ReportFile>target/reports/simple_tcp.csv</ReportFile>
+		<ReportFile>reports/simple_tcp.csv</ReportFile>
 	</Report>
 	
 	<DefaultFixture>
@@ -41,7 +41,7 @@ Sample:
 		</DefaultSharedConfig>
 		<ProducerConfig commandPort="5010">
 			<Properties>
-				<Property name="simulationFile">src/test/resources/simulations/county_envelopes_1000_points.csv</Property>
+				<Property name="simulationFile">simulations/county_envelopes_1000_points.csv</Property>
 				<Property name="port">5565</Property>
 			</Properties>
 		</ProducerConfig>
