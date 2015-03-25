@@ -80,17 +80,17 @@ You will need to start the producer and consumer first (the order does not matte
 
 Start a TCP producer
 ```
-run.bat -m producer -t tcp
+java -jar Performance-Test-Harness-10.3.0.jar -m producer -t tcp
 ```
 
 Start a TCP consumer
 ```
-run.bat -m consumer -t tcp
+java -jar Performance-Test-Harness-10.3.0.jar -m consumer -t tcp
 ```
 
 Start the orchestrator 
 ```
-run.bat -f fixtures\my_fixtures.xml
+java -jar Performance-Test-Harness-10.3.0.jar -f fixtures\my_fixtures.xml
 ```
 
 ### Reading the Results
