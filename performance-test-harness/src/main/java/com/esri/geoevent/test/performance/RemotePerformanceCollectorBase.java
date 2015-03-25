@@ -505,6 +505,8 @@ public class RemotePerformanceCollectorBase implements PerformanceCollector
 							// read some more
 							responseStr = readResponse();
 							response = KryoUtils.fromString(responseStr, Response.class);
+							if( response == null )
+								break;
 						}
 					}
 				}

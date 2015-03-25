@@ -33,7 +33,8 @@ public abstract class ProducerBase extends PerformanceCollectorBase implements P
 	private int				eventsPerSec				= -1;
 	private int				staggeringInterval	= 10;
 	private TestType	testType						= TestType.UNKNOWN;
-
+	private String 		simulationFile				= null;
+	
 	public ProducerBase()
 	{
 		super(Mode.Producer);
@@ -44,8 +45,8 @@ public abstract class ProducerBase extends PerformanceCollectorBase implements P
 	{
 		try
 		{
-			String path = config.getPropertyValue("simulationFile", "");
-			loadEvents(new File(path));
+			simulationFile = config.getPropertyValue("simulationFile", "");
+			loadEvents(new File(simulationFile));
 			eventsPerSec = Integer.parseInt(config.getPropertyValue("eventsPerSec", "-1"));
 			staggeringInterval = Integer.parseInt(config.getPropertyValue("staggeringInterval", "1"));
 			testType = TestType.fromValue(config.getPropertyValue("testType"));
@@ -151,4 +152,8 @@ public abstract class ProducerBase extends PerformanceCollectorBase implements P
 		events.clear();
 	}
 
+	public String getSimulationFile()
+	{
+		return simulationFile;
+	}
 }

@@ -64,7 +64,7 @@ public enum Protocol
 			return UNKNOWN;
 		if( TCP.toString().equalsIgnoreCase(valueStr) || TCP.name().equalsIgnoreCase(valueStr) )
 			return TCP;
-		if( TCP_SERVER.toString().equalsIgnoreCase(valueStr) || TCP_SERVER.name().equalsIgnoreCase(valueStr) )
+		else if( TCP_SERVER.toString().equalsIgnoreCase(valueStr) || TCP_SERVER.name().equalsIgnoreCase(valueStr) )
 			return TCP_SERVER;
 		else if( WEBSOCKETS.toString().equalsIgnoreCase(valueStr) || WEBSOCKETS.name().equalsIgnoreCase(valueStr))
 			return WEBSOCKETS;

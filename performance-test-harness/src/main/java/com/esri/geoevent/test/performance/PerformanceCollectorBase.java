@@ -26,7 +26,6 @@ package com.esri.geoevent.test.performance;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
@@ -39,8 +38,11 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.map.ObjectMapper;
 
 import com.esri.geoevent.test.performance.jaxb.Config;
 import com.esri.geoevent.test.performance.jaxb.ConsumerConfig;
@@ -66,6 +68,7 @@ public abstract class PerformanceCollectorBase implements PerformanceCollector, 
 	private Integer									commandPort;
 	private Boolean									isLocal;
 	private ClockSync 							clockSync = null;
+	private FileType 								eventFileType = FileType.UNKNOWN;
 	
 	public PerformanceCollectorBase(Mode mode)
 	{
@@ -107,6 +110,11 @@ public abstract class PerformanceCollectorBase implements PerformanceCollector, 
 		return timeStamps;
 	}
 
+	public FileType getEventFileType()
+	{
+		return eventFileType;
+	}
+	
 	@Override
 	public void start() throws RunningException
 	{
@@ -160,36 +168,54 @@ public abstract class PerformanceCollectorBase implements PerformanceCollector, 
 	{
 		if (!events.isEmpty())
 			events.clear();
-
-		BufferedReader input = null;
-		try
+		
+		// parse out json files differently
+		if( FilenameUtils.isExtension(file.getName(), "json") )
 		{
-			input = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
-			String line = null;
-			while ((line = input.readLine()) != null)
-				events.add(line + "\n");
-		}
-		catch (Exception e)
-		{
-			throw new TestException(e.getMessage());
-		}
-		finally
-		{
-			if (input != null)
+			eventFileType = FileType.JSON;
+			try
 			{
-				try
-				{
-					input.close();
-					input = null;
-				}
-				catch (IOException e)
-				{
-					;
-				}
+				ObjectMapper mapper = new ObjectMapper();
+				JsonNode node = mapper.readTree(file);
+				addEventsToList(node);
+			} 
+			catch( Exception error )
+			{
+				throw new TestException(error.getMessage());
+			}
+		}
+		else
+		{	
+			eventFileType = FileType.TEXT;
+			try(BufferedReader input = new BufferedReader(new InputStreamReader(new FileInputStream(file))))
+			{
+				String line = null;
+				while ((line = input.readLine()) != null)
+					events.add(line + "\n");
+			}
+			catch (Exception error)
+			{
+				throw new TestException(error.getMessage());
 			}
 		}
 	}
 
+	private void addEventsToList(JsonNode node)
+	{
+		if( node == null )
+			return;
+		
+		if( node.isArray() )
+		{
+			for (final JsonNode eventNode : node) 
+				addEventsToList(eventNode);
+		}
+		else
+		{
+			events.add(node.toString());
+		}
+	}
+	
 	@Override
 	public void listenOnCommandPort(int commandPort, boolean isLocal)
 	{

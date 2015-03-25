@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Fixtures>
+	<Report type="CSV">
+		<ReportFile>target/reports/simple_ss.csv</ReportFile>
+	</Report>
+	
+	<DefaultFixture>
+		<DefaultSharedConfig protocol="STREAM_SERVICE">
+		</DefaultSharedConfig>
+		<ProducerConfig commandPort="5010">
+			<Properties>
+				<Property name="simulationFile">src/test/resources/simulations/counties_1000.json</Property>
+				<Property name="url">http://localhost:6080/arcgis/rest/services/counties-stream-out/StreamServer</Property>
+			</Properties>
+		</ProducerConfig>
+		<ConsumerConfig commandPort="5020" timeoutInSec="5">
+			<Properties>
+				<Property name="url">http://localhost:6080/arcgis/rest/services/counties-stream-out/StreamServer</Property>
+			</Properties>
+		</ConsumerConfig>
+		<Simulation>
+			<TimeTest eventsPerSec="100" totalTimeInSec="10" staggeringInterval="10" />
+		</Simulation>
+	</DefaultFixture>
+	
+	<Fixture name="100 e/s" />
+	
+	<Fixture name="200 e/s">
+		<Simulation>
+			<TimeTest eventsPerSec="200"/>
+		</Simulation>
+	</Fixture>
+	
+	<Fixture name="300 e/s">
+		<Simulation>
+			<TimeTest eventsPerSec="300"/>
+		</Simulation>
+	</Fixture>
+</Fixtures>

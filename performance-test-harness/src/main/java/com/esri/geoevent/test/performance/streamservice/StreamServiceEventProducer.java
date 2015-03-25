@@ -28,63 +28,60 @@ import java.net.URI;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.jetty.websocket.WebSocket;
 import org.eclipse.jetty.websocket.WebSocketClient;
 import org.eclipse.jetty.websocket.WebSocketClientFactory;
 
+import com.esri.geoevent.test.performance.FileType;
 import com.esri.geoevent.test.performance.ImplMessages;
 import com.esri.geoevent.test.performance.ProducerBase;
 import com.esri.geoevent.test.performance.TestException;
 import com.esri.geoevent.test.performance.jaxb.Config;
+import com.esri.geoevent.test.performance.websocket.WebsocketConnection;
 
 public class StreamServiceEventProducer extends ProducerBase
 {
-	// private static final String STREAM_SERVICE = "/streamservice";
 	private static final String			BROADCAST	= "/broadcast";
 
-	private ConnectionHandler[]					connections;
-	private String									host;
-	private int											port;
+	private WebsocketConnection[]					connections;
+	private String url;
 	private WebSocketClientFactory	factory;
 	private WebSocketClient					client;
 	private int											connectionCount;
-	private String									serviceName;
 	private StreamMetadata					metaData;
 
 	@Override
 	public void init(Config config) throws TestException
 	{
 		super.init(config);
+		
 		try
 		{
-			if (factory == null)
+			if( factory == null )
 			{
 				factory = new WebSocketClientFactory();
 				factory.start();
 			}
 
-			if (client == null)
+			if( client == null )
 			{
 				client = factory.newWebSocketClient();
 				client.setMaxIdleTime(30000);
 				client.setProtocol("input");
 			}
 
-			host = config.getPropertyValue("hosts", "localhost");
-			port = Integer.parseInt(config.getPropertyValue("port", "6180"));
-			serviceName = config.getPropertyValue("serviceName", "vehicles");
 			connectionCount = Integer.parseInt(config.getPropertyValue("connectionCount", "1"));
+			url = config.getPropertyValue("url");
 
-			String serviceMetadataUrl = "http://" + host + ":" + port + "/arcgis/rest/services/" + serviceName + "/StreamServer?f=json";
+			String serviceMetadataUrl = url +"?f=json";
 			metaData = new StreamMetadata(serviceMetadataUrl);
 			List<String> wsUrls = metaData.gerUrls();
 
-			connections = new ConnectionHandler[connectionCount];
+			connections = new WebsocketConnection[connectionCount];
 			for (int i = 0; i < connectionCount; i++)
 			{
 				String wsUrl = wsUrls.get(i % wsUrls.size()) + BROADCAST;
 				URI uri = new URI(wsUrl);
-				connections[i] = new ConnectionHandler();
+				connections[i] = new WebsocketConnection();
 				connections[i].setConnection(client.open(uri, connections[i], 10, TimeUnit.SECONDS));
 			}
 		}
@@ -98,26 +95,28 @@ public class StreamServiceEventProducer extends ProducerBase
 	public void validate() throws TestException
 	{
 		super.validate();
-		for (ConnectionHandler connection : connections)
-		{
-			if (connection.getConnection() == null)
-				throw new TestException("Socket connection is not established. Please initialize " + StreamServiceEventProducer.class.getName() + " before it starts collecting diagnostics.");
-		}
+		
+		// validate the event file is of type feature json
+		if( getEventFileType() != FileType.JSON )
+			throw new TestException( ImplMessages.getMessage("INVALID_SIMULATION_FILE_TYPE", getSimulationFile(), FileType.JSON.name().toLowerCase() ) );
+		
+		for( WebsocketConnection connection : connections )
+			connection.validate();
 	}
 
 	@Override
 	public int sendEvents(int index, int numEventsToSend)
 	{
 		int eventIndex = index;
-		for (int i = 0; i < numberOfEvents; i++)
+		for (int i = 0; i < numEventsToSend; i++)
 		{
 			if (eventIndex == events.size())
 				eventIndex = 0;
 			try
 			{
 				String message = events.get(eventIndex++);
-				for (ConnectionHandler conn : connections)
-					conn.getConnection().sendMessage(message);
+				for( WebsocketConnection connection : connections )
+					connection.send(message);
 				messageSent(message);
 				if (running.get() == false)
 					break;
@@ -134,68 +133,22 @@ public class StreamServiceEventProducer extends ProducerBase
 	public void destroy()
 	{
 		super.destroy();
-		for (ConnectionHandler conn : connections)
-		{
-			if (conn.getConnection() != null)
-				conn.getConnection().close();
-		}
+
+		for (WebsocketConnection connection : connections)
+			connection.close();
+
 		try
 		{
 			factory.stop();
 		}
-		catch (Exception ignored)
+		catch (Exception e)
 		{
+			e.printStackTrace();
 		}
 		
 		factory.destroy();
 		factory = null;
 		client = null;
 		connections = null;
-	}
-	
-	class ConnectionHandler implements WebSocket.OnTextMessage
-	{
-		WebSocket.Connection	connection;
-
-		public void setConnection(WebSocket.Connection connection)
-		{
-			this.connection = connection;
-		}
-
-		public WebSocket.Connection getConnection()
-		{
-			return connection;
-		}
-
-		/* ------------------------------------------------------------ */
-		/**
-		 * Callback on close of the WebSocket connection
-		 */
-		@Override
-		public void onClose(int closeCode, String message)
-		{
-			System.out.println("The connection was closed by the remote host.  (this should not happen)");
-			connection = null;
-		}
-
-		/* ------------------------------------------------------------ */
-		/**
-		 * Callback on receiving a message
-		 */
-		@Override
-		public void onMessage(String data)
-		{
-
-		}
-
-		/* ------------------------------------------------------------ */
-		/**
-		 * Callback on receiving a connection
-		 */
-		@Override
-		public void onOpen(Connection connection)
-		{
-			this.connection = connection;
-		}
 	}
 }

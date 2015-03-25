@@ -72,7 +72,7 @@ public class WebsocketConnection implements WebSocket.OnTextMessage
 	 * @param message to send
 	 * @throws IOException if the message cannot be sent
 	 */
-	public void send(String message ) throws IOException
+	public void send(String message) throws IOException
 	{
 		connection.sendMessage(message);
 	}

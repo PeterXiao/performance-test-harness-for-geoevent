@@ -75,7 +75,6 @@ public abstract class ConsumerBase extends PerformanceCollectorBase implements C
 		eventIx.incrementAndGet();
 		long successEvents = successfulEvents.incrementAndGet();
 		successfulEventBytes.addAndGet(message.getBytes().length);
-		
 		// check if we are done - received all expected results
 		//System.out.println( "Current Count[" + currentCount + "] =? Expected Count[" + expectedResultCount +"] =? Success Events["  + successEvents + "]");
 		if (successEvents == getNumberOfExpectedResults())

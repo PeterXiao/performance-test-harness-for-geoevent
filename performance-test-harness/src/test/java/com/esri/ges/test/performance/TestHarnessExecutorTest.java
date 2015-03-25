@@ -173,6 +173,22 @@ public class TestHarnessExecutorTest
 	}
 	
 	@Test
+	public void testPerformanceTestHarnessMode_SS_SANITY() throws InterruptedException
+	{
+		// setup consumer
+		String args = "-m consumer -t stream_service -p local";
+		TestHarnessExecutor.main(args.split(" "));
+		
+		// setup producer
+		args = "-m producer -t stream_service -p local";
+		TestHarnessExecutor.main(args.split(" "));
+		
+		// run the test
+		args = "-f src/test/resources/fixtures_simple_ss.xml";
+		TestHarnessExecutor.main(args.split(" "));
+	}
+	
+	@Test
 	public void testPerformanceTestHarnessMode_RABBITMQ() throws InterruptedException
 	{	  
 	  // setup consumer
@@ -205,32 +221,6 @@ public class TestHarnessExecutorTest
 	  args = "-f src/test/resources/fixtures_kafka.xml";
 	  TestHarnessExecutor.main(args.split(" "));
 	}
-	
-	@Test
-  public void testPerformanceTestHarnessMode_WSServer() throws InterruptedException
-  {
-    String args;
-    
-    // setup consumer
-    args = "-m consumer -t tcp -p local -cp 5665 -c yes";
-    TestHarnessExecutor.main(args.split(" "));
-    
-    // setup producer
-//    args = "-m producer -t websocket_server -p local";
-//    TestHarnessExecutor.main(args.split(" "));
-//    int numOfThreadsAtStartTime = Thread.activeCount();
-    
-    // run the test
-    args = "-f src/test/resources/fixtures_ws_server.xml";
-    TestHarnessExecutor.main(args.split(" "));
-    
-//    int numOfThreads = Thread.activeCount();
-//    while( numOfThreads > numOfThreadsAtStartTime )
-//    {
-//      Thread.sleep(100);
-//      numOfThreads = Thread.activeCount();
-//    }
-  }
 	
 	@Test
 	public void testCMDLineParameters_HELP()
