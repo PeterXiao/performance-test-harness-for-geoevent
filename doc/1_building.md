@@ -22,4 +22,14 @@ Each build directory will have the following structure:
 		+ binary.jar 	(binary jar file)
 		
 
+After the binaries have been builyt successfully, you can now move the `lib` and `binary.jar` file to any location as long as the directory structure stays the same. You may also want to create the following directory structure to contain the other necessary files together:
+
+     - root/
+		+ config 		(contains GeoEvent configuration files)
+		+ fixtures		(contains all of your test fixture configuration files)
+		+ lib 			(all library dependencies are stored and referenced here)
+		+ reports		(contains all of the generated reports)
+		+ simulation	(contains all of your simulation files)
+		+ binary.jar 	(binary jar file)
+
 [Next - Configuration](2_configuration.md)
