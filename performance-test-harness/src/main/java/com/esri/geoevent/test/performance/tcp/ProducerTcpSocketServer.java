@@ -27,8 +27,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Deque;
+import java.util.concurrent.ConcurrentLinkedDeque;
 
 import org.apache.commons.io.IOUtils;
 
@@ -38,7 +38,7 @@ public class ProducerTcpSocketServer
 {
 	private int									port;
 	private ConnectionListener	listenerThread;
-	private List<Socket>				clients	= new ArrayList<>();
+	private Deque<Socket>				clients	= new ConcurrentLinkedDeque<>();
 
 	public ProducerTcpSocketServer()
 	{
@@ -85,23 +85,29 @@ public class ProducerTcpSocketServer
 		clients.clear();
 	}
 	
+	/**
+	 * Send the event in a round robin fashion to distribute the load
+	 * @param message to send
+	 */
 	public void sendEvent(String message)
 	{
-		for( Socket socket : clients )
+		Socket socket = clients.pop();
+		try
 		{
-			try
-			{
-				OutputStream out = socket.getOutputStream();
-				out.write(message.getBytes());
-				out.flush();
-			}
-			catch( Exception error )
-			{
-				error.printStackTrace();
-			}
+			OutputStream out = socket.getOutputStream();
+			out.write(message.getBytes());
+			out.flush();
 		}
+		catch( Exception error )
+		{
+			error.printStackTrace();
+		}
+		clients.push(socket);
 	}
 
+	/**
+	 * Clean up method used when we are finished
+	 */
 	public void destroy()
 	{
 		stop();
