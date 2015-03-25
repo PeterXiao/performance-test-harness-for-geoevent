@@ -30,8 +30,6 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -93,34 +91,22 @@ public abstract class PerformanceCollectorController implements Initializable
 		serverPort.setPromptText( UIMessages.getMessage("UI_SERVER_PORT_PROMPT") );
 		serverPort.setTooltip( new Tooltip(UIMessages.getMessage("UI_SERVER_PORT_DESC")) );
 		// add a focus out event to save the state
-		serverPort.focusedProperty().addListener(new ChangeListener<Boolean>()
+		serverPort.focusedProperty().addListener((observable,oldValue,newValue)->{
+			if( ! newValue )
 			{
-				@Override
-				public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue)
-				{
-					// if we focused out
-					if( ! newValue )
-					{
-						saveState();
-					}
-				}
-			});
+				saveState();
+			}
+		});
 		portLabel.setText( UIMessages.getMessage("UI_PORT_LABEL") );
 		port.setPromptText( UIMessages.getMessage("UI_PORT_PROMPT") );
 		port.setTooltip( new Tooltip(UIMessages.getMessage("UI_PORT_DESC")) );
 		// add a focus out event to save the state
-		port.focusedProperty().addListener(new ChangeListener<Boolean>()
-				{
-					@Override
-					public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue)
-					{
-						// if we focused out
-						if( ! newValue )
-						{
-							saveState();
-						}
-					}
-				});
+		port.focusedProperty().addListener((observable,oldValue,newValue)->{
+			if( ! newValue )
+			{
+				saveState();
+			}
+		});
 		loggerBox.setTitle( UIMessages.getMessage("UI_LOGGER_BOX_LABEL") );
 		copyBtn.setText( UIMessages.getMessage("UI_COPY_BUTTON_LABEL") );
 		copyBtn.setTooltip( new Tooltip(UIMessages.getMessage("UI_COPY_BUTTON_DESC")) );
@@ -165,7 +151,7 @@ public abstract class PerformanceCollectorController implements Initializable
 	@FXML
 	public void toggleServerPortState(final ActionEvent event)
 	{
-		if( protocol.getValue() == Protocol.TCP_SERVER )
+		if( protocol.getValue() == Protocol.TCP_SERVER || protocol.getValue() == Protocol.WEBSOCKET_SERVER )
 		{
 			serverPort.setVisible(true);
 		}

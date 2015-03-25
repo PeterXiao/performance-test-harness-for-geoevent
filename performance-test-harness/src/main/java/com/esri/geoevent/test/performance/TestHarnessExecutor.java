@@ -72,7 +72,8 @@ import com.esri.geoevent.test.performance.tcp.TcpEventConsumer;
 import com.esri.geoevent.test.performance.tcp.TcpEventProducer;
 import com.esri.geoevent.test.performance.websocket.WebsocketEventConsumer;
 import com.esri.geoevent.test.performance.websocket.WebsocketEventProducer;
-import com.esri.geoevent.test.performance.websocket.server.WebsocketServerEventProducer;
+import com.esri.geoevent.test.performance.websocket.WebsocketServerEventConsumer;
+import com.esri.geoevent.test.performance.websocket.WebsocketServerEventProducer;
 
 public class TestHarnessExecutor implements RunnableComponent
 {
@@ -367,6 +368,7 @@ public class TestHarnessExecutor implements RunnableComponent
 			// activate
 			if (mode == Mode.Producer)
 			{
+				int serverPort = NumberUtils.toInt(cmd.getOptionValue("sp"), 5665);
 				PerformanceCollector producer = null;
 				switch (protocol)
 				{
@@ -374,8 +376,7 @@ public class TestHarnessExecutor implements RunnableComponent
 						producer = new TcpEventProducer();
 						break;
 					case TCP_SERVER:
-						int connectionPort = NumberUtils.toInt(cmd.getOptionValue("sp"), 5665);
-						producer = new TcpServerEventProducer(connectionPort);
+						producer = new TcpServerEventProducer(serverPort);
 						break;
 					case WEBSOCKETS:
 						producer = new WebsocketEventProducer();
@@ -393,8 +394,7 @@ public class TestHarnessExecutor implements RunnableComponent
 					  producer = new KafkaEventProducer();
 					  break;
 					case WEBSOCKET_SERVER:
-            final WebsocketServerEventProducer wsProducer = new WebsocketServerEventProducer();
-            producer = wsProducer;
+						producer = new WebsocketServerEventProducer(serverPort);
             break;
 					default:
 						return;
@@ -403,6 +403,7 @@ public class TestHarnessExecutor implements RunnableComponent
 			}
 			else if (mode == Mode.Consumer)
 			{
+				int serverPort = NumberUtils.toInt(cmd.getOptionValue("sp"), 5775);
 				PerformanceCollector consumer = null;
 				switch (protocol)
 				{
@@ -410,13 +411,14 @@ public class TestHarnessExecutor implements RunnableComponent
 						consumer = new TcpEventConsumer();
 						break;
 					case TCP_SERVER:
-						int consumerServerPort = NumberUtils.toInt(cmd.getOptionValue("sp"), 5775);
-						TcpServerEventConsumer clusterableTcpEventConsumer = new TcpServerEventConsumer(consumerServerPort);
-						consumer = clusterableTcpEventConsumer;
+						consumer = new TcpServerEventConsumer(serverPort);
 						break;
 					case WEBSOCKETS:
 						consumer = new WebsocketEventConsumer();
 						break;
+					case WEBSOCKET_SERVER:
+						consumer = new WebsocketServerEventConsumer(serverPort);
+            break;
 					case ACTIVE_MQ:
 						consumer = new ActiveMQEventConsumer();
 						break;

@@ -37,7 +37,7 @@ import com.esri.geoevent.test.performance.jaxb.Config;
 
 public class WebsocketEventProducer extends ProducerBase
 {
-	private WebSocketConnection[] connections;
+	private WebsocketConnection[] connections;
 	private WebSocketClientFactory factory;
 	private WebSocketClient client;
 	private String url;
@@ -66,10 +66,10 @@ public class WebsocketEventProducer extends ProducerBase
 			url = config.getPropertyValue("url");
 			URI uri = new URI(url);
 
-			connections = new WebSocketConnection[connectionCount];
+			connections = new WebsocketConnection[connectionCount];
 			for( int i = 0; i < connectionCount; i++ )
 			{
-				connections[i] = new WebSocketConnection();
+				connections[i] = new WebsocketConnection();
 				connections[i].setConnection( client.open(uri, connections[i], 10, TimeUnit.SECONDS) );
 			}
 		}
@@ -84,7 +84,7 @@ public class WebsocketEventProducer extends ProducerBase
 	{
 		super.validate();
 		
-		for( WebSocketConnection connection : connections )
+		for( WebsocketConnection connection : connections )
 			connection.validate();
 	}
 
@@ -99,7 +99,7 @@ public class WebsocketEventProducer extends ProducerBase
 			try
 			{
 				String message = events.get(eventIndex++);
-				for( WebSocketConnection connection : connections )
+				for( WebsocketConnection connection : connections )
 					connection.send(message);
 				messageSent(message);
 				if (running.get() == false)
@@ -118,7 +118,7 @@ public class WebsocketEventProducer extends ProducerBase
 	{
 		super.destroy();
 		
-		for( WebSocketConnection connection : connections )
+		for( WebsocketConnection connection : connections )
 			connection.close();
 		
 		try 

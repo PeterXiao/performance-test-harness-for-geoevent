@@ -21,13 +21,13 @@
 
   email: contracts@esri.com
  */
-package com.esri.geoevent.test.performance.websocket.server;
+package com.esri.geoevent.test.performance.websocket;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
-import java.util.Set;
-import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.Deque;
+import java.util.concurrent.ConcurrentLinkedDeque;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -37,69 +37,79 @@ import javax.servlet.http.HttpServletResponse;
 import org.eclipse.jetty.websocket.WebSocket;
 import org.eclipse.jetty.websocket.WebSocketFactory;
 
+import com.esri.geoevent.test.performance.MessageListener;
+
 @SuppressWarnings("serial")
 public class WebsocketOutboundServlet extends HttpServlet
 {
-	private WebSocketFactory _wsFactory;
-	private Set<GenericWebSocket> _members = new CopyOnWriteArraySet<GenericWebSocket>();
-
+	private WebSocketFactory						wsFactory;
+	private Deque<WebsocketConnection>	clients	= new ConcurrentLinkedDeque<>();
+	private MessageListener listener;
+	
+	public WebsocketOutboundServlet()
+	{
+	}
+	
+	public WebsocketOutboundServlet(MessageListener listener)
+	{
+		this.listener = listener;
+	}
+	
 	@Override
 	public void init() throws ServletException
 	{
 		// Create and configure WS factory
-		_wsFactory=new WebSocketFactory(new WebSocketFactory.Acceptor()
-		{
-			@Override
-			public boolean checkOrigin(HttpServletRequest request, String origin)
+		wsFactory = new WebSocketFactory(new WebSocketFactory.Acceptor()
 			{
-				// Allow all origins
-				return true;
-			}
+				@Override
+				public boolean checkOrigin(HttpServletRequest request, String origin)
+				{
+					// Allow all origins
+					return true;
+				}
 
-			@Override
-			public WebSocket doWebSocketConnect(HttpServletRequest request, String protocol)
-			{
-				System.out.println("Received a socket connection with protocol \""+protocol+"\"");
-				//if ("chat".equals(protocol))
-				GenericWebSocket socket = new GenericWebSocket();
-				_members.add(socket);
-				return socket;
-				//return null;
-			}
-		});
-		_wsFactory.setBufferSize(4096);
-		_wsFactory.setMaxIdleTime(600000);
+				@Override
+				public WebSocket doWebSocketConnect(HttpServletRequest request, String protocol)
+				{
+					System.out.println("Received a socket connection with protocol \"" + protocol + "\"");
+					WebsocketConnection socket = new WebsocketConnection(listener);
+					clients.push(socket);
+					return socket;
+				}
+			});
+		wsFactory.setBufferSize(4096);
+		wsFactory.setMaxIdleTime(600000);
 	}
 
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException
 	{
-		if (_wsFactory.acceptWebSocket(request,response))
+		if (wsFactory.acceptWebSocket(request, response))
 			return;
 		PrintWriter out = response.getWriter();
 		InputStream in = this.getClass().getClassLoader().getResourceAsStream("index.html");
 		int c = -1;
-		while( (c = in.read()) != -1 )
+		while ((c = in.read()) != -1)
 			out.write(c);
 		out.flush();
 		return;
 	}
 
-	public void publish(String message )
+	/**
+	 * Send the event in a round robin fashion to distribute the load
+	 * @param message to send
+	 */
+	public void sendEvent(String message)
 	{
-		for( GenericWebSocket socket : _members )
+		WebsocketConnection socket = clients.pop();
+		try
 		{
-			try
-			{
-				socket.send(message);
-			}catch(IOException ex)
-			{
-			  ex.printStackTrace();
-//				_members.remove(socket);
-			}
+			socket.send(message);
 		}
+		catch( Exception error )
+		{
+			error.printStackTrace();
+		}
+		clients.push(socket);
 	}
-
-
 }
-

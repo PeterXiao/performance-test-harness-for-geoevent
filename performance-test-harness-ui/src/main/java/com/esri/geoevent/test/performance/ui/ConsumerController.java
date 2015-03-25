@@ -42,6 +42,7 @@ import com.esri.geoevent.test.performance.streamservice.StreamServiceEventConsum
 import com.esri.geoevent.test.performance.tcp.TcpServerEventConsumer;
 import com.esri.geoevent.test.performance.tcp.TcpEventConsumer;
 import com.esri.geoevent.test.performance.websocket.WebsocketEventConsumer;
+import com.esri.geoevent.test.performance.websocket.WebsocketServerEventConsumer;
 
 public class ConsumerController extends PerformanceCollectorController
 {
@@ -72,17 +73,20 @@ public class ConsumerController extends PerformanceCollectorController
 		if( consumer != null )
 			stop();
 		
+		int serverPortInt = NumberUtils.toInt(serverPort.getText(), DEFAULT_SERVER_PORT);
 		switch (protocol.getValue())
 		{
 			case TCP:
 				consumer = new TcpEventConsumer();
 				break;
 			case TCP_SERVER:
-				int connectionPort = NumberUtils.toInt(serverPort.getText(), DEFAULT_SERVER_PORT);
-				consumer = new TcpServerEventConsumer(connectionPort);
-			break;
+				consumer = new TcpServerEventConsumer(serverPortInt);
+				break;
 			case WEBSOCKETS:
 				consumer = new WebsocketEventConsumer();
+				break;
+			case WEBSOCKET_SERVER:
+				consumer = new WebsocketServerEventConsumer(serverPortInt);
 				break;
 			case ACTIVE_MQ:
 				consumer = new ActiveMQEventConsumer();
@@ -146,6 +150,8 @@ public class ConsumerController extends PerformanceCollectorController
 		list.add(Protocol.TCP);
 		list.add(Protocol.TCP_SERVER);
 		list.add(Protocol.WEBSOCKETS);
+		list.add(Protocol.WEBSOCKET_SERVER);
+
 		return FXCollections.observableList(list);
 	}
 }

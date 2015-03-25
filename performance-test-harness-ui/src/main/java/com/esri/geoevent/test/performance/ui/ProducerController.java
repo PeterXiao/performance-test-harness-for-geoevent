@@ -43,7 +43,7 @@ import com.esri.geoevent.test.performance.streamservice.StreamServiceEventProduc
 import com.esri.geoevent.test.performance.tcp.TcpServerEventProducer;
 import com.esri.geoevent.test.performance.tcp.TcpEventProducer;
 import com.esri.geoevent.test.performance.websocket.WebsocketEventProducer;
-import com.esri.geoevent.test.performance.websocket.server.WebsocketServerEventProducer;
+import com.esri.geoevent.test.performance.websocket.WebsocketServerEventProducer;
 
 public class ProducerController extends PerformanceCollectorController
 {
@@ -74,17 +74,20 @@ public class ProducerController extends PerformanceCollectorController
 		if( producer != null )
 			stop();
 		
+		int serverPortInt = NumberUtils.toInt(serverPort.getText(), DEFAULT_SERVER_PORT);
 		switch (protocol.getValue())
 		{
 			case TCP:
 				producer = new TcpEventProducer();
 				break;
 			case TCP_SERVER:
-				int connectionPort = NumberUtils.toInt(serverPort.getText(), DEFAULT_SERVER_PORT);
-				producer = new TcpServerEventProducer(connectionPort);
-			break;
+				producer = new TcpServerEventProducer(serverPortInt);
+				break;
 			case WEBSOCKETS:
 				producer = new WebsocketEventProducer();
+				break;
+			case WEBSOCKET_SERVER:
+				producer = new WebsocketServerEventProducer(serverPortInt);
 				break;
 			case ACTIVE_MQ:
 				producer = new ActiveMQEventProducer();
@@ -98,17 +101,6 @@ public class ProducerController extends PerformanceCollectorController
 			case KAFKA:
 			  producer = new KafkaEventProducer();
 			  break;
-			case WEBSOCKET_SERVER:
-        final WebsocketServerEventProducer wsProducer = new WebsocketServerEventProducer();
-        producer = wsProducer;
-        Runtime.getRuntime().addShutdownHook(new Thread() {
-          @Override
-          public void run()
-          {
-            wsProducer.shutdown();
-          }
-        });
-        break;
 			default:
 				return;
 		}

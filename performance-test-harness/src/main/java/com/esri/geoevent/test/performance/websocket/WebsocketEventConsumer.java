@@ -43,7 +43,7 @@ public class WebsocketEventConsumer extends ConsumerBase
 	private WebSocketClient client;
 	private String url;
 	private int connectionCount;
-	private WebSocketConnection[] connections;
+	private WebsocketConnection[] connections;
 
 	@Override
 	public void init(Config config) throws TestException
@@ -69,10 +69,10 @@ public class WebsocketEventConsumer extends ConsumerBase
 			url = config.getPropertyValue("url");
 			URI uri = new URI(url);
 
-			connections = new WebSocketConnection[connectionCount];
+			connections = new WebsocketConnection[connectionCount];
 			for( int i = 0; i < connectionCount; i++ )
 			{
-				connections[i] = new WebSocketConnection(message->receive(message));
+				connections[i] = new WebsocketConnection(message->receive(message));
 				connections[i].setConnection( client.open(uri, connections[i], 10, TimeUnit.SECONDS) );
 			}
 		}
@@ -85,7 +85,7 @@ public class WebsocketEventConsumer extends ConsumerBase
 	@Override
 	public void validate() throws TestException 
 	{
-		for( WebSocketConnection connection : connections )
+		for( WebsocketConnection connection : connections )
 			connection.validate();
 	}
 
@@ -94,7 +94,7 @@ public class WebsocketEventConsumer extends ConsumerBase
 	{
 		super.destroy();
 		
-		for( WebSocketConnection connection : connections )
+		for( WebsocketConnection connection : connections )
 			connection.close();
 		
 		try 

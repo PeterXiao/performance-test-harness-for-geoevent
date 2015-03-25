@@ -33,17 +33,17 @@ import com.esri.geoevent.test.performance.TestException;
 /**
  * Helper class used with WebSockets
  */
-public class WebSocketConnection implements WebSocket.OnTextMessage
+public class WebsocketConnection implements WebSocket.OnTextMessage
 {
 	// member vars
 	private Connection connection;
 	private MessageListener listener;
 	
-	public WebSocketConnection()
+	public WebsocketConnection()
 	{
 	}
 	
-	public WebSocketConnection(MessageListener listener)
+	public WebsocketConnection(MessageListener listener)
 	{
 		this.listener = listener;
 	}
