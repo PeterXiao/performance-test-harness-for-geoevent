@@ -2,8 +2,18 @@
 
 The Performance Test Harness is an application which measures the throughput performance for ArcGIS GeoEvent Extension for Server. This application can be run via the command line or as a JavaFX application (In progress).
 
+![App](performance-test-harness.png?raw=true)
+
 ## Features
-- Support for TCP client and server.
+- Available Transports:
+ - TCP client and server.
+ - WebSockets client and server.
+ - [Stream Services](https://server.arcgis.com/en/geoevent-extension/latest/process-event-data/stream-services.htm).
+ - [RabbitMQ](https://www.rabbitmq.com/).
+ - [Kafka](http://kafka.apache.org/) (Producing only).
+ - [ActiveMQ](http://activemq.apache.org/).
+- Support for Text(csv) and JSON simulation files.
+- Reports output in CSV or XLSX formats.
 
 ## Requirements
 
