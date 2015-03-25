@@ -71,6 +71,7 @@ Sample:
 </Fixtures>
 ```
 See [Configuration](2_configuration.md)
+
 Now you're ready to run your first test.
 
 ### Performance Testing
@@ -79,12 +80,12 @@ You will need to start the producer and consumer first (the order does not matte
 
 Start a TCP producer
 ```
-run.bat -m producer -t tcp -p local
+run.bat -m producer -t tcp
 ```
 
 Start a TCP consumer
 ```
-run.bat -m consumer -t tcp -p local
+run.bat -m consumer -t tcp
 ```
 
 Start the orchestrator 
