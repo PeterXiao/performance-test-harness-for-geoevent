@@ -21,3 +21,5 @@ Each build directory will have the following structure:
 		+ lib 			(all library dependencies are stored and referenced here)
 		+ binary.jar 	(binary jar file)
 		
+
+[Next - Configuration](2_configuration.md)
