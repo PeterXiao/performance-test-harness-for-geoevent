@@ -164,7 +164,7 @@ DefaultSharedConfig configuration with all available options:
 ``` 
 
 - `protocol`: the type of protocol to be used for both Consumer and Producer (may be over witten in `<ProducerConfig>` and `<ConsumerConfig>`).
-   - The available types are: `TCP`, `TCP_SERVER`, `WEBSOCKETS`, `WEBSOCKET_SERVER`(Producer only), `ACTIVE_MQ`, `RABBIT_MQ`, `STREAM_SERVICE`, or `KAFKA` (Producer only).
+   - The available types are: `TCP`, `TCP_SERVER`, `WEBSOCKETS`, `WEBSOCKET_SERVER`, `ACTIVE_MQ`, `RABBIT_MQ`, `STREAM_SERVICE`, or `KAFKA` (Producer only).
    - This is an optional attribute
 - `host`: the host where the Producer and Consumer are running from (may be over witten in `<ProducerConfig>` and `<ConsumerConfig>`).
    -  This is an optional attribute
@@ -245,7 +245,7 @@ ConsumerConfig configuration with all available options:
 ``` 
 
 - `protocol`: the type of protocol to be used for the Consumer.
-   - The available types are: `TCP`, `TCP_SERVER`, `WEBSOCKETS`, `ACTIVE_MQ`, `RABBIT_MQ`, or `STREAM_SERVICE`.
+   - The available types are: `TCP`, `TCP_SERVER`, `WEBSOCKETS`, `WEBSOCKET_SERVER`, `ACTIVE_MQ`, `RABBIT_MQ`, or `STREAM_SERVICE`.
    - This is an optional attribute only if it was specified in the `<DefaultSharedConfig>`, otherwise it is required.
 - `host`: the host where the Consumer is running from.
    -  This is an optional attribute
