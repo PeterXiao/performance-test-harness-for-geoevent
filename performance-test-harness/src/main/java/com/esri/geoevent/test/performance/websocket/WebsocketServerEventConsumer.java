@@ -114,6 +114,8 @@ public class WebsocketServerEventConsumer extends ConsumerBase
 			try
 			{
 				server.start();
+				String url = "ws://localhost:" + port + uri;
+				System.out.println( ImplMessages.getMessage("WS_SERVER_START_MSG", url) );
 				// add the shutdown hook
 				Runtime.getRuntime().addShutdownHook(new Thread(()->shutdown()));
 			}
