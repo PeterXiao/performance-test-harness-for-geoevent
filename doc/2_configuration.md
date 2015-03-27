@@ -78,10 +78,10 @@ Report configuration with all available options:
 - `<ReportFile>`: the path to write out the report file
   - this is a <b>required</b> tag
 - `<ReportColumns>`: the minimum report columns to output
-  - a comma seperated list of columns to be outputted
+  - a comma separated list of columns to be outputted
   - this is an optional tag. When this tag is missing the [default columns](#report-columns) are used.
 - `<AdditionalReportColumns>`: In addition to the default columns (or `<ReportColumns>` when specified), the columns specified here are added to to the report.
-  - a comman seperated list of columns to be outputted in addition to the defaults.
+  - a comma separated list of columns to be outputted in addition to the defaults.
   - this is an optional tag.
   
 <b>NOTE:</B> Typically you will not used both optional tags `<ReportColumns>` and `<AdditionalReportColumns>` together. You should use one or the other or none. If you want to override the default columns, then you will use the  `<ReportColumns>` tag. If you want a few extra columns along with the default columns, then you will use the `<AdditionalReportColumns>` tag. If you are content with the default columns, then both of these tags are unnecessary.
@@ -102,7 +102,7 @@ Rate, totalEvents, successes, expectedResultCount, failures, avgTotalTime, avgEv
 
 #### Provisioner Configuration
 
-The Provisioner configuration is used to setup all of the fixtures (once) or setup each individual fixture before the execution takes place. The Provisioner is used to "setup" GeoEvent by resetting GeoEvent's configuration and laying down a new configuration. This is helpful if you want to make sure GeoEvent is configured exactly the way you want to performance test it.
+The Provisioner configuration is used to set up all of the fixtures (once) or set up each individual fixture before the execution takes place. The Provisioner is used to "set up" GeoEvent by resetting GeoEvent's configuration and laying down a new configuration. This is helpful if you want to make sure GeoEvent is configured exactly the way you want to performance test it.
 
 Minimal ProvisionerConfig Configuration
 ``` xml
@@ -268,7 +268,7 @@ Sample ProvisionerConfig Configuration as a per fixture re-configuration
 
 #### DefaultFixture and Fixture Configuration
 
-The `<DefaultFixture>` and `<Fixture>` configuration are identical. The reason why there are two seperate tags is to eliminiate verbosity of individual tests. Everything specified in the `<DefaultFixture>` will be copied to all of the other `<Fixture>` configurations. <b>Note:</b> the `<DefaultFixture>` will not override anything specified in the `<Fixture>` configuration, it will simply fill in the missing holes.
+The `<DefaultFixture>` and `<Fixture>` configuration are identical. The reason why there are two separate tags is to eliminate verbosity of individual tests. Everything specified in the `<DefaultFixture>` will be copied to all of the other `<Fixture>` configurations. <b>Note:</b> the `<DefaultFixture>` will not override anything specified in the `<Fixture>` configuration, it will simply fill in the missing holes.
 
 There can ony be one `<DefaultFixture>` configuration and this tag is <b>required</b>. There must be at least one `<Fixture>` configuration.
 
@@ -329,10 +329,10 @@ DefaultSharedConfig configuration with all available options:
 </DefaultSharedConfig>
 ``` 
 
-- `protocol`: the type of protocol to be used for both Consumer and Producer (may be over witten in `<ProducerConfig>` and `<ConsumerConfig>`).
+- `protocol`: the type of protocol to be used for both Consumer and Producer (may be over written in `<ProducerConfig>` and `<ConsumerConfig>`).
    - The available types are: `TCP`, `TCP_SERVER`, `WEBSOCKETS`, `WEBSOCKET_SERVER`, `ACTIVE_MQ`, `RABBIT_MQ`, `STREAM_SERVICE`, or `KAFKA` (Producer only).
    - This is an optional attribute
-- `host`: the host where the Producer and Consumer are running from (may be over witten in `<ProducerConfig>` and `<ConsumerConfig>`).
+- `host`: the host where the Producer and Consumer are running from (may be over written in `<ProducerConfig>` and `<ConsumerConfig>`).
    -  This is an optional attribute
    -  the default value is `localhost`
 -  `<Property>`: each configuration can have 0 to many properties which help configure the transports accordingly. 
