@@ -12,18 +12,18 @@ The fixtures schema is a custom made schema used exclusively for the Performance
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <Fixtures>
 	<Report type="CSV">
-		<ReportFile>target/reports/simple_tcp.csv</ReportFile>
+		<ReportFile>reports/simple_tcp.csv</ReportFile>
 	</Report>
 	
 	<DefaultFixture>
 		<DefaultSharedConfig protocol="TCP">
 			<Properties>
-				<Property name="hosts">rtrujillo</Property>
+				<Property name="hosts">mymachine</Property>
 			</Properties>
 		</DefaultSharedConfig>
 		<ProducerConfig commandPort="5010">
 			<Properties>
-				<Property name="simulationFile">src/test/resources/simulations/county_envelopes_1000_points.csv</Property>
+				<Property name="simulationFile">simulations/county_envelopes_1000_points.csv</Property>
 				<Property name="port">5565</Property>
 			</Properties>
 		</ProducerConfig>
@@ -59,14 +59,14 @@ The `<Report>` tag is used to configure  the output report. Here are the Report 
 Minimal Report Configuration
 ``` xml
 <Report type="CSV">
-  <ReportFile>target/reports/simple_tcp.csv</ReportFile>
+  <ReportFile>reports/simple_tcp.csv</ReportFile>
 </Report>
 ```
 
 Report configuration with all available options:
 ``` xml
 <Report type="XLSX">
-	<ReportFile>target/reports/report-options.xlsx</ReportFile>
+	<ReportFile>reports/report-options.xlsx</ReportFile>
 	<ReportColumns>Rate,totalEvents,successes,expectedResultCount,failures</ReportColumns>
 	<AdditionalReportColumns>totalBytesConsumed,avgBytesConsumedPerMessage</AdditionalReportColumns>
 </Report>
@@ -100,6 +100,172 @@ Rate, totalEvents, successes, expectedResultCount, failures, avgTotalTime, avgEv
 
 <b>TODO:</b> Describe the report columns
 
+#### Provisioner Configuration
+
+The Provisioner configuration is used to setup all of the fixtures (once) or setup each individual fixture before the execution takes place. The Provisioner is used to "setup" GeoEvent by resetting GeoEvent's configuration and laying down a new configuration. This is helpful if you want to make sure GeoEvent is configured exactly the way you want to performance test it.
+
+Minimal ProvisionerConfig Configuration
+``` xml
+<ProvisionerConfig className="com.esri.geoevent.test.performance.provision.GeoEventProvisioner">
+	<Properties>
+		<Property name="hostName">mymachine</Property>
+		<Property name="userName">user</Property>
+		<Property name="password">password</Property>
+		<Property name="configFile">config/GeoEventConfig-TCP.xml</Property>
+	</Properties>
+</ProvisionerConfig>
+```
+
+- `className`: the Java class name to instantiate and run as a Provisioner.
+   -  This is a <b>required</b> attribute.
+   -  The only available option is `com.esri.geoevent.test.performance.provision.GeoEventProvisioner`, but this is a placeholder for future extensibility.
+- `hostName`: the machine name where GeoEvent is running on.
+   -  This is a <b>required</b> property.
+- `userName`: the user name for a administrator account of GeoEvent.
+   -  This is a <b>required</b> property.
+   -  This property is used to log into GeoEvent and reset/upload a new configuration.
+- `password`: the password for a administrator account of GeoEvent.
+   -  This is a <b>required</b> property.
+   -  This property is used to log into GeoEvent and reset/upload a new configuration.
+- `configFile`: the path to a configuration file xml used to configure GeoEvent.
+   -  This is a <b>required</b> property.
+
+
+Sample ProvisionerConfig Configuration as a one time configuration for all fixtures
+``` xml
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Fixtures>
+	
+	<Report type="CSV" >
+		<ReportFile>reports/simple_tcp.csv</ReportFile>
+	</Report>
+	
+	<!--  Provision the Fixtures with a specific GeoEvent Configuration -->
+	<ProvisionerConfig className="com.esri.geoevent.test.performance.provision.GeoEventProvisioner">
+		<Properties>
+			<Property name="hostName">mymachine</Property>
+			<Property name="userName">user</Property>
+			<Property name="password">password</Property>
+			<Property name="configFile">config/GeoEventConfig-TCP.xml</Property>
+		</Properties>
+	</ProvisionerConfig>
+	
+	<DefaultFixture>
+		<!-- SHARED CONFIGURATION -->
+		<DefaultSharedConfig protocol="TCP">
+			<Properties>
+				<Property name="hosts">mymachine</Property>
+			</Properties>
+		</DefaultSharedConfig>
+		<ProducerConfig commandPort="5010">
+			<Properties>
+				<Property name="simulationFile">simulations/county_envelopes_1000_points.csv</Property>
+				<Property name="port">5565</Property>
+			</Properties>
+		</ProducerConfig>
+		<ConsumerConfig commandPort="5020" timeoutInSec="5">
+			<Properties>
+				<Property name="port">5575</Property>
+			</Properties>
+		</ConsumerConfig>
+				
+		<Simulation>
+			<TimeTest eventsPerSec="100" totalTimeInSec="10" staggeringInterval="10" />
+		</Simulation>
+	</DefaultFixture>
+	
+	<Fixture name="100 e/s" />
+	
+	<Fixture name="200 e/s">
+		<Simulation>
+			<TimeTest eventsPerSec="200"/>
+		</Simulation>
+	</Fixture>
+	
+	<Fixture name="300 e/s">
+		<Simulation>
+			<TimeTest eventsPerSec="300"/>
+		</Simulation>
+	</Fixture>
+	
+</Fixtures>
+```
+
+Sample ProvisionerConfig Configuration as a per fixture re-configuration
+``` xml
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Fixtures>
+	
+	<Report type="CSV">
+		<ReportFile>reports/simple_tcp.csv</ReportFile>
+	</Report>
+	
+	<DefaultFixture>
+		<!-- SHARED CONFIGURATION -->
+		<DefaultSharedConfig protocol="TCP">
+			<Properties>
+				<Property name="hosts">mymachine</Property>
+			</Properties>
+		</DefaultSharedConfig>
+		<ProducerConfig commandPort="5010">
+			<Properties>
+				<Property name="simulationFile">simulations/county_envelopes_1000_points.csv</Property>
+				<Property name="port">5565</Property>
+			</Properties>
+		</ProducerConfig>
+		<ConsumerConfig commandPort="5020" timeoutInSec="5">
+			<Properties>
+				<Property name="port">5575</Property>
+			</Properties>
+		</ConsumerConfig>
+
+		<Simulation>
+			<TimeTest eventsPerSec="100" totalTimeInSec="10" staggeringInterval="10" />
+		</Simulation>
+	</DefaultFixture>
+	
+	<Fixture name="100 e/s">
+		<ProvisionerConfig className="com.esri.geoevent.test.performance.provision.GeoEventProvisioner">
+			<Properties>
+				<Property name="hostName">mymachine</Property>
+				<Property name="userName">user</Property>
+				<Property name="password">password</Property>
+				<Property name="configFile">config/GeoEventConfig-TCP-1.xml</Property>
+			</Properties>
+		</ProvisionerConfig>
+	</Fixture>
+	
+	<Fixture name="200 e/s">
+		<ProvisionerConfig className="com.esri.geoevent.test.performance.provision.GeoEventProvisioner">
+			<Properties>
+				<Property name="hostName">mymachine</Property>
+				<Property name="userName">user</Property>
+				<Property name="password">password</Property>
+				<Property name="configFile">config/GeoEventConfig-TCP-2.xml</Property>
+			</Properties>
+		</ProvisionerConfig>
+		<Simulation>
+			<TimeTest eventsPerSec="200"/>
+		</Simulation>
+	</Fixture>
+	
+	<Fixture name="300 e/s">
+		<ProvisionerConfig className="com.esri.geoevent.test.performance.provision.GeoEventProvisioner">
+			<Properties>
+				<Property name="hostName">mymachine</Property>
+				<Property name="userName">user</Property>
+				<Property name="password">password</Property>
+				<Property name="configFile">config/GeoEventConfig-TCP-3.xml</Property>
+			</Properties>
+		</ProvisionerConfig>
+		<Simulation>
+			<TimeTest eventsPerSec="300"/>
+		</Simulation>
+	</Fixture>
+	
+</Fixtures>
+```
+
 #### DefaultFixture and Fixture Configuration
 
 The `<DefaultFixture>` and `<Fixture>` configuration are identical. The reason why there are two seperate tags is to eliminiate verbosity of individual tests. Everything specified in the `<DefaultFixture>` will be copied to all of the other `<Fixture>` configurations. <b>Note:</b> the `<DefaultFixture>` will not override anything specified in the `<Fixture>` configuration, it will simply fill in the missing holes.
@@ -111,12 +277,12 @@ Minimal DefaultFixture Configuration
 <DefaultFixture>
 	<DefaultSharedConfig protocol="TCP">
 		<Properties>
-			<Property name="hosts">rtrujillo</Property>
+			<Property name="hosts">mymachine</Property>
 		</Properties>
 	</DefaultSharedConfig>
 	<ProducerConfig commandPort="5010">
 		<Properties>
-			<Property name="simulationFile">src/test/resources/simulations/county_envelopes_1000_points.csv</Property>
+			<Property name="simulationFile">simulations/county_envelopes_1000_points.csv</Property>
 			<Property name="port">5565</Property>
 		</Properties>
 	</ProducerConfig>
@@ -148,15 +314,15 @@ Minimal DefaultSharedConfig Configuration
 ``` xml
 <DefaultSharedConfig>
 	<Properties>
-		<Property name="hosts">rtrujillo</Property>
+		<Property name="hosts">mymachine</Property>
 	</Properties>
 </DefaultSharedConfig>
 ```
 DefaultSharedConfig configuration with all available options:
 ``` xml
-<DefaultSharedConfig protocol="TCP" host="rtrujillo" >
+<DefaultSharedConfig protocol="TCP" host="mymachine" >
 	<Properties>
-		<Property name="hosts">rtrujillo</Property>
+		<Property name="hosts">mymachine</Property>
 		<Property name="port">5565</Property>
 		...
 	</Properties>
@@ -180,15 +346,15 @@ Minimal ProducerConfig Configuration
 ``` xml
 <ProducerConfig>
 	<Properties>
-		<Property name="hosts">rtrujillo</Property>
+		<Property name="hosts">mymachine</Property>
 	</Properties>
 </ProducerConfig>
 ```
 ProducerConfig configuration with all available options:
 ``` xml
-<ProducerConfig protocol="TCP" host="rtrujillo" commandPort="5010">
+<ProducerConfig protocol="TCP" host="mymachine" commandPort="5010">
 	<Properties>
-		<Property name="hosts">rtrujillo</Property>
+		<Property name="hosts">mymachine</Property>
 		<Property name="port">5565</Property>
 		...
 	</Properties>
@@ -224,15 +390,15 @@ Minimal ConsumerConfig Configuration
 ``` xml
 <ConsumerConfig>
 	<Properties>
-		<Property name="hosts">rtrujillo</Property>
+		<Property name="hosts">mymachine</Property>
 	</Properties>
 </ConsumerConfig>
 ```
 ConsumerConfig configuration with all available options:
 ``` xml
-<ConsumerConfig protocol="TCP" host="rtrujillo" commandPort="5010" timeoutInSec="5">
+<ConsumerConfig protocol="TCP" host="mymachine" commandPort="5010" timeoutInSec="5">
 	<Properties>
-		<Property name="hosts">rtrujillo</Property>
+		<Property name="hosts">mymachine</Property>
 		<Property name="port">5565</Property>
 		...
 	</Properties>
