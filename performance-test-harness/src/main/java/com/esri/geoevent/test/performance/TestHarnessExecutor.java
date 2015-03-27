@@ -262,8 +262,8 @@ public class TestHarnessExecutor implements RunnableComponent
 
 		// performer options
 		Options performerOptions = new Options();
-		performerOptions.addOption(OptionBuilder.withLongOpt("type").withDescription("[TCP(default) | WEBSOCKETS | ACTIVE_MQ | RABBIT_MQ]").hasArg().isRequired().create("t"));
-		performerOptions.addOption(OptionBuilder.withLongOpt("mode").withDescription("[producer|consumer]").hasArg().isRequired().create("m"));
+		performerOptions.addOption(OptionBuilder.withLongOpt("type").withDescription("[" + Protocol.getAllowableValues() + "]").hasArg().isRequired().create("t"));
+		performerOptions.addOption(OptionBuilder.withLongOpt("mode").withDescription("[producer,consumer]").hasArg().isRequired().create("m"));
 		performerOptions.addOption(OptionBuilder.withLongOpt("commandListenerPort").withDescription("The TCP Port where this diagnostic tool will listen for commands from the orchestrator, e.g. 5010. It can be set to \"local\" to be run locally (port 5010 for \"producer\" and port 5020 for \"consumer\"").hasArg().isRequired().create("p"));
 		performerOptions.addOption(OptionBuilder.withLongOpt("serverPort").withDescription("The TCP Port where the server will listen for TCP connections to produce/consume events, e.g. 5665. (Default value is 5665 for producer and 5775 for consumer").hasArg().create("sp"));
 		performerOptions.addOption("h", "help", false, "print the help message");
