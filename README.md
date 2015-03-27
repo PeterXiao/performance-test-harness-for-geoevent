@@ -28,6 +28,7 @@ See [Building](doc/1_building.md)
 - [Quick-start guide](doc/0_quick_start.md)
 - [Building](doc/1_building.md)
 - [Configuration](doc/2_configuration.md)
+- [Running](doc/3_running.md)
 
 ## Resources
 
