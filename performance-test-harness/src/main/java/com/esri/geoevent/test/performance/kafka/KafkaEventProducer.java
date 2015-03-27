@@ -57,7 +57,7 @@ public class KafkaEventProducer extends ProducerBase
       kprops.put("metadata.broker.list", brokerList);
       kprops.put("serializer.class", "kafka.serializer.StringEncoder");
       kprops.put("request.required.acks", acks);
-      kprops.put("partitioner.class", "com.esri.ges.test.performance.kafka.SimplePartitioner");
+      kprops.put("partitioner.class", "com.esri.geoevent.test.performance.kafka.SimplePartitioner");
       kprops.put("producer.type", "async");
       kprops.put("queue.buffering.max.ms", "1000");
       kprops.put("batch.num.messages", "2000");
