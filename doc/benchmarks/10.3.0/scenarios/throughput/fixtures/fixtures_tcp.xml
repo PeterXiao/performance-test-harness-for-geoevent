@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Fixtures>
+	<Report type="XLSX">
+		<ReportFile>reports/tcp-throughput.xlsx</ReportFile>
+	</Report>
+	
+	<DefaultFixture>
+		<DefaultSharedConfig protocol="TCP">
+			<Properties>
+				<Property name="hosts">rtrujillo</Property>
+			</Properties>
+		</DefaultSharedConfig>
+		<ProducerConfig commandPort="5010">
+			<Properties>
+				<Property name="simulationFile">simulations/county_envelopes_3000_points.csv</Property>
+				<Property name="port">5565</Property>
+			</Properties>
+		</ProducerConfig>
+		<ConsumerConfig commandPort="5020" timeoutInSec="5">
+			<Properties>
+				<Property name="port">5570</Property>
+			</Properties>
+		</ConsumerConfig>
+		<Simulation>
+			<TimeTest eventsPerSec="1000" totalTimeInSec="20" staggeringInterval="100" />
+		</Simulation>
+	</DefaultFixture>
+	
+	<Fixture name="1000 e/s" />
+	<Fixture name="1100 e/s">
+		<Simulation>
+			<TimeTest eventsPerSec="1100"/>
+		</Simulation>
+	</Fixture>
+	<Fixture name="1200 e/s">
+		<Simulation>
+			<TimeTest eventsPerSec="1200"/>
+		</Simulation>
+	</Fixture>
+	<Fixture name="1300 e/s">
+		<Simulation>
+			<TimeTest eventsPerSec="1300"/>
+		</Simulation>
+	</Fixture>
+	<Fixture name="1400 e/s">
+		<Simulation>
+			<TimeTest eventsPerSec="1400"/>
+		</Simulation>
+	</Fixture>
+	<Fixture name="1500 e/s">
+		<Simulation>
+			<TimeTest eventsPerSec="1500"/>
+		</Simulation>
+	</Fixture>
+	<Fixture name="1600 e/s">
+		<Simulation>
+			<TimeTest eventsPerSec="1600"/>
+		</Simulation>
+	</Fixture>
+	<Fixture name="1700 e/s">
+		<Simulation>
+			<TimeTest eventsPerSec="1700"/>
+		</Simulation>
+	</Fixture>
+	<Fixture name="1800 e/s">
+		<Simulation>
+			<TimeTest eventsPerSec="1900"/>
+		</Simulation>
+	</Fixture>
+	<Fixture name="2000 e/s">
+		<Simulation>
+			<TimeTest eventsPerSec="2000"/>
+		</Simulation>
+	</Fixture>
+	<Fixture name="2100 e/s">
+		<Simulation>
+			<TimeTest eventsPerSec="2100"/>
+		</Simulation>
+	</Fixture>
+	<Fixture name="2200 e/s">
+		<Simulation>
+			<TimeTest eventsPerSec="2200"/>
+		</Simulation>
+	</Fixture>
+	<Fixture name="2300 e/s">
+		<Simulation>
+			<TimeTest eventsPerSec="2300"/>
+		</Simulation>
+	</Fixture>
+	<Fixture name="2400 e/s">
+		<Simulation>
+			<TimeTest eventsPerSec="2400"/>
+		</Simulation>
+	</Fixture>
+	<Fixture name="2500 e/s">
+		<Simulation>
+			<TimeTest eventsPerSec="2500"/>
+		</Simulation>
+	</Fixture>
+	<Fixture name="2600 e/s">
+		<Simulation>
+			<TimeTest eventsPerSec="2600"/>
+		</Simulation>
+	</Fixture>
+	<Fixture name="2700 e/s">
+		<Simulation>
+			<TimeTest eventsPerSec="2700"/>
+		</Simulation>
+	</Fixture>
+	<Fixture name="2800 e/s">
+		<Simulation>
+			<TimeTest eventsPerSec="2800"/>
+		</Simulation>
+	</Fixture>
+	<Fixture name="2900 e/s">
+		<Simulation>
+			<TimeTest eventsPerSec="2900"/>
+		</Simulation>
+	</Fixture>
+	<Fixture name="3000 e/s">
+		<Simulation>
+			<TimeTest eventsPerSec="3000"/>
+		</Simulation>
+	</Fixture>
+</Fixtures>
