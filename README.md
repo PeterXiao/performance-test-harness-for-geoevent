@@ -29,6 +29,7 @@ See [Building](doc/1_building.md)
 - [Building](doc/1_building.md)
 - [Configuration](doc/2_configuration.md)
 - [Running](doc/3_running.md)
+- [Results](doc/4_results.md)
 
 ## Resources
 
