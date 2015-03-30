@@ -75,7 +75,7 @@ public class FixturesMarshallingTest
 	public void testFromXML() throws Exception
 	{
 		Fixtures fixtures = fromXML(basePath + "/fixtures_sanity.xml");
-		
+
 		// check the list
 		Assert.assertNotNull(fixtures);
 		Assert.assertNotNull(fixtures.getFixtures());
