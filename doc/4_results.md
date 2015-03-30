@@ -6,6 +6,6 @@ Once the Performance Test Harness is done executing, a report will be generated 
 
 ### What do the results mean?
 
-Here is a sample of a test run using this [fixtures.xml](benchmarks/10.3.0/throughput/fixtures/fixtures_tcp.xml). 
+Here is a sample of a test run using this [fixtures.xml](benchmarks/10.3.0/scenarios/throughput/fixtures/fixtures_tcp.xml). 
 
 [Next - Benchmarking](5_benchmarking.md)
