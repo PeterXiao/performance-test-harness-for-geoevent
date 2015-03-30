@@ -54,6 +54,15 @@ import org.codehaus.jackson.map.ObjectMapper;
 import com.esri.geoevent.test.performance.ImplMessages;
 import com.esri.geoevent.test.performance.jaxb.Config;
 
+/**
+ *	<p>This class provisions GeoEvent wth a configurable GeoEvent configuration file. 
+ *	It achieves this by doing the following: </p>
+ *	<ol>
+ *	<li>Fetches a new user token</li>
+ *	<li>Resets the current configuration</li>
+ *	<li>Uploads the new configuration XML file</li>
+ *	</ol> 
+ */
 public class GeoEventProvisioner implements Provisioner
 {
 	private String	configFile;
@@ -64,12 +73,14 @@ public class GeoEventProvisioner implements Provisioner
 	private String	token;
 	private long		expiration;
 	private String	referer;
-
+	
+	private static final String NAME = "GeoEvent";
+	
 	@Override
 	public void init(Config config) throws ProvisionException
 	{
 		if( config == null )
-			throw new ProvisionException( ImplMessages.getMessage("PROVISIONER_INIT_ERROR") );
+			throw new ProvisionException( ImplMessages.getMessage("PROVISIONER_INIT_ERROR", getClass().getSimpleName()) );
 		
 		this.hostName = config.getPropertyValue("hostName");
 		this.userName = config.getPropertyValue("userName");
@@ -85,17 +96,17 @@ public class GeoEventProvisioner implements Provisioner
 		try
 		{
 			System.out.println("-----------------------------------------------");
-			System.out.println( ImplMessages.getMessage("PROVISIONER_START_MSG") );
+			System.out.println( ImplMessages.getMessage("PROVISIONER_START_MSG", NAME) );
 			System.out.println("-----------------------------------------------");
 			
 			refreshToken();
 			resetConfiguration();
 			uploadConfiguration();
-			System.out.println( ImplMessages.getMessage("PROVISIONER_FINISH_MSG") );
+			System.out.println( ImplMessages.getMessage("PROVISIONER_FINISH_MSG", NAME) );
 		}
 		catch (IOException ex)
 		{
-			throw new ProvisionException( ImplMessages.getMessage("PROVISIONER_ERROR", ex.getMessage() ) );
+			throw new ProvisionException( ImplMessages.getMessage("PROVISIONER_ERROR", NAME, ex.getMessage() ) );
 		}
 	}
 	
