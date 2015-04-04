@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Fixtures>
+	<Report type="XLSX">
+		<ReportFile>target/reports/cassandra.xlsx</ReportFile>
+	</Report>
+	
+	<DefaultFixture>
+		<ProducerConfig commandPort="5010" protocol="KAFKA">
+			<Properties>
+				<Property name="simulationFile">src/test/resources/simulations/truck_1000.csv</Property>
+				<Property name="topic">taxis</Property>
+				<Property name="acks">1</Property>
+				<Property name="brokerList">rtrujillo:9092</Property>
+			</Properties>
+		</ProducerConfig>
+		<ConsumerConfig protocol="CASSANDRA" commandPort="5020" timeoutInSec="5">
+			<Properties>
+				<Property name="nodeName">rtrujillo</Property>
+				<Property name="keyspace">geoevent</Property>
+				<Property name="tableName">truck</Property>
+				<Property name="columnName">speed</Property>
+			</Properties>
+		</ConsumerConfig>
+		<ProvisionerConfig className="com.esri.geoevent.test.performance.provision.CassandraProvisioner">
+			<Properties>
+				<Property name="nodeName">rtrujillo</Property>
+				<Property name="keyspace">geoevent</Property>
+				<Property name="tableName">truck</Property>
+			</Properties>
+		</ProvisionerConfig>
+		<Simulation>
+			<TimeTest eventsPerSec="1000" totalTimeInSec="20" staggeringInterval="10" />
+		</Simulation>
+	</DefaultFixture>
+	
+	<Fixture name="1000 e/s" />
+	
+	<Fixture name="2000 e/s">
+		<Simulation>
+			<TimeTest eventsPerSec="2000"/>
+		</Simulation>
+	</Fixture>
+	
+	<Fixture name="3000 e/s">
+		<Simulation>
+			<TimeTest eventsPerSec="3000"/>
+		</Simulation>
+	</Fixture>
+</Fixtures>

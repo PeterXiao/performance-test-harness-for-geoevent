@@ -49,6 +49,7 @@ import org.apache.commons.lang3.math.NumberUtils;
 
 import com.esri.geoevent.test.performance.activemq.ActiveMQEventConsumer;
 import com.esri.geoevent.test.performance.activemq.ActiveMQEventProducer;
+import com.esri.geoevent.test.performance.cassandra.CassandraEventConsumer;
 import com.esri.geoevent.test.performance.jaxb.Fixture;
 import com.esri.geoevent.test.performance.jaxb.Fixtures;
 import com.esri.geoevent.test.performance.jaxb.ProvisionerConfig;
@@ -427,6 +428,9 @@ public class TestHarnessExecutor implements RunnableComponent
 						break;
 					case STREAM_SERVICE:
 						consumer = new StreamServiceEventConsumer();
+						break;
+					case CASSANDRA:
+						consumer = new CassandraEventConsumer();
 						break;
 					default:
 						return;
