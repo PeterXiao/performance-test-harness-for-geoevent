@@ -11,7 +11,7 @@ public class CassandraTestHarnessTest
 	// ---------------------------------------------------------
 	
 	@Test
-	public void testPerformanceTestHarnessMode_CASSANDRA() throws InterruptedException
+	public void testPerformanceTestHarnessMode_CASSANDRA()
 	{		
 		// setup consumer
 		String args = "-m consumer -t cassandra -p local";

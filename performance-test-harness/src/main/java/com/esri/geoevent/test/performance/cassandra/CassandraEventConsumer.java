@@ -1,7 +1,6 @@
 package com.esri.geoevent.test.performance.cassandra;
 
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -102,7 +101,6 @@ public class CassandraEventConsumer extends ConsumerBase
       // set the start and end times
       long previousSuccessFulCount = getSuccessfulEvents();
       setStartTime(allRows.get(0).getLong(0)/1000);
-      System.out.println("StartTime: " + (allRows.get(0).getLong(0)/1000) + " Date: " +  new Date(allRows.get(0).getLong(0)/1000));
       setSuccessfulEvents(allRows.size());
       
       // we are done

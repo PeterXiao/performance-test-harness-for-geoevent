@@ -17,7 +17,7 @@
 			<Properties>
 				<Property name="nodeName">rtrujillo</Property>
 				<Property name="keyspace">geoevent</Property>
-				<Property name="tableName">truck</Property>
+				<Property name="tableName">trucks</Property>
 				<Property name="columnName">speed</Property>
 			</Properties>
 		</ConsumerConfig>
@@ -25,7 +25,7 @@
 			<Properties>
 				<Property name="nodeName">rtrujillo</Property>
 				<Property name="keyspace">geoevent</Property>
-				<Property name="tableName">truck</Property>
+				<Property name="tableName">trucks</Property>
 			</Properties>
 		</ProvisionerConfig>
 		<Simulation>

@@ -95,9 +95,9 @@ public class GeoEventProvisioner implements Provisioner
 	{
 		try
 		{
-			System.out.println("-----------------------------------------------");
+			System.out.println("-------------------------------------------------------");
 			System.out.println( ImplMessages.getMessage("PROVISIONER_START_MSG", NAME) );
-			System.out.println("-----------------------------------------------");
+			System.out.println("-------------------------------------------------------");
 			
 			refreshToken();
 			resetConfiguration();
