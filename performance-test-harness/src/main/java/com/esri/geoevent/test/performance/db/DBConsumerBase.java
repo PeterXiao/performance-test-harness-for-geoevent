@@ -1,39 +1,24 @@
-package com.esri.geoevent.test.performance.cassandra;
+package com.esri.geoevent.test.performance.db;
 
 import java.util.Comparator;
-import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
-
-import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Row;
 import com.esri.geoevent.test.performance.ConsumerBase;
-import com.esri.geoevent.test.performance.ImplMessages;
 import com.esri.geoevent.test.performance.TestException;
 import com.esri.geoevent.test.performance.jaxb.Config;
 
-public class CassandraEventConsumer extends ConsumerBase
+public abstract class DBConsumerBase extends ConsumerBase
 {
 	private static final int DEFAULT_TOTAL_TIME_IN_SEC = 20;  // default to 20 secs
 	
-	// member vars
-	private String nodeName;
-	private String keyspace;
-	private String tableName;
-	private String columnName;
 	private long startTime = 0L;
 	private int timeToWaitInSec = DEFAULT_TOTAL_TIME_IN_SEC;
 	private int retries = 0;
 	
 	@Override
-	public void init(Config config) throws TestException 
+	public synchronized void init(Config config) throws TestException
 	{
 		super.init(config);
-		
-		this.nodeName = config.getPropertyValue("nodeName");
-		this.keyspace = config.getPropertyValue("keyspace");
-		this.tableName = config.getPropertyValue("tableName");
-		this.columnName = config.getPropertyValue("columnName");
 		
 		int totalTimeInSec = getTotalTimeInSec();
 		if( totalTimeInSec <= 0 )
@@ -45,30 +30,7 @@ public class CassandraEventConsumer extends ConsumerBase
 		this.timeToWaitInSec = totalTimeInSec + 2;
 		setTimeOutInSec( Math.max(totalTimeInSec*2, timeToWaitInSec) );
 	}
-	
-	@Override
-	public void validate() throws TestException
-	{
-		if(StringUtils.isEmpty(nodeName))
-      throw new TestException( ImplMessages.getMessage("PROVISIONER_PROPERTY_VALIDATION", "nodeName") );
-		if(StringUtils.isEmpty(keyspace))
-      throw new TestException( ImplMessages.getMessage("PROVISIONER_PROPERTY_VALIDATION", "keyspace") );
-		if(StringUtils.isEmpty(tableName))
-      throw new TestException( ImplMessages.getMessage("PROVISIONER_PROPERTY_VALIDATION", "tableName") );
-		if(StringUtils.isEmpty(columnName))
-      throw new TestException( ImplMessages.getMessage("PROVISIONER_PROPERTY_VALIDATION", "columnName") );
-
-		// check if we can connect
-		try( CassandraClient client = new DefaultCassandraClient(nodeName) )
-		{
-			;
-		} 
-		catch( Exception error)
-		{
-			throw new TestException( ImplMessages.getMessage("PROVISIONER_CANNOT_CONNECT", "nodeName") );
-		}
-	}
-
+		
 	@Override
 	public String pullMessage()
 	{
@@ -90,23 +52,19 @@ public class CassandraEventConsumer extends ConsumerBase
 	private void queryForAllWriteTimes()
 	{
 		// check if we can connect
-		try( CassandraClient client = new DefaultCassandraClient(nodeName) )
+		try( DBClient client = getDBClient() )
 		{
-			ResultSet results = client.queryForLastWriteTimes(keyspace, tableName, columnName);
-	    List<Row> allRows = results.all();
-	    
-	    //sort all of the rows accordingly
-      allRows.sort(new RowComparator());
-      
+			DBResult results = client.queryForLastWriteTimes();
+			
       // set the start and end times
       long previousSuccessFulCount = getSuccessfulEvents();
-      setStartTime(allRows.get(0).getLong(0)/1000);
-      setSuccessfulEvents(allRows.size());
+      setStartTime(results.getStartTime());
+      setSuccessfulEvents(results.getTotalCount());
       
       // we are done
-	    if( allRows.size() == getNumberOfExpectedResults() )
+	    if( results.getTotalCount() == getNumberOfExpectedResults() )
       {
-	    	finishConsuming(allRows.get(allRows.size()-1).getLong(0)/1000);
+	    	finishConsuming(results.getEndTime());
       }
 	    else
 	    {
@@ -115,7 +73,7 @@ public class CassandraEventConsumer extends ConsumerBase
 	    		retries = 0;
 	    	// check the number of retries if we reached our max, then finish
 	    	if( retries >= 3 )
-	    		finishConsuming(allRows.get(allRows.size()-1).getLong(0)/1000);
+	    		finishConsuming(results.getEndTime());
 	    	else
 	    	{
 	    		// inc and wait a sec
@@ -131,6 +89,13 @@ public class CassandraEventConsumer extends ConsumerBase
 	}
 	
 	/**
+	 * Abstract method to be implemented by the sub class
+	 * 
+	 * @return
+	 */
+	public abstract DBClient getDBClient();
+	
+	/**
 	 * Inner class used to sort the incoming Cassandra rows by last updated (long)
 	 */
 	class RowComparator implements Comparator<Row>
@@ -144,4 +109,5 @@ public class CassandraEventConsumer extends ConsumerBase
 			return Long.compare(row1.getLong(0), row2.getLong(0));
 		}
 	}
+
 }

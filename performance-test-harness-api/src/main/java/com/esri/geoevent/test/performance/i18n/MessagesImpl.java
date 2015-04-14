@@ -92,7 +92,15 @@ public class MessagesImpl implements Messages
 		if (bundle == null || key == null)
 			return key;
 
-		String message = bundle.getString(key);
+		String message = null;
+		try
+		{
+			message = bundle.getString(key);
+		} 
+		catch( Exception ignored )
+		{
+		}
+		
 		if (message == null)
 			// if the key is not found - return the key
 			return key;

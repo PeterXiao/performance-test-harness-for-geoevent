@@ -49,7 +49,7 @@ import org.apache.commons.lang3.math.NumberUtils;
 
 import com.esri.geoevent.test.performance.activemq.ActiveMQEventConsumer;
 import com.esri.geoevent.test.performance.activemq.ActiveMQEventProducer;
-import com.esri.geoevent.test.performance.cassandra.CassandraEventConsumer;
+import com.esri.geoevent.test.performance.db.cassandra.CassandraEventConsumer;
 import com.esri.geoevent.test.performance.jaxb.Fixture;
 import com.esri.geoevent.test.performance.jaxb.Fixtures;
 import com.esri.geoevent.test.performance.jaxb.ProvisionerConfig;

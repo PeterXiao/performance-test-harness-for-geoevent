@@ -3,8 +3,8 @@ package com.esri.geoevent.test.performance.provision;
 import org.apache.commons.lang3.StringUtils;
 
 import com.esri.geoevent.test.performance.ImplMessages;
-import com.esri.geoevent.test.performance.cassandra.CassandraClient;
-import com.esri.geoevent.test.performance.cassandra.DefaultCassandraClient;
+import com.esri.geoevent.test.performance.db.DBClient;
+import com.esri.geoevent.test.performance.db.cassandra.CassandraClient;
 import com.esri.geoevent.test.performance.jaxb.Config;
 
 public class CassandraProvisioner implements Provisioner
@@ -55,25 +55,25 @@ public class CassandraProvisioner implements Provisioner
 			throw new ProvisionException( ImplMessages.getMessage("PROVISIONER_PROPERTY_VALIDATION", "tableName") );
 		
 		// check if we can connect
-		try( CassandraClient client = new DefaultCassandraClient(nodeName) )
+		try( DBClient client = new CassandraClient(nodeName, keyspace, tableName, null) )
 		{
 			;
-		} 
+		}
 		catch( Exception error)
 		{
-			throw new ProvisionException( ImplMessages.getMessage("PROVISIONER_CANNOT_CONNECT", "nodeName") );
+			throw new ProvisionException( ImplMessages.getMessage("PROVISIONER_CANNOT_CONNECT", "nodeName", error.getMessage()), error );
 		}
 	}
 	
 	private void truncateTable()
 	{
-		try( CassandraClient client = new DefaultCassandraClient(nodeName) )
+		try( DBClient client = new CassandraClient(nodeName, keyspace, tableName, null) )
 		{
-			client.truncate(keyspace, tableName);
+			client.truncate();
 		} 
 		catch( Exception error)
 		{
-			System.err.println( ImplMessages.getMessage("PROVISIONER_TRUNCATE_FAILED", keyspace, tableName) );
+			System.err.println( ImplMessages.getMessage("PROVISIONER_TRUNCATE_FAILED", keyspace, tableName, error.getMessage()) );
 			error.printStackTrace();
 		}
 	}
