@@ -46,7 +46,6 @@ import com.esri.geoevent.test.performance.jaxb.Config;
 import com.esri.geoevent.test.performance.jaxb.RemoteHost;
 import com.esri.geoevent.test.performance.utils.KryoUtils;
 import com.esri.geoevent.test.performance.utils.MessageUtils;
-import com.esri.geoevent.test.performance.utils.NetworkUtils;
 
 public class RemotePerformanceCollectorBase implements PerformanceCollector
 {
@@ -65,7 +64,8 @@ public class RemotePerformanceCollectorBase implements PerformanceCollector
 			{
 				synchronized (clients)
 				{
-					clients.add(new Connection(host.getHost(), host.getCommandPort(), NetworkUtils.isLocal(host.getHost())));
+					//clients.add(new Connection(host.getHost(), host.getCommandPort(), NetworkUtils.isLocal(host.getHost())));
+					clients.add(new Connection(host.getHost(), host.getCommandPort(), true));
 				}
 			}
 			catch (UnknownHostException e)
@@ -435,6 +435,7 @@ public class RemotePerformanceCollectorBase implements PerformanceCollector
 				};
 			thread.start();
 
+			//TODO: This is broken - we need to look at this and fix the clock thread
 			if (!isLocal)
 			{
 				DatagramPacket timeSocket = new DatagramPacket(new byte[8], 8, InetAddress.getByName(host), 7720);
