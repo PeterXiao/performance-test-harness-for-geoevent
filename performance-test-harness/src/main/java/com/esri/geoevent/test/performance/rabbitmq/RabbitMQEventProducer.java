@@ -92,7 +92,7 @@ public class RabbitMQEventProducer extends ProducerBase
 		{
 			if (eventIndex == events.size())
 				eventIndex = 0;
-			String message = events.get(eventIndex++);
+			String message = augmentMessage(events.get(eventIndex++));
 			try
 			{
 				byte[] bytes = message.getBytes();

@@ -24,6 +24,7 @@
 package com.esri.geoevent.test.performance;
 
 import java.io.File;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import com.esri.geoevent.test.performance.jaxb.Config;
 import com.esri.geoevent.test.performance.jaxb.TestType;
@@ -33,7 +34,9 @@ public abstract class ProducerBase extends PerformanceCollectorBase implements P
 	private int				eventsPerSec				= -1;
 	private int				staggeringInterval	= 10;
 	private TestType	testType						= TestType.UNKNOWN;
-	private String 		simulationFile				= null;
+	private String 		simulationFile			= null;
+	private boolean		addUniqueId					= false;
+	private AtomicInteger	uniqueIdIndex		= new AtomicInteger(0);
 	
 	public ProducerBase()
 	{
@@ -50,6 +53,8 @@ public abstract class ProducerBase extends PerformanceCollectorBase implements P
 			eventsPerSec = Integer.parseInt(config.getPropertyValue("eventsPerSec", "-1"));
 			staggeringInterval = Integer.parseInt(config.getPropertyValue("staggeringInterval", "1"));
 			testType = TestType.fromValue(config.getPropertyValue("testType"));
+			addUniqueId = Boolean.parseBoolean(config.getPropertyValue("addUniqueId", "false"));
+			uniqueIdIndex		= new AtomicInteger(0);
 		}
 		catch( Exception error )
 		{
@@ -155,5 +160,16 @@ public abstract class ProducerBase extends PerformanceCollectorBase implements P
 	public String getSimulationFile()
 	{
 		return simulationFile;
+	}
+	
+	protected String augmentMessage(String message)
+	{
+		String newMessage = message;
+		if( getEventFileType() == FileType.TEXT )
+		{
+			if( addUniqueId )
+				newMessage = uniqueIdIndex.incrementAndGet() + "," + newMessage;
+		}
+		return newMessage;
 	}
 }

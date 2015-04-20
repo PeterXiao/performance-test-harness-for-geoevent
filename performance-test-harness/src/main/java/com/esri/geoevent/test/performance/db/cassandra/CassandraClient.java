@@ -36,7 +36,6 @@ public class CassandraClient implements DBClient
 		if( nodeName != null && nodeName.contains(",") )
 			nodeNames = nodeName.split(",");
 		
-		
 		this.cluster = Cluster.builder().addContactPoints(nodeNames).build();
 		this.metadata = cluster.getMetadata();
 	}
