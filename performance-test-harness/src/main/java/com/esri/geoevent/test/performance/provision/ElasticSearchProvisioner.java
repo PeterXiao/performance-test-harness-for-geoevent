@@ -27,16 +27,17 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.esri.geoevent.test.performance.ImplMessages;
 import com.esri.geoevent.test.performance.db.DBClient;
-import com.esri.geoevent.test.performance.db.cassandra.CassandraClient;
+import com.esri.geoevent.test.performance.db.elasticsearch.ElasticSearchClient;
 import com.esri.geoevent.test.performance.jaxb.Config;
 
-public class CassandraProvisioner implements Provisioner
+public class ElasticSearchProvisioner implements Provisioner
 {
-	private String							nodeName;
-	private String							keyspace;
-	private String							tableName;
+	private String							hostName;
+	private String							clusterName;
+	private String							indexName;
+	private String							indexType;
 
-	private static final String	NAME	= "Cassandra";
+	private static final String	NAME	= "{es}";
 
 	@Override
 	public void init(Config config) throws ProvisionException
@@ -44,9 +45,10 @@ public class CassandraProvisioner implements Provisioner
 		if (config == null)
 			throw new ProvisionException(ImplMessages.getMessage("PROVISIONER_INIT_ERROR", getClass().getSimpleName()));
 
-		this.nodeName = config.getPropertyValue("nodeName");
-		this.keyspace = config.getPropertyValue("keyspace");
-		this.tableName = config.getPropertyValue("tableName");
+		this.hostName = config.getPropertyValue("hostName");
+		this.clusterName = config.getPropertyValue("clusterName");
+		this.indexName = config.getPropertyValue("indexName");
+		this.indexType = config.getPropertyValue("indexType");
 
 		validate();
 	}
@@ -59,7 +61,7 @@ public class CassandraProvisioner implements Provisioner
 			System.out.println("-------------------------------------------------------");
 			System.out.println(ImplMessages.getMessage("PROVISIONER_START_MSG", NAME));
 			System.out.println("-------------------------------------------------------");
-			truncateTable();
+			removeAndRecreateIndex();
 			System.out.println(ImplMessages.getMessage("PROVISIONER_FINISH_MSG", NAME));
 		}
 		catch (Exception ex)
@@ -70,15 +72,15 @@ public class CassandraProvisioner implements Provisioner
 
 	private void validate() throws ProvisionException
 	{
-		if (StringUtils.isEmpty(nodeName))
-			throw new ProvisionException(ImplMessages.getMessage("PROVISIONER_PROPERTY_VALIDATION", "nodeName"));
-		if (StringUtils.isEmpty(keyspace))
-			throw new ProvisionException(ImplMessages.getMessage("PROVISIONER_PROPERTY_VALIDATION", "keyspace"));
-		if (StringUtils.isEmpty(tableName))
-			throw new ProvisionException(ImplMessages.getMessage("PROVISIONER_PROPERTY_VALIDATION", "tableName"));
+		if (StringUtils.isEmpty(hostName))
+			throw new ProvisionException(ImplMessages.getMessage("PROVISIONER_PROPERTY_VALIDATION", "hostName"));
+		if (StringUtils.isEmpty(indexName))
+			throw new ProvisionException(ImplMessages.getMessage("PROVISIONER_PROPERTY_VALIDATION", "indexName"));
+		if (StringUtils.isEmpty(indexType))
+			throw new ProvisionException(ImplMessages.getMessage("PROVISIONER_PROPERTY_VALIDATION", "indexType"));
 
 		// check if we can connect
-		try (DBClient client = new CassandraClient(nodeName, keyspace, tableName, null))
+		try (DBClient client = new ElasticSearchClient(hostName, clusterName, indexName, indexType))
 		{
 			;
 		}
@@ -88,15 +90,16 @@ public class CassandraProvisioner implements Provisioner
 		}
 	}
 
-	private void truncateTable()
+	private void removeAndRecreateIndex()
 	{
-		try (DBClient client = new CassandraClient(nodeName, keyspace, tableName, null))
+		try (DBClient client = new ElasticSearchClient(hostName, clusterName, indexName, indexType))
 		{
 			client.truncate();
+			client.createSchema();
 		}
 		catch (Exception error)
 		{
-			System.err.println(ImplMessages.getMessage("PROVISIONER_TRUNCATE_FAILED", keyspace, tableName, error.getMessage()));
+			System.err.println(ImplMessages.getMessage("PROVISIONER_TRUNCATE_FAILED", indexName, indexType, error.getMessage()));
 			error.printStackTrace();
 		}
 	}

@@ -21,7 +21,7 @@
 
   email: contracts@esri.com
  */
-package com.esri.geoevent.test.performance.db.cassandra;
+package com.esri.geoevent.test.performance.db.elasticsearch;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -31,37 +31,37 @@ import com.esri.geoevent.test.performance.db.DBClient;
 import com.esri.geoevent.test.performance.db.DBConsumerBase;
 import com.esri.geoevent.test.performance.jaxb.Config;
 
-public class CassandraEventConsumer extends DBConsumerBase
+public class ElasticSearchEventConsumer extends DBConsumerBase
 {
 	// member vars
-	private String	nodeName;
-	private String	keyspace;
-	private String	tableName;
-	private String	columnName;
+	private String	hostName;
+	private String	clusterName;
+	private String	indexName;
+	private String	indexType;
 
 	@Override
 	public void init(Config config) throws TestException
 	{
 		super.init(config);
 
-		this.nodeName = config.getPropertyValue("nodeName");
-		this.keyspace = config.getPropertyValue("keyspace");
-		this.tableName = config.getPropertyValue("tableName");
-		this.columnName = config.getPropertyValue("columnName");
+		this.hostName = config.getPropertyValue("hostName");
+		this.clusterName = config.getPropertyValue("clusterName");
+		this.indexName = config.getPropertyValue("indexName");
+		this.indexType = config.getPropertyValue("indexType");
 	}
 
 	@Override
 	public void validate() throws TestException
 	{
-		if (StringUtils.isEmpty(nodeName))
-			throw new TestException(ImplMessages.getMessage("PROVISIONER_PROPERTY_VALIDATION", "nodeName"));
-		if (StringUtils.isEmpty(keyspace))
-			throw new TestException(ImplMessages.getMessage("PROVISIONER_PROPERTY_VALIDATION", "keyspace"));
-		if (StringUtils.isEmpty(tableName))
-			throw new TestException(ImplMessages.getMessage("PROVISIONER_PROPERTY_VALIDATION", "tableName"));
-		if (StringUtils.isEmpty(columnName))
-			throw new TestException(ImplMessages.getMessage("PROVISIONER_PROPERTY_VALIDATION", "columnName"));
-
+		if (StringUtils.isEmpty(hostName))
+			throw new TestException(ImplMessages.getMessage("PROVISIONER_PROPERTY_VALIDATION", "hostName"));
+		if (StringUtils.isEmpty(clusterName))
+			throw new TestException(ImplMessages.getMessage("PROVISIONER_PROPERTY_VALIDATION", "clusterName"));
+		if (StringUtils.isEmpty(indexName))
+			throw new TestException(ImplMessages.getMessage("PROVISIONER_PROPERTY_VALIDATION", "indexName"));
+		if (StringUtils.isEmpty(indexType))
+			throw new TestException(ImplMessages.getMessage("PROVISIONER_PROPERTY_VALIDATION", "indexType"));
+	
 		// check if we can connect
 		try (DBClient client = getDBClient())
 		{
@@ -76,6 +76,6 @@ public class CassandraEventConsumer extends DBConsumerBase
 	@Override
 	public DBClient getDBClient()
 	{
-		return new CassandraClient(nodeName, keyspace, tableName, columnName);
+		return new ElasticSearchClient(hostName, clusterName, indexName, indexType);
 	}
 }
