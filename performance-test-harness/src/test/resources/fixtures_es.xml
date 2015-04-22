@@ -7,9 +7,9 @@
 	<ProvisionerConfig className="com.esri.geoevent.test.performance.provision.ElasticSearchProvisioner">
 		<Properties>
 			<Property name="hostName">10.27.51.119</Property>
-			<Property name="clusterName">GeoEvent</Property>
-			<Property name="indexName">geoevent</Property>
-			<Property name="indexType">trucks</Property>
+			<Property name="clusterName">Spatiotemporal</Property>
+			<Property name="indexName">arcgis</Property>
+			<Property name="indexType">taxi</Property>
 		</Properties>
 	</ProvisionerConfig>
 	
@@ -26,9 +26,9 @@
 		<ConsumerConfig protocol="ES" commandPort="5020" timeoutInSec="5">
 			<Properties>
 				<Property name="hostName">10.27.51.119</Property>
-				<Property name="clusterName">GeoEvent</Property>
-				<Property name="indexName">geoevent</Property>
-				<Property name="indexType">trucks</Property>
+				<Property name="clusterName">Spatiotemporal</Property>
+				<Property name="indexName">arcgis</Property>
+				<Property name="indexType">taxi</Property>
 			</Properties>
 		</ConsumerConfig>
 		<Simulation>

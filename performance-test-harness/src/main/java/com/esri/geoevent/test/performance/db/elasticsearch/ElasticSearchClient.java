@@ -74,7 +74,7 @@ public class ElasticSearchClient implements DBClient
 	@Override
 	public void createSchema()
 	{
-		String mappingJSON = "{\"trucks\":{\"_timestamp\":{\"enabled\":true,\"store\":true},\"properties\":{\"eventid\":{\"type\":\"string\"},\"eventtime\":{\"type\":\"date\"},\"speed\":{\"type\":\"float\"}}}}";
+		String mappingJSON = "{\"" + indexType +"\":{\"_timestamp\":{\"enabled\":true,\"store\":true},\"properties\":{\"trackId\":{\"type\":\"string\"},\"timestamp\":{\"type\":\"date\"},\"speed\":{\"type\":\"float\"}}}}";
 
 		CreateIndexRequestBuilder builder = client.admin().indices().prepareCreate(indexName);
 		builder.addMapping(indexType, mappingJSON);
@@ -88,11 +88,6 @@ public class ElasticSearchClient implements DBClient
 	@Override
 	public void truncate()
 	{
-//		DeleteMappingRequest request = new DeleteMappingRequest(indexName);
-//		request.types(indexType);
-//		request.indices(new String[] {indexName});
-//		DeleteMappingResponse response = client.admin().indices().deleteMapping(request).actionGet();
-		
 		IndicesExistsResponse indicesExistsResponse = client.admin().indices().prepareExists(indexName).execute().actionGet();
 		if( indicesExistsResponse.isExists() )
 		{
