@@ -93,7 +93,7 @@ public class ElasticSearchClient implements DBClient
 		if (iter > 0)
 			indexIter += iter;
 
-		String mappingJSON = "{\"" + indexType + "\":{\"_timestamp\":{\"enabled\":true,\"store\":true,\"index\":\"not_analyzed\"},\"_all\":{\"enabled\":false},\"properties\":{\"trackId\":{\"type\":\"string\",\"index\":\"no\"},\"timestamp\":{\"type\":\"date\",\"index\":\"no\"},\"speed\":{\"type\":\"float\",\"index\":\"no\"}}}}";
+		String mappingJSON = "{\"" + indexType + "\":{\"_timestamp\":{\"enabled\":true,\"store\":true,\"index\":\"not_analyzed\"},\"_all\":{\"enabled\":false},\"properties\":{\"trackId\":{\"type\":\"string\"},\"timestamp\":{\"type\":\"date\"},\"speed\":{\"type\":\"float\",\"index\":\"no\"}}}}";
 
 		CreateIndexRequestBuilder builder = client.admin().indices().prepareCreate(indexName + indexIter);
 		builder.addMapping(indexType, mappingJSON);
