@@ -50,6 +50,12 @@ public class DBResult
 		this.startTime = startTime;
 	}
 
+	public void addStartTime(long startTime)
+	{
+		if (startTime < this.startTime) 
+			this.startTime = startTime;
+	}
+
 	public long getEndTime()
 	{
 		return endTime;
@@ -60,6 +66,12 @@ public class DBResult
 		this.endTime = endTime;
 	}
 
+	public void addEndTime(long endTime)
+	{
+		if (endTime > this.endTime) 
+			this.endTime = endTime;
+	}
+
 	public int getTotalCount()
 	{
 		return totalCount;
@@ -68,5 +80,10 @@ public class DBResult
 	public void setTotalCount(int totalCount)
 	{
 		this.totalCount = totalCount;
+	}
+
+	public void addTotalCount(int totalCount)
+	{
+		this.totalCount += totalCount;
 	}
 }

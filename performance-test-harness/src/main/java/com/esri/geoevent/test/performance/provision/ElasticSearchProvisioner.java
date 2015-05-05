@@ -36,6 +36,7 @@ public class ElasticSearchProvisioner implements Provisioner
 	private String							clusterName;
 	private String							indexName;
 	private String							indexType;
+	private int									numOfNodes = 1;
 
 	private static final String	NAME	= "{es}";
 
@@ -49,6 +50,7 @@ public class ElasticSearchProvisioner implements Provisioner
 		this.clusterName = config.getPropertyValue("clusterName");
 		this.indexName = config.getPropertyValue("indexName");
 		this.indexType = config.getPropertyValue("indexType");
+		this.numOfNodes = Integer.parseInt(config.getPropertyValue("numOfNodes", "1"));
 
 		validate();
 	}
@@ -80,7 +82,7 @@ public class ElasticSearchProvisioner implements Provisioner
 			throw new ProvisionException(ImplMessages.getMessage("PROVISIONER_PROPERTY_VALIDATION", "indexType"));
 
 		// check if we can connect
-		try (DBClient client = new ElasticSearchClient(hostName, clusterName, indexName, indexType))
+		try (DBClient client = new ElasticSearchClient(hostName, clusterName, indexName, indexType, numOfNodes))
 		{
 			;
 		}
@@ -92,7 +94,7 @@ public class ElasticSearchProvisioner implements Provisioner
 
 	private void removeAndRecreateIndex()
 	{
-		try (DBClient client = new ElasticSearchClient(hostName, clusterName, indexName, indexType))
+		try (DBClient client = new ElasticSearchClient(hostName, clusterName, indexName, indexType, numOfNodes))
 		{
 			client.truncate();
 			client.createSchema();

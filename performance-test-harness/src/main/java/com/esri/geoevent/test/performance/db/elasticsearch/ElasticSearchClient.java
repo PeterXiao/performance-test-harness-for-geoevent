@@ -50,15 +50,17 @@ public class ElasticSearchClient implements DBClient
 	private String	indexName;
 	private String	indexType;
 	private String	fieldName = "_timestamp";
+	private int			numOfNodes = 1;
 
 	// setup the cluster
 	private Client	client;
 
 	@SuppressWarnings("resource")
-	public ElasticSearchClient(String hostName, String clusterName, String indexName, String indexType)
+	public ElasticSearchClient(String hostName, String clusterName, String indexName, String indexType, int numOfNodes)
 	{
 		this.indexName = indexName;
 		this.indexType = indexType;
+		this.numOfNodes = numOfNodes;
 		
 		// TODO: Fixed the hard coding of the port number
 		Settings settings = ImmutableSettings.settingsBuilder().put("cluster.name", clusterName).build();
@@ -74,24 +76,47 @@ public class ElasticSearchClient implements DBClient
 	@Override
 	public void createSchema()
 	{
-		String mappingJSON = "{\"" + indexType +"\":{\"_timestamp\":{\"enabled\":true,\"store\":true},\"properties\":{\"trackId\":{\"type\":\"string\"},\"timestamp\":{\"type\":\"date\"},\"speed\":{\"type\":\"float\"}}}}";
+		if (numOfNodes > 1)
+		{
+			for (int i = 1; i <= numOfNodes; i++)
+				addSchema(i);
+		}
+		else
+		{
+			addSchema(0);
+		}
+	}
+		
+	private void addSchema(int iter)
+	{
+		String indexIter = "";
+		if (iter > 0)
+			indexIter += iter;
 
-		CreateIndexRequestBuilder builder = client.admin().indices().prepareCreate(indexName);
+		String mappingJSON = "{\"" + indexType + "\":{\"_timestamp\":{\"enabled\":true,\"store\":true,\"index\":\"not_analyzed\"},\"_all\":{\"enabled\":false},\"properties\":{\"trackId\":{\"type\":\"string\",\"index\":\"no\"},\"timestamp\":{\"type\":\"date\",\"index\":\"no\"},\"speed\":{\"type\":\"float\",\"index\":\"no\"}}}}";
+
+		CreateIndexRequestBuilder builder = client.admin().indices().prepareCreate(indexName + indexIter);
 		builder.addMapping(indexType, mappingJSON);
+
+		//builder.setSettings("index.number_of_shards", 1);
+		//builder.setSettings("index.number_of_replicas", 0);
+		//builder.setSettings("refresh_interval", "120s");
+		builder.setSettings("index.store.type", "memory");
+
 		CreateIndexResponse createResponse = builder.execute().actionGet();
 		if ( ! createResponse.isAcknowledged())
 		{
 			System.err.println("Index was not created!");
 		}
 	}
-	
+
 	@Override
 	public void truncate()
 	{
-		IndicesExistsResponse indicesExistsResponse = client.admin().indices().prepareExists(indexName).execute().actionGet();
+		IndicesExistsResponse indicesExistsResponse = client.admin().indices().prepareExists(indexName + "*").execute().actionGet();
 		if( indicesExistsResponse.isExists() )
 		{
-			DeleteIndexResponse response = client.admin().indices().prepareDelete(indexName).execute().actionGet();
+			DeleteIndexResponse response = client.admin().indices().prepareDelete(indexName + "*").execute().actionGet();
 			if ( ! response.isAcknowledged())
 			{
 				System.err.println("Index wasn't deleted");
@@ -103,7 +128,7 @@ public class ElasticSearchClient implements DBClient
 	public DBResult queryForLastWriteTimes()
 	{
 		SearchResponse response = 
-				client.prepareSearch(indexName)
+				client.prepareSearch(indexName + "*")
 					.setTypes(indexType)
 					.setQuery(QueryBuilders.matchAllQuery())
 					.addFields(fieldName)
@@ -117,9 +142,16 @@ public class ElasticSearchClient implements DBClient
 		hits.sort(new RowComparator());
 
 		// gather the information we need
-		long startTime = new Long(hits.get(0).field(fieldName).getValue());
-		long endTime = new Long(hits.get(hits.size() - 1).field(fieldName).getValue());
 		int totalCount = hits.size();
+
+		long startTime = Long.MAX_VALUE;
+		long endTime = Long.MIN_VALUE;
+		if (hits.size() > 0)
+		{
+			startTime = (long)(hits.get(0).field(fieldName).getValue());
+			endTime = (long)(hits.get(hits.size() - 1).field(fieldName).getValue());
+		}
+
 		return new DBResult(startTime, endTime, totalCount);
 	}
 

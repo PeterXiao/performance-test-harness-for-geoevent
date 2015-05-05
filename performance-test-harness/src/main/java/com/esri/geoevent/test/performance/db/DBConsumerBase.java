@@ -91,13 +91,17 @@ public abstract class DBConsumerBase extends ConsumerBase
 				// keep track of the previous counts - check if they are changing -if the are then reset the retries counter
 				if (previousSuccessFulCount != getSuccessfulEvents())
 					retries = 0;
+
 				// check the number of retries if we reached our max, then finish
 				if (retries >= 3)
+				{
 					finishConsuming(results.getEndTime());
+				}
 				else
 				{
 					// inc and wait a sec
 					retries++;
+					System.out.println("query is not done, got " + getSuccessfulEvents() + " events, re-querying ...");
 					Thread.sleep(1000);
 				}
 			}

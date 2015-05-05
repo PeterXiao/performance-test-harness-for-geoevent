@@ -61,7 +61,7 @@ public class ElasticSearchEventConsumer extends DBConsumerBase
 			throw new TestException(ImplMessages.getMessage("PROVISIONER_PROPERTY_VALIDATION", "indexName"));
 		if (StringUtils.isEmpty(indexType))
 			throw new TestException(ImplMessages.getMessage("PROVISIONER_PROPERTY_VALIDATION", "indexType"));
-	
+
 		// check if we can connect
 		try (DBClient client = getDBClient())
 		{
@@ -76,6 +76,6 @@ public class ElasticSearchEventConsumer extends DBConsumerBase
 	@Override
 	public DBClient getDBClient()
 	{
-		return new ElasticSearchClient(hostName, clusterName, indexName, indexType);
+		return new ElasticSearchClient(hostName, clusterName, indexName, indexType, 1);
 	}
 }
