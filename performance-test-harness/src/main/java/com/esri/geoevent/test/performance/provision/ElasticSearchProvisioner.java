@@ -62,7 +62,6 @@ public class ElasticSearchProvisioner implements Provisioner
 		{
 			System.out.println("-------------------------------------------------------");
 			System.out.println(ImplMessages.getMessage("PROVISIONER_START_MSG", NAME));
-			System.out.println("-------------------------------------------------------");
 			removeAndRecreateIndex();
 			System.out.println(ImplMessages.getMessage("PROVISIONER_FINISH_MSG", NAME));
 		}

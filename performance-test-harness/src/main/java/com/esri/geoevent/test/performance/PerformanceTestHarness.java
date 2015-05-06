@@ -96,7 +96,6 @@ public class PerformanceTestHarness implements Orchestrator, RunningStateListene
 				
 		System.out.println("-------------------------------------------------------");
 		System.out.println( ImplMessages.getMessage("TEST_HARNESS_START_MSG", testName ) );
-		System.out.println("-------------------------------------------------------");
 
 		ProducerConfig producerConfig = fixture.getProducerConfig();
 		ConsumerConfig consumerConfig = fixture.getConsumerConfig();
@@ -328,6 +327,7 @@ public class PerformanceTestHarness implements Orchestrator, RunningStateListene
 				lastReceivedLatencies[i] = cdIx[1] - pdIx[1];
 				totalTimes[i] = cdIx[1] - pdIx[0];
 			}
+			String statsOutput = "";
 			try
 			{
 				long actualTotalEvents = totalEvents * producerConnections / numberOfIterations;
@@ -396,7 +396,7 @@ public class PerformanceTestHarness implements Orchestrator, RunningStateListene
 					fixtureStat.addStat("Rate", eventsPerSec);
 					fixtureStat.addStat("%", avgEventsPerSec / (double) eventsPerSec);
 				}
-				
+				statsOutput += "avgTotalTime = " + fixtureStat.getStat("avgTotalTime") + ", avgEventsPerSec = " + fixtureStat.getStat("avgEventsPerSec") + ", % = " + fixtureStat.getStat("%");
 				// add the statistics
 				FixturesStatistics.getInstance().addFixtureStatistic(testName, fixtureStat);
 			}
@@ -404,7 +404,8 @@ public class PerformanceTestHarness implements Orchestrator, RunningStateListene
 			{
 				e.printStackTrace();
 			}
-			System.out.println( ImplMessages.getMessage("DONE") );
+			System.out.println( ImplMessages.getMessage("DONE:") );
+			System.out.println( statsOutput );
 		}
 		else
 			System.out.println( ImplMessages.getMessage("TEST_HARNESS_REPORT_STATS_ERROR", size, consumerDiagnostics.size() ) );

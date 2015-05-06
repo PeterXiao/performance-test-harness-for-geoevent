@@ -363,7 +363,7 @@ public class RemotePerformanceCollectorBase implements PerformanceCollector
 		{
 			this.host = host;
 			this.port = commandPort;
-			System.out.println(ImplMessages.getMessage("REMOTE_COLLECTOR_CONNECTION_CREATED", host, String.valueOf(port)));
+			//System.out.println(ImplMessages.getMessage("REMOTE_COLLECTOR_CONNECTION_CREATED", host, String.valueOf(port)));
 			socket = new Socket(host, port);
 			socket.setSoTimeout(100);
 			in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -553,7 +553,7 @@ public class RemotePerformanceCollectorBase implements PerformanceCollector
 			in = null;
 			out = null;
 			socket = null;
-			System.out.println(ImplMessages.getMessage("REMOTE_COLLECTOR_DISCONNECTION", host, String.valueOf(port)));
+			//System.out.println(ImplMessages.getMessage("REMOTE_COLLECTOR_DISCONNECTION", host, String.valueOf(port)));
 		}
 
 		public String getConnectionString()

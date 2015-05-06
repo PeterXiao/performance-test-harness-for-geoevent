@@ -194,7 +194,8 @@ public abstract class ConsumerBase extends PerformanceCollectorBase implements C
 					}
 					totalTime = totalTimeInSec;
 				}
-				System.out.println(ImplMessages.getMessage("CONSUMER_TIMED_FINISH_MSG", successfulEvents.get(), String.valueOf(totalTime), String.valueOf(((double) successfulEvents.get() / totalTime))));
+				System.out.println(ImplMessages.getMessage("CONSUMER_FINISH_MSG", successfulEvents.get()));
+				//System.out.println(ImplMessages.getMessage("CONSUMER_TIMED_FINISH_MSG", successfulEvents.get(), String.valueOf(totalTime), String.valueOf(((double) successfulEvents.get() / totalTime))));
 			}
 			else
 				System.out.println(ImplMessages.getMessage("CONSUMER_FINISH_MSG", successfulEvents.get()));
