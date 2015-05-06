@@ -17,6 +17,22 @@
 	</properties>
 
 	<dependencies>
+	<dependency>
+			<groupId>com.esri.geoevent.sdk</groupId>
+			<artifactId>geoevent-sdk</artifactId>
+			<version>10.3.0</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+            <groupId>com.esri.ges.framework.messaging</groupId>
+            <artifactId>jms-messaging</artifactId>
+            <version>10.3.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.esri.ges.framework.messaging</groupId>
+            <artifactId>messaging-api</artifactId>
+            <version>10.3.1</version>
+        </dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>performance-test-harness-api</artifactId>

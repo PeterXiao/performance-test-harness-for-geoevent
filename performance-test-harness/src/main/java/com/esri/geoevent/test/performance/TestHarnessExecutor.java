@@ -52,6 +52,7 @@ import com.esri.geoevent.test.performance.activemq.ActiveMQEventProducer;
 import com.esri.geoevent.test.performance.jaxb.Fixture;
 import com.esri.geoevent.test.performance.jaxb.Fixtures;
 import com.esri.geoevent.test.performance.jaxb.ProvisionerConfig;
+import com.esri.geoevent.test.performance.kafka.KafkaEventConsumer;
 import com.esri.geoevent.test.performance.kafka.KafkaEventProducer;
 import com.esri.geoevent.test.performance.provision.DefaultProvisionerFactory;
 import com.esri.geoevent.test.performance.provision.ProvisionException;
@@ -427,6 +428,9 @@ public class TestHarnessExecutor implements RunnableComponent
 						break;
 					case STREAM_SERVICE:
 						consumer = new StreamServiceEventConsumer();
+						break;
+					case KAFKA:
+						consumer = new KafkaEventConsumer();
 						break;
 					default:
 						return;

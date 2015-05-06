@@ -33,6 +33,6 @@ public class SimplePartitioner implements Partitioner
   }
 
   public int partition(Object key, int a_numPartitions) {
-     return Integer.parseInt((String)key) % a_numPartitions;
+     return Math.abs(key.hashCode()) % a_numPartitions;
   }
 }
