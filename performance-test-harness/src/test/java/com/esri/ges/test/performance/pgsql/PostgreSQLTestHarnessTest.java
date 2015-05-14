@@ -20,32 +20,33 @@
   Redlands, California, USA 92373
 
   email: contracts@esri.com
- */
-package com.esri.ges.test.performance.cassandra;
+ */ 
+
+package com.esri.ges.test.performance.pgsql;
 
 import org.junit.Test;
 
 import com.esri.geoevent.test.performance.TestHarnessExecutor;
 
-public class CassandraTestHarnessTest
+public class PostgreSQLTestHarnessTest 
 {
 	// ---------------------------------------------------------
 	// Tests
 	// ---------------------------------------------------------
 	
 	@Test
-	public void testPerformanceTestHarnessMode_CASSANDRA()
+	public void testPerformanceTestHarnessMode_POSTGRESQL()
 	{		
 		// setup consumer
-		String args = "-m consumer -t cassandra -p local";
+		String args = "-m consumer -t postgresql -p local";
 		TestHarnessExecutor.main(args.split(" "));
 		
 		// setup producer
-		args = "-m producer -t kafka -p local";
+		args = "-m producer -t tcp -p local";
 		TestHarnessExecutor.main(args.split(" "));
 		
 		// run the test
-		args = "-f src/test/resources/fixtures_cassandra.xml";
+		args = "-f src/test/resources/fixtures_pgsql.xml";
 		TestHarnessExecutor.main(args.split(" "));
 	}
 }

@@ -39,6 +39,7 @@ public enum Protocol
 	KAFKA(ApiMessages.getMessage("PROTOCOL_KAFKA")), 
 	WEBSOCKET_SERVER(ApiMessages.getMessage("PROTOCOL_WEBSOCKET_SERVER")),
 	CASSANDRA(ApiMessages.getMessage("PROTOCOL_CASSANDRA")),
+	POSTGRESQL(ApiMessages.getMessage("PROTOCOL_POSTGRESQL")),
 	ES(ApiMessages.getMessage("PROTOCOL_ES")),
 	UNKNOWN(ApiMessages.getMessage("PROTOCOL_UNKNOWN"));
 
@@ -82,6 +83,8 @@ public enum Protocol
 		  return WEBSOCKET_SERVER;
 		else if( CASSANDRA.toString().equalsIgnoreCase(valueStr) || CASSANDRA.name().equalsIgnoreCase(valueStr))
 		  return CASSANDRA;
+		else if( POSTGRESQL.toString().equalsIgnoreCase(valueStr) || POSTGRESQL.name().equalsIgnoreCase(valueStr))
+			  return POSTGRESQL;
 		else if( ES.toString().equalsIgnoreCase(valueStr) || ES.name().equalsIgnoreCase(valueStr))
 		  return ES;
 		else 
