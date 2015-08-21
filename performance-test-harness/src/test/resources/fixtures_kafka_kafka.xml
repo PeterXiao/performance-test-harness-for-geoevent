@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Fixtures>
+	<Report type="XLSX">
+		<ReportFile>target/reports/kafka.xlsx</ReportFile>
+	</Report>
+	
+	<DefaultFixture>
+	<DefaultSharedConfig>
+			<Properties>
+				<Property name="hosts">localhost</Property>
+			</Properties>
+		</DefaultSharedConfig>
+		<ProducerConfig commandPort="5010" protocol="KAFKA">
+			<Properties>
+				<Property name="topic">test_flight</Property>
+				<Property name="acks">1</Property>
+				<Property name="brokerList">localhost:9093,localhost:9094</Property>
+				<Property name="simulationFile">C:\\ages\\utilities\\geoevent-simulator\\simulations\\Flight-no-GED.csv</Property>
+			</Properties>
+		</ProducerConfig>
+		<ConsumerConfig commandPort="5020" timeoutInSec="5" protocol="KAFKA">
+			<Properties>
+				<Property name="zookeeper">localhost:2181</Property>
+				<Property name="consumergroup">consumergroup1</Property>
+				<Property name="topic">test_flight</Property>
+				<Property name="receiveGeoEvent">false</Property>
+				<Property name="numthreads">2</Property>
+			</Properties>
+		</ConsumerConfig>
+		<Simulation>
+			<TimeTest eventsPerSec="100" totalTimeInSec="10" staggeringInterval="10" />
+		</Simulation>
+	</DefaultFixture>
+	
+	
+	<Fixture name="60k">
+        <Simulation>
+            <TimeTest eventsPerSec="60000" totalTimeInSec="20" staggeringInterval="10" />
+        </Simulation>
+    </Fixture>
+	<Fixture name="80k">
+        <Simulation>
+            <TimeTest eventsPerSec="80000" totalTimeInSec="20" staggeringInterval="10" />
+        </Simulation>
+    </Fixture>
+	<Fixture name="100k">
+        <Simulation>
+            <TimeTest eventsPerSec="100000" totalTimeInSec="20" staggeringInterval="10" />
+        </Simulation>
+    </Fixture>
+	<Fixture name="120k">
+        <Simulation>
+            <TimeTest eventsPerSec="120000" totalTimeInSec="20" staggeringInterval="10" />
+        </Simulation>
+    </Fixture>
+	<Fixture name="140k">
+        <Simulation>
+            <TimeTest eventsPerSec="140000" totalTimeInSec="20" staggeringInterval="10" />
+        </Simulation>
+    </Fixture>
+	<Fixture name="160k">
+        <Simulation>
+            <TimeTest eventsPerSec="160000" totalTimeInSec="20" staggeringInterval="10" />
+        </Simulation>
+    </Fixture>
+	<Fixture name="180k">
+        <Simulation>
+            <TimeTest eventsPerSec="180000" totalTimeInSec="20" staggeringInterval="10" />
+        </Simulation>
+    </Fixture>
+	<Fixture name="200k">
+        <Simulation>
+            <TimeTest eventsPerSec="200000" totalTimeInSec="20" staggeringInterval="10" />
+        </Simulation>
+    </Fixture>
+	<Fixture name="220k">
+        <Simulation>
+            <TimeTest eventsPerSec="220000" totalTimeInSec="20" staggeringInterval="10" />
+        </Simulation>
+    </Fixture>
+	
+</Fixtures>
