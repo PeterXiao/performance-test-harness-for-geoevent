@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Fixtures>
+	<Report type="XLSX">
+		<ReportFile>reports/cassandra-B1.xlsx</ReportFile>
+	</Report>
+	
+	<DefaultFixture>
+		<ProducerConfig commandPort="5010" protocol="KAFKA">
+			<Properties>
+				<Property name="simulationFile">simulations/truck_1000.csv</Property>
+				<Property name="brokerList">rtrujillo:9092,mingz14:9092</Property>
+				<Property name="topic">taxis</Property>
+				<Property name="requiredAcks">0</Property>
+			</Properties>
+		</ProducerConfig>
+		<ConsumerConfig protocol="CASSANDRA" commandPort="5020" timeoutInSec="5">
+			<Properties>
+				<Property name="nodeName">10.27.51.229</Property>
+				<Property name="keyspace">geoevent</Property>
+				<Property name="tableName">trucks</Property>
+				<Property name="columnName">speed</Property>
+			</Properties>
+		</ConsumerConfig>
+		<ProvisionerConfig className="com.esri.geoevent.test.performance.provision.CassandraProvisioner">
+			<Properties>
+				<Property name="nodeName">10.27.51.229</Property>
+				<Property name="keyspace">geoevent</Property>
+				<Property name="tableName">trucks</Property>
+			</Properties>
+		</ProvisionerConfig>
+		<Simulation>
+			<TimeTest eventsPerSec="10000" totalTimeInSec="20" staggeringInterval="100" />
+		</Simulation>
+	</DefaultFixture>
+	
+	<Fixture name="10k" />
+	
+	<Fixture name="20k">
+		<Simulation>
+			<TimeTest eventsPerSec="20000"/>
+		</Simulation>
+	</Fixture>
+	
+	<Fixture name="30k">
+		<Simulation>
+			<TimeTest eventsPerSec="30000"/>
+		</Simulation>
+	</Fixture>
+	<Fixture name="40k">
+		<Simulation>
+			<TimeTest eventsPerSec="40000"/>
+		</Simulation>
+	</Fixture>
+	<Fixture name="50k">
+		<Simulation>
+			<TimeTest eventsPerSec="50000"/>
+		</Simulation>
+	</Fixture>
+	
+	<Fixture name="60k">
+		<Simulation>
+			<TimeTest eventsPerSec="60000"/>
+		</Simulation>
+	</Fixture>
+	
+	<Fixture name="70k">
+		<Simulation>
+			<TimeTest eventsPerSec="70000"/>
+		</Simulation>
+	</Fixture>
+	
+	<Fixture name="80k">
+		<Simulation>
+			<TimeTest eventsPerSec="80000"/>
+		</Simulation>
+	</Fixture>
+	
+	<Fixture name="90k">
+		<Simulation>
+			<TimeTest eventsPerSec="90000"/>
+		</Simulation>
+	</Fixture>
+	
+	<Fixture name="100k">
+		<Simulation>
+			<TimeTest eventsPerSec="100000"/>
+		</Simulation>
+	</Fixture>
+	
+	<Fixture name="110k">
+		<Simulation>
+			<TimeTest eventsPerSec="110000"/>
+		</Simulation>
+	</Fixture>
+	
+	<Fixture name="120k">
+		<Simulation>
+			<TimeTest eventsPerSec="120000"/>
+		</Simulation>
+	</Fixture>
+</Fixtures>

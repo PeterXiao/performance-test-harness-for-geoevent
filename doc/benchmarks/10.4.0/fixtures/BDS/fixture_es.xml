@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Fixtures>
+	<Report type="XLSX">
+		<ReportFile>reports/es-A1.xlsx</ReportFile>
+	</Report>
+	
+	<ProvisionerConfig className="com.esri.geoevent.test.performance.provision.ElasticSearchProvisioner">
+		<Properties>
+			<Property name="hostName">10.27.51.119</Property>
+			<Property name="clusterName">Spatiotemporal</Property>
+			<Property name="indexName">arcgis</Property>
+			<Property name="indexType">taxi</Property>
+		</Properties>
+	</ProvisionerConfig>
+		
+	<DefaultFixture>
+		<ProducerConfig commandPort="5010" protocol="KAFKA">
+			<Properties>
+				<Property name="simulationFile">simulations/truck_1000.csv</Property>
+				<Property name="brokerList">rtrujillo:9092</Property>
+				<Property name="topic">taxis</Property>
+				<Property name="requiredAcks">0</Property>
+				<Property name="addUniqueId">true</Property>
+			</Properties>
+		</ProducerConfig>
+		<ConsumerConfig protocol="ES" commandPort="5020" timeoutInSec="5">
+			<Properties>
+				<Property name="hostName">10.27.51.119</Property>
+				<Property name="clusterName">Spatiotemporal</Property>
+				<Property name="indexName">arcgis</Property>
+				<Property name="indexType">taxi</Property>
+			</Properties>
+		</ConsumerConfig>
+		<Simulation>
+			<TimeTest eventsPerSec="1000" totalTimeInSec="20" staggeringInterval="100" />
+		</Simulation>
+	</DefaultFixture>
+	
+	<Fixture name="10k">
+		<Simulation>
+			<TimeTest eventsPerSec="10000"/>
+		</Simulation>
+	</Fixture>
+	<Fixture name="20k">
+		<Simulation>
+			<TimeTest eventsPerSec="20000"/>
+		</Simulation>
+	</Fixture>
+	<Fixture name="30k">
+		<Simulation>
+			<TimeTest eventsPerSec="30000"/>
+		</Simulation>
+	</Fixture>
+	<Fixture name="40k">
+		<Simulation>
+			<TimeTest eventsPerSec="40000"/>
+		</Simulation>
+	</Fixture>
+	<Fixture name="50k">
+		<Simulation>
+			<TimeTest eventsPerSec="50000"/>
+		</Simulation>
+	</Fixture>
+	
+</Fixtures>
