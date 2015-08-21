@@ -37,6 +37,7 @@ import com.esri.geoevent.test.performance.Mode;
 import com.esri.geoevent.test.performance.PerformanceCollector;
 import com.esri.geoevent.test.performance.Protocol;
 import com.esri.geoevent.test.performance.activemq.ActiveMQEventConsumer;
+import com.esri.geoevent.test.performance.kafka.KafkaEventConsumer;
 import com.esri.geoevent.test.performance.rabbitmq.RabbitMQEventConsumer;
 import com.esri.geoevent.test.performance.streamservice.StreamServiceEventConsumer;
 import com.esri.geoevent.test.performance.tcp.TcpServerEventConsumer;
@@ -97,6 +98,9 @@ public class ConsumerController extends PerformanceCollectorController
 			case STREAM_SERVICE:
 				consumer = new StreamServiceEventConsumer();
 				break;
+			case KAFKA:
+				consumer = new KafkaEventConsumer();
+				break;
 			default:
 				return;
 		}
@@ -151,6 +155,7 @@ public class ConsumerController extends PerformanceCollectorController
 		list.add(Protocol.TCP_SERVER);
 		list.add(Protocol.WEBSOCKETS);
 		list.add(Protocol.WEBSOCKET_SERVER);
+		list.add(Protocol.KAFKA);
 
 		return FXCollections.observableList(list);
 	}

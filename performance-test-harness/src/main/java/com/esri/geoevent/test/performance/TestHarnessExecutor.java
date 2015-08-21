@@ -55,6 +55,7 @@ import com.esri.geoevent.test.performance.db.pgsql.PostgreSQLEventConsumer;
 import com.esri.geoevent.test.performance.jaxb.Fixture;
 import com.esri.geoevent.test.performance.jaxb.Fixtures;
 import com.esri.geoevent.test.performance.jaxb.ProvisionerConfig;
+import com.esri.geoevent.test.performance.kafka.KafkaEventConsumer;
 import com.esri.geoevent.test.performance.kafka.KafkaEventProducer;
 import com.esri.geoevent.test.performance.provision.DefaultProvisionerFactory;
 import com.esri.geoevent.test.performance.provision.ProvisionException;
@@ -431,7 +432,10 @@ public class TestHarnessExecutor implements RunnableComponent
 					case STREAM_SERVICE:
 						consumer = new StreamServiceEventConsumer();
 						break;
-					case CASSANDRA:
+					case KAFKA:
+						consumer = new KafkaEventConsumer();
+						break;
+          case CASSANDRA:
 						consumer = new CassandraEventConsumer();
 						break;
 					case POSTGRESQL:

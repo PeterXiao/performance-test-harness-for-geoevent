@@ -882,6 +882,7 @@ public class FixtureController implements Initializable
 		list.add(Protocol.TCP);
 		list.add(Protocol.TCP_SERVER);
 		list.add(Protocol.WEBSOCKETS);
+		list.add(Protocol.KAFKA);
 		return FXCollections.observableList(list);
 	}
   
@@ -998,6 +999,14 @@ public class FixtureController implements Initializable
   	props.add(new Property("url", ""));
   	props.add(new Property("connectionCount", "1"));
   	consumerPropertiesCache.put(Protocol.WEBSOCKETS, FXCollections.observableList(props));
+  	
+  	// KAFKA
+  	props = new ArrayList<Property>();
+  	props.add(new Property("zookeeper", "localhost:2181"));
+  	props.add(new Property("consumergroup", "consumergroup1"));
+  	props.add(new Property("topic", "testtopic"));
+  	props.add(new Property("numthreads", "1"));
+  	consumerPropertiesCache.put(Protocol.KAFKA, FXCollections.observableList(props));
   }
   
   /**
