@@ -37,8 +37,8 @@ public abstract class ConsumerBase extends PerformanceCollectorBase implements C
 	private long					lastSuccessIncrement	= 0;
 	private long					timeOutInSec					= 10;
 	private TestType			testType							= TestType.UNKNOWN;
-	private int 					totalTimeInSec 				= -1;
-	
+	private int						totalTimeInSec				= -1;
+
 	public ConsumerBase()
 	{
 		super(Mode.Consumer);
@@ -76,7 +76,8 @@ public abstract class ConsumerBase extends PerformanceCollectorBase implements C
 		long successEvents = successfulEvents.incrementAndGet();
 		successfulEventBytes.addAndGet(message.getBytes().length);
 		// check if we are done - received all expected results
-		//System.out.println( "Current Count[" + currentCount + "] =? Expected Count[" + expectedResultCount +"] =? Success Events["  + successEvents + "]");
+		// System.out.println( "Current Count[" + currentCount + "] =? Expected Count[" + expectedResultCount
+		// +"] =? Success Events[" + successEvents + "]");
 		if (successEvents == getNumberOfExpectedResults())
 		{
 			finishConsuming(System.currentTimeMillis());
@@ -96,7 +97,8 @@ public abstract class ConsumerBase extends PerformanceCollectorBase implements C
 	@Override
 	public void run()
 	{
-		int expectedResultCount = numberOfEvents;// (this.numberOfExpectedResults > -1) ? this.numberOfExpectedResults : numberOfEvents;
+		int expectedResultCount = numberOfEvents;// (this.numberOfExpectedResults > -1) ? this.numberOfExpectedResults :
+																							// numberOfEvents;
 		if (expectedResultCount > 0)
 		{
 			if (runningStateListener != null)
@@ -146,7 +148,7 @@ public abstract class ConsumerBase extends PerformanceCollectorBase implements C
 					lastSuccessIncrement = now;
 				if (now - lastSuccessIncrement > timeOutInSec * 1000)
 				{
-					System.out.println( ImplMessages.getMessage("CONSUMER_TIMEOUT_MSG") );
+					System.out.println(ImplMessages.getMessage("CONSUMER_TIMEOUT_MSG"));
 					finishConsuming(lastSuccessIncrement);
 				}
 			}
@@ -158,7 +160,7 @@ public abstract class ConsumerBase extends PerformanceCollectorBase implements C
 		}
 	}
 
-	private void finishConsuming(long finalTimeStamp)
+	protected void finishConsuming(long finalTimeStamp)
 	{
 		// check if we init the time stamps
 		if (timeStamp == null)
@@ -174,32 +176,81 @@ public abstract class ConsumerBase extends PerformanceCollectorBase implements C
 		if (timeStamp != null && timeStamp[0] != null && timeStamp[1] != null)
 		{
 			totalTime = ((double) timeStamp[1] - (double) timeStamp[0]) / 1000d;
-			
-			// for tests of type TIME - lets get the greatest of the two times for display purposes (actual time versus total time)
-			if( testType == TestType.TIME )
+
+			// for tests of type TIME - lets get the greatest of the two times for display purposes (actual time versus total
+			// time)
+			if (testType == TestType.TIME)
 			{
-				if( totalTime < new Integer(totalTimeInSec).doubleValue() )
+				if (totalTime < new Integer(totalTimeInSec).doubleValue())
 				{
 					// sleep to sync up the displays - this does not effect the calculations
 					double timeToSleep = new Integer(totalTimeInSec).doubleValue() - (totalTime * 1000.0d);
-					try {
-						Thread.sleep( new Double(timeToSleep).longValue() );
-					} catch ( Exception ignored )
+					try
+					{
+						Thread.sleep(new Double(timeToSleep).longValue());
+					}
+					catch (Exception ignored)
 					{
 					}
 					totalTime = totalTimeInSec;
 				}
-				System.out.println( ImplMessages.getMessage("CONSUMER_TIMED_FINISH_MSG", successfulEvents.get(), String.valueOf(totalTime), String.valueOf(((double) successfulEvents.get() / totalTime))) );
+				System.out.println(ImplMessages.getMessage("CONSUMER_FINISH_MSG", successfulEvents.get()));
+				//System.out.println(ImplMessages.getMessage("CONSUMER_TIMED_FINISH_MSG", successfulEvents.get(), String.valueOf(totalTime), String.valueOf(((double) successfulEvents.get() / totalTime))));
 			}
 			else
-				System.out.println( ImplMessages.getMessage("CONSUMER_FINISH_MSG", successfulEvents.get()) );
+				System.out.println(ImplMessages.getMessage("CONSUMER_FINISH_MSG", successfulEvents.get()));
 		}
 		else if (successfulEvents.get() > 0)
-			System.out.println( ImplMessages.getMessage("CONSUMER_FINISH_MSG", successfulEvents.get()) );
+			System.out.println(ImplMessages.getMessage("CONSUMER_FINISH_MSG", successfulEvents.get()));
 
 		// send the stop status
 		running.set(false);
 		if (runningStateListener != null)
 			runningStateListener.onStateChange(new RunningState(RunningStateType.STOPPED));
+	}
+
+	/**
+	 * This is used to set the successful events
+	 * 
+	 * @param newValue
+	 */
+	protected void setSuccessfulEvents(long newValue)
+	{
+		successfulEvents.set(newValue);
+	}
+	
+	/**
+	 * Sets the start time
+	 * 
+	 * @param startTime
+	 */
+	protected void setStartTime(long startTime)
+	{
+		if (timeStamp == null)
+		{
+			timeStamp = new Long[2];
+		}
+		timeStamp[0] = startTime;
+	}
+	
+	/**
+	 * Added protected method to set the timeout in secs just in case individual consumers need more time.
+	 * 
+	 * @param timeOutInSec
+	 */
+	protected void setTimeOutInSec(long timeOutInSec)
+	{
+		this.timeOutInSec = timeOutInSec;
+	}
+
+	/**
+	 * Adding a way to retrieve the total time in sec just in case individual consumers need to know how long the tests
+	 * are running for.
+	 * 
+	 * @return totalTimeInSec
+	 */
+	protected int getTotalTimeInSec()
+	{
+		return totalTimeInSec;
 	}
 }

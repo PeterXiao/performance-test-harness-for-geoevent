@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<template key="ITrKdZUzfvYslmYL/6RpTg==" productVersion="10.3.1">
+    <geoEventServices>
+        <geoEventService name="07023a9e-5164-438a-84d8-04ab64894943" label="throughput" description="" lineStyle="Diagonal" runningState="STARTED" statusDetails="">
+            <inputs>
+                <input ref="64d6e41d-b1a3-42b4-8fe0-fc82e567c4e5" label="tcp-text-in" left="183" top="250" width="61.77777767181396" height="37.7777771949768"/>
+            </inputs>
+            <outputs>
+                <output ref="ae61fe88-8196-40bc-826d-fcb13c7c6b2a" label="add-fs-out" left="613" top="256" width="65.77777767181396" height="40.7777771949768"/>
+            </outputs>
+            <nodes>
+                <node name="a585d686-c0cf-4dc8-8595-000b46377271" label="FieldMapper" left="405" top="191" width="51.77777767181396" height="37.7777771949768">
+                    <processor uri="com.esri.ges.processor/FieldMapper/10.3.1">
+                        <properties>
+                            <property name="inputGeoEventDefinition" type="GeoEventDefinition">RandomPoint</property>
+                            <property name="outputGeoEventDefinition" type="GeoEventDefinition">RandomPoints_AGS</property>
+                            <property name="inputFields" type="String">Field1,StartTime,Field4,Geometry</property>
+                            <property name="outputFields" type="String">field1,starttime,field2,geometry</property>
+                        </properties>
+                    </processor>
+                </node>
+            </nodes>
+            <flow>
+                <from ref="64d6e41d-b1a3-42b4-8fe0-fc82e567c4e5" label="tcp-text-in">
+                    <to ref="a585d686-c0cf-4dc8-8595-000b46377271" label="FieldMapper"/>
+                </from>
+                <from ref="a585d686-c0cf-4dc8-8595-000b46377271" label="FieldMapper">
+                    <to ref="ae61fe88-8196-40bc-826d-fcb13c7c6b2a" label="add-fs-out"/>
+                </from>
+            </flow>
+            <geoEventsReceivedRateRange max="0.0" min="0.0"/>
+            <geoEventsSentRateRange max="0.0" min="0.0"/>
+        </geoEventService>
+    </geoEventServices>
+    <inputs>
+        <input clusterCommand="START" connector="esri-in-tcp-text-generictext" connectorLabel="Receive Text from a TCP Socket" label="tcp-text-in" name="64d6e41d-b1a3-42b4-8fe0-fc82e567c4e5" runningState="STARTED" statusDetails="NULL" supportsAllGeoEventDefinitions="true">
+            <adapter uri="com.esri.ges.adapter.inbound/Text/10.3.1">
+                <properties>
+                    <property name="XGeometryField" type="String"></property>
+                    <property name="CustomDateFormat" type="String"></property>
+                    <property name="LocaleForNumberFormatter" type="String"></property>
+                    <property name="NewFixedGeoEventDefinitionName" type="String"></property>
+                    <property name="CreateFixedGeoEventDefinitions" type="Boolean">true</property>
+                    <property name="YGeometryField" type="String"></property>
+                    <property name="WKIDGeometryField" type="String"></property>
+                    <property name="WKTextGeometryField" type="String"></property>
+                    <property name="MessageSeparator" type="String">\n</property>
+                    <property name="BuildGeometryFromFields" type="Boolean">false</property>
+                    <property name="IncomingDataContainsGeoEventDefinition" type="Boolean">true</property>
+                    <property name="ExistingFixedGeoEventDefinitionName" type="GeoEventDefinition">incident</property>
+                    <property name="ZGeometryField" type="String"></property>
+                    <property name="CreateUnrecognizedGeoEventDefinitions" type="Boolean">true</property>
+                    <property name="AttributeSeparator" type="String">,</property>
+                </properties>
+            </adapter>
+            <geoEventDefinitionHistory>
+                <guid>ff82fe8c-b946-4a01-8540-9afe954d2913</guid>
+            </geoEventDefinitionHistory>
+            <geoEventsRateRange max="0.0" min="0.0"/>
+            <supportedGeoEventDefinitions/>
+            <transport uri="com.esri.ges.transport.inbound/TCP/10.3.1">
+                <properties>
+                    <property name="port" type="Integer">5565</property>
+                    <property name="handshake" type="String"></property>
+                    <property name="mode" type="String">SERVER</property>
+                    <property name="host" type="String">localhost</property>
+                    <property name="clientConnectionTimeout" type="Integer">60</property>
+                </properties>
+            </transport>
+        </input>
+    </inputs>
+    <outputs>
+        <output clusterCommand="START" connector="esri-out-json-fs-add" connectorLabel="Add a Feature" label="add-fs-out" name="ae61fe88-8196-40bc-826d-fcb13c7c6b2a" runningState="STARTED" statusDetails="NULL" supportsAllGeoEventDefinitions="true">
+            <adapter uri="com.esri.ges.adapter.outbound/JSON/10.3.1">
+                <properties>
+                    <property name="mimeType" type="String">application/json</property>
+                    <property name="flattenEvents" type="Boolean">true</property>
+                    <property name="keepEventsUnique" type="Boolean">false</property>
+                    <property name="prettyJson" type="Boolean">false</property>
+                    <property name="updateInterval" type="String">1</property>
+                </properties>
+            </adapter>
+            <geoEventDefinitionHistory>
+                <guid>ff82fe8c-b946-4a01-8540-9afe954d2913</guid>
+                <guid>b0ac381b-a818-4abd-bb61-6e0ec3212541</guid>
+            </geoEventDefinitionHistory>
+            <geoEventsRateRange max="0.0" min="0.0"/>
+            <supportedGeoEventDefinitions/>
+            <transport uri="com.esri.ges.transport.outbound/FeatureService/10.3.1">
+                <properties>
+                    <property name="serviceName" type="ArcGISFeatureService">RandomPoints</property>
+                    <property name="append" type="Boolean">true</property>
+                    <property name="path" type="ArcGISFolder">/</property>
+                    <property name="trackIDField" type="ArcGISField">objectid</property>
+                    <property name="featureLifeSpan" type="Integer">1440</property>
+                    <property name="cleanupTimeField" type="ArcGISField">starttime</property>
+                    <property name="layerIndex" type="ArcGISLayer">0</property>
+                    <property name="cleanupFrequency" type="Integer">20</property>
+                    <property name="cleanupFeatures" type="Boolean">false</property>
+                    <property name="maximumTransactionSize" type="Integer">500</property>
+                    <property name="datastore" type="ArcGISConnection">eb6526fd-ec94-465d-805a-322343c2a73a</property>
+                </properties>
+            </transport>
+        </output>
+    </outputs>
+    <geoEventDefinitions>
+        <geoEventDefinition guid="ff82fe8c-b946-4a01-8540-9afe954d2913" name="RandomPoint" owner="auto-generated/com.esri.ges.adapter.inbound.Text/10.3.1" accessType="editable">
+            <fieldDefinitions>
+                <fieldDefinition name="Field1" type="String" cardinality="One">
+                    <fieldDefinitions/>
+                </fieldDefinition>
+                <fieldDefinition name="StartTime" type="Date" cardinality="One">
+                    <fieldDefinitionTag>
+                        <name>TIME_START</name>
+                    </fieldDefinitionTag>
+                    <fieldDefinitions/>
+                </fieldDefinition>
+                <fieldDefinition name="Geometry" type="Geometry" cardinality="One">
+                    <fieldDefinitionTag>
+                        <name>GEOMETRY</name>
+                    </fieldDefinitionTag>
+                    <fieldDefinitions/>
+                </fieldDefinition>
+                <fieldDefinition name="Field4" type="String" cardinality="One">
+                    <fieldDefinitions/>
+                </fieldDefinition>
+            </fieldDefinitions>
+        </geoEventDefinition>
+        <geoEventDefinition guid="b0ac381b-a818-4abd-bb61-6e0ec3212541" name="RandomPoints_AGS" owner="admin" accessType="editable">
+            <fieldDefinitions>
+                <fieldDefinition name="objectid" type="String" cardinality="One">
+                    <fieldDefinitions/>
+                </fieldDefinition>
+                <fieldDefinition name="field1" type="Short" cardinality="One">
+                    <fieldDefinitions/>
+                </fieldDefinition>
+                <fieldDefinition name="starttime" type="Date" cardinality="One">
+                    <fieldDefinitionTag>
+                        <name>TIME_START</name>
+                    </fieldDefinitionTag>
+                    <fieldDefinitions/>
+                </fieldDefinition>
+                <fieldDefinition name="field2" type="Short" cardinality="One">
+                    <fieldDefinitions/>
+                </fieldDefinition>
+                <fieldDefinition name="created_user" type="String" cardinality="One">
+                    <fieldDefinitions/>
+                </fieldDefinition>
+                <fieldDefinition name="created_date" type="Date" cardinality="One">
+                    <fieldDefinitions/>
+                </fieldDefinition>
+                <fieldDefinition name="last_edited_user" type="String" cardinality="One">
+                    <fieldDefinitions/>
+                </fieldDefinition>
+                <fieldDefinition name="last_edited_date" type="Date" cardinality="One">
+                    <fieldDefinitions/>
+                </fieldDefinition>
+                <fieldDefinition name="geometry" type="Geometry" cardinality="One">
+                    <fieldDefinitionTag>
+                        <name>GEOMETRY</name>
+                    </fieldDefinitionTag>
+                    <fieldDefinitions/>
+                </fieldDefinition>
+            </fieldDefinitions>
+        </geoEventDefinition>
+    </geoEventDefinitions>
+    <tags/>
+    <connectors>
+        <connector accessType="editable" label="Push Text to a TCP Socket (Deprecated)" name="esri-out-text-tcp" type="outbound">
+            <adapter uri="com.esri.ges.adapter.outbound/Text/10.3.1"/>
+            <defaultName>tcp-text-out</defaultName>
+            <description>Pushes GeoEvents as text to a TCP socket for display in a client application.</description>
+            <properties>
+                <advanced>
+                    <property default="60" label="Connection Timeout (Client Mode)" name="clientConnectionTimeout" source="transport"/>
+                    <property default="\n" label="Message Separator" name="MessageSeparator" source="adapter"/>
+                    <property default="," label="Attribute Separator" name="AttributeSeparator" source="adapter"/>
+                    <property label="Output Date Format" name="CustomDateFormatType" source="adapter"/>
+                    <property label="Custom Date Format" name="CustomDateFormat" source="adapter"/>
+                    <property label="Language for Number Formatting" name="LocaleForNumberFormatter" source="adapter"/>
+                </advanced>
+                <hidden>
+                    <property default="text/plain" label="MIME Type" name="mimeType" source="adapter"/>
+                    <property default="localhost" label="Host (Client Mode)" name="host" source="transport"/>
+                    <property default="SERVER" label="Mode" name="mode" source="transport"/>
+                </hidden>
+                <shown>
+                    <property default="5575" label="Server Port" name="port" source="transport"/>
+                </shown>
+            </properties>
+            <transport uri="com.esri.ges.transport.outbound/TCP/10.3.1"/>
+        </connector>
+    </connectors>
+    <arcgisServerConnections>
+        <arcgisServerConnection accessType="nonDeletable" connectionType="SERVER" label="${com.esri.ges.manager.internal-agsconnectionmanager.DEFAULT_AGS_CONNECTION_LABEL}" name="default" referer="https://RICARDOT.esri.com:6143/geoevent/admin/datastores/agsconnection/default" tokenConfigured="false" updateIntervalSec="60" url="http://localhost:6080/arcgis/"/>
+        <arcgisServerConnection accessType="editable" connectionType="SERVER" label="localhost" name="eb6526fd-ec94-465d-805a-322343c2a73a" referer="https://CORTEGAVM7.esri.com:6143/geoevent/admin/datastores/agsconnection/eb6526fd-ec94-465d-805a-322343c2a73a" token="sSLbifKWfziMyZIqDTeqoz1s3CoNGdgxiBMWOFiwv5w3bkvUxGXd/qPYuTtgn+R1HotVTWRl3uo0I4Dkv0Cun/hv7X2M/X8jeAZgLJWiib1da50qDWUPuZqTjM11tHeGLz3V15T0IKv8CXc7HlPsjedaRoV4ZooyhuJ3Z6W0duW6G+MpxxJ5zs9tnIVaCjX9/OEjzCxmYbn5BNFjEbIRAi4yibVGqevs9r9PnP1V4dBfZeF5aJOP3RdaEOMsL6IuOmLdMmjbmPc/LCRs0Fy1M6BucPf6xYqIcqKFG6oinMdasdyHGO7VXCYjeF8vThs/CpgA7CNgoM+JW6wjWu94j8SvzOtsG32RLVS9LMZ1umM=" tokenConfigured="true" updateIntervalSec="300" url="http://localhost.esri.com/arcgis/"/>
+    </arcgisServerConnections>
+</template>

@@ -37,7 +37,10 @@ public enum Protocol
 	RABBIT_MQ(ApiMessages.getMessage("PROTOCOL_RABBIT_MQ")), 
 	STREAM_SERVICE(ApiMessages.getMessage("PROTOCOL_STREAM_SERVICE")), 
 	KAFKA(ApiMessages.getMessage("PROTOCOL_KAFKA")), 
-	WEBSOCKET_SERVER(ApiMessages.getMessage("PROTOCOL_WEBSOCKET_SERVER")), 
+	WEBSOCKET_SERVER(ApiMessages.getMessage("PROTOCOL_WEBSOCKET_SERVER")),
+	CASSANDRA(ApiMessages.getMessage("PROTOCOL_CASSANDRA")),
+	POSTGRESQL(ApiMessages.getMessage("PROTOCOL_POSTGRESQL")),
+	ES(ApiMessages.getMessage("PROTOCOL_ES")),
 	UNKNOWN(ApiMessages.getMessage("PROTOCOL_UNKNOWN"));
 
 	private String label;
@@ -78,6 +81,12 @@ public enum Protocol
 		  return KAFKA;
 		else if( WEBSOCKET_SERVER.toString().equalsIgnoreCase(valueStr) || WEBSOCKET_SERVER.name().equalsIgnoreCase(valueStr))
 		  return WEBSOCKET_SERVER;
+		else if( CASSANDRA.toString().equalsIgnoreCase(valueStr) || CASSANDRA.name().equalsIgnoreCase(valueStr))
+		  return CASSANDRA;
+		else if( POSTGRESQL.toString().equalsIgnoreCase(valueStr) || POSTGRESQL.name().equalsIgnoreCase(valueStr))
+			  return POSTGRESQL;
+		else if( ES.toString().equalsIgnoreCase(valueStr) || ES.name().equalsIgnoreCase(valueStr))
+		  return ES;
 		else 
 			return UNKNOWN;
 	}

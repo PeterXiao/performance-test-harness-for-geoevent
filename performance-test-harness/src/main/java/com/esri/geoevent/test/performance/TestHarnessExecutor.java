@@ -49,6 +49,9 @@ import org.apache.commons.lang3.math.NumberUtils;
 
 import com.esri.geoevent.test.performance.activemq.ActiveMQEventConsumer;
 import com.esri.geoevent.test.performance.activemq.ActiveMQEventProducer;
+import com.esri.geoevent.test.performance.db.cassandra.CassandraEventConsumer;
+import com.esri.geoevent.test.performance.db.elasticsearch.ElasticSearchEventConsumer;
+import com.esri.geoevent.test.performance.db.pgsql.PostgreSQLEventConsumer;
 import com.esri.geoevent.test.performance.jaxb.Fixture;
 import com.esri.geoevent.test.performance.jaxb.Fixtures;
 import com.esri.geoevent.test.performance.jaxb.ProvisionerConfig;
@@ -67,10 +70,10 @@ import com.esri.geoevent.test.performance.report.XLSXReportWriter;
 import com.esri.geoevent.test.performance.statistics.FixturesStatistics;
 import com.esri.geoevent.test.performance.streamservice.StreamServiceEventConsumer;
 import com.esri.geoevent.test.performance.streamservice.StreamServiceEventProducer;
-import com.esri.geoevent.test.performance.tcp.TcpServerEventConsumer;
-import com.esri.geoevent.test.performance.tcp.TcpServerEventProducer;
 import com.esri.geoevent.test.performance.tcp.TcpEventConsumer;
 import com.esri.geoevent.test.performance.tcp.TcpEventProducer;
+import com.esri.geoevent.test.performance.tcp.TcpServerEventConsumer;
+import com.esri.geoevent.test.performance.tcp.TcpServerEventProducer;
 import com.esri.geoevent.test.performance.websocket.WebsocketEventConsumer;
 import com.esri.geoevent.test.performance.websocket.WebsocketEventProducer;
 import com.esri.geoevent.test.performance.websocket.WebsocketServerEventConsumer;
@@ -431,6 +434,15 @@ public class TestHarnessExecutor implements RunnableComponent
 						break;
 					case KAFKA:
 						consumer = new KafkaEventConsumer();
+						break;
+          case CASSANDRA:
+						consumer = new CassandraEventConsumer();
+						break;
+					case POSTGRESQL:
+						consumer = new PostgreSQLEventConsumer();
+						break;
+					case ES:
+						consumer = new ElasticSearchEventConsumer();
 						break;
 					default:
 						return;

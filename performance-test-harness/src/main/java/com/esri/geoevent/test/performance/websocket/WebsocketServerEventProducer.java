@@ -90,7 +90,7 @@ public class WebsocketServerEventProducer extends ProducerBase
 				eventIndex = 0;
 
 			// send the events
-			String message = events.get(eventIndex++);
+			String message = augmentMessage(events.get(eventIndex++));
 			webSocketServlet.sendEvent(message);
 			messageSent(message);
 			if (running.get() == false)

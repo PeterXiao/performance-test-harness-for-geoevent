@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Fixtures>
+	<Report type="XLSX">
+		<ReportFile>reports/tcp-baseline.xlsx</ReportFile>
+	</Report>
+		
+	<DefaultFixture>
+		<ProducerConfig commandPort="5010" protocol="TCP_SERVER">
+			<Properties>
+				<Property name="simulationFile">simulations/Flight_NoGED.csv</Property>
+				<Property name="port">5566</Property>
+			</Properties>
+		</ProducerConfig>
+		<ConsumerConfig commandPort="5020" protocol="TCP_SERVER" timeoutInSec="5">
+			<Properties>
+				<Property name="port">5575</Property>
+			</Properties>
+		</ConsumerConfig>
+		<Simulation>
+			<TimeTest eventsPerSec="1000" totalTimeInSec="20" staggeringInterval="100" />
+		</Simulation>
+	</DefaultFixture>
+	
+	<Fixture name="80k">
+		<Simulation>
+			<TimeTest eventsPerSec="80000"/>
+		</Simulation>
+	</Fixture>
+	<Fixture name="100k">
+		<Simulation>
+			<TimeTest eventsPerSec="100000"/>
+		</Simulation>
+	</Fixture>
+	<Fixture name="120k">
+		<Simulation>
+			<TimeTest eventsPerSec="120000"/>
+		</Simulation>
+	</Fixture>
+	<Fixture name="140k">
+		<Simulation>
+			<TimeTest eventsPerSec="140000"/>
+		</Simulation>
+	</Fixture>
+	
+</Fixtures>

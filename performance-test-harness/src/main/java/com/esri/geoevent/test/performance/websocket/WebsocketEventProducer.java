@@ -98,7 +98,7 @@ public class WebsocketEventProducer extends ProducerBase
 				eventIndex = 0;
 			try
 			{
-				String message = events.get(eventIndex++);
+				String message = augmentMessage(events.get(eventIndex++));
 				for( WebsocketConnection connection : connections )
 					connection.send(message);
 				messageSent(message);

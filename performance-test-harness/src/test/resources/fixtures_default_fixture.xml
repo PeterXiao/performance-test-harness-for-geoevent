@@ -18,7 +18,7 @@
 				<Property name="port">5565</Property>
 			</Properties>
 			<Producers>
-				<Producer port="5010">localhost</Producer>
+				<Producer commandPort="5010">localhost</Producer>
 			</Producers>
 		</ProducerConfig>
 		
@@ -27,7 +27,7 @@
 				<Property name="port">5565</Property>
 			</Properties>
 			<Consumers>
-				<Consumer port="5020">localhost</Consumer>
+				<Consumer commandPort="5020">localhost</Consumer>
 			</Consumers>
 		</ConsumerConfig>
 				

@@ -82,7 +82,7 @@ public class TcpServerEventProducer extends ProducerBase
 				eventIndex = 0;
 
 			// send the events
-			String message = events.get(eventIndex++);
+			String message = augmentMessage(events.get(eventIndex++));
 			socketServer.sendEvent(message);
 			messageSent(message);
 			if (running.get() == false)

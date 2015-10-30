@@ -76,7 +76,7 @@ public class TcpEventProducer extends ProducerBase
 				eventIndex = 0;
 			try
 			{
-				String message = events.get(eventIndex++);
+				String message = augmentMessage(events.get(eventIndex++));
 				os.write(message.getBytes());
 				os.flush();
 				messageSent(message);
