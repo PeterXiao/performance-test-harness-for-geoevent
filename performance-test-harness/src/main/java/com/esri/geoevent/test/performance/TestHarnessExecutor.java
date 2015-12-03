@@ -49,6 +49,8 @@ import org.apache.commons.lang3.math.NumberUtils;
 
 import com.esri.geoevent.test.performance.activemq.ActiveMQEventConsumer;
 import com.esri.geoevent.test.performance.activemq.ActiveMQEventProducer;
+import com.esri.geoevent.test.performance.azure.AzureIoTHubConsumer;
+import com.esri.geoevent.test.performance.azure.AzureIoTHubProducer;
 import com.esri.geoevent.test.performance.db.cassandra.CassandraEventConsumer;
 import com.esri.geoevent.test.performance.db.elasticsearch.ElasticSearchEventConsumer;
 import com.esri.geoevent.test.performance.db.pgsql.PostgreSQLEventConsumer;
@@ -81,37 +83,37 @@ import com.esri.geoevent.test.performance.websocket.WebsocketServerEventProducer
 
 public class TestHarnessExecutor implements RunnableComponent
 {
-	public static boolean DEBUG = false;
-	
+	public static boolean					DEBUG		= false;
+
 	// member vars
-	private List<String> testNames;
-	private boolean reportComplete;
-	private long startTime;	
-	private Fixtures fixtures;
-	
+	private List<String>					testNames;
+	private boolean								reportComplete;
+	private long									startTime;
+	private Fixtures							fixtures;
+
 	// Runnable
 	private RunningStateListener	listener;
-	protected AtomicBoolean					running						= new AtomicBoolean(false);
-	
-	//-------------------------------------------------------
+	protected AtomicBoolean				running	= new AtomicBoolean(false);
+
+	// -------------------------------------------------------
 	// Constructor
 	// ------------------------------------------------------
-	
+
 	public TestHarnessExecutor(Fixtures fixtures)
 	{
 		this.fixtures = fixtures;
 	}
-	
-	//-------------------------------------------------------
+
+	// -------------------------------------------------------
 	// Public methods
 	// ------------------------------------------------------
-	
+
 	@Override
 	public void start() throws RunningException
 	{
 		running = new AtomicBoolean(true);
 		run();
-		if( listener != null )
+		if (listener != null)
 			listener.onStateChange(new RunningState(RunningStateType.STARTED));
 	}
 
@@ -119,16 +121,16 @@ public class TestHarnessExecutor implements RunnableComponent
 	public void stop()
 	{
 		running.set(false);
-		if( listener != null )
+		if (listener != null)
 			listener.onStateChange(new RunningState(RunningStateType.STOPPED));
 	}
-	
+
 	@Override
 	public boolean isRunning()
 	{
 		return running.get();
 	}
-	
+
 	@Override
 	public RunningStateType getRunningState()
 	{
@@ -140,7 +142,7 @@ public class TestHarnessExecutor implements RunnableComponent
 	{
 		this.listener = listener;
 	}
-	
+
 	/**
 	 * Main Test Harness Orchestrator Method
 	 */
@@ -150,10 +152,11 @@ public class TestHarnessExecutor implements RunnableComponent
 		testNames = new ArrayList<String>();
 
 		// add this runtime hook to write out whatever results we have to a report in case of exit or failures
-		Runtime.getRuntime().addShutdownHook(new Thread(()->{
-			long totalTime = System.currentTimeMillis() - startTime;
-			writeReport(fixtures, testNames, totalTime);
-		}));
+		Runtime.getRuntime().addShutdownHook(new Thread(() ->
+			{
+				long totalTime = System.currentTimeMillis() - startTime;
+				writeReport(fixtures, testNames, totalTime);
+			}));
 
 		// Check the master fixtures configuration to see if we need to provision all of the test
 		ProvisionerFactory provisionerFactory = new DefaultProvisionerFactory();
@@ -243,16 +246,17 @@ public class TestHarnessExecutor implements RunnableComponent
 		long totalTime = System.currentTimeMillis() - startTime;
 		// write out the report
 		writeReport(fixtures, testNames, totalTime);
-		//notify
+		// notify
 		stop();
 	}
-	
-	//-------------------------------------------------------
+
+	// -------------------------------------------------------
 	// Statics Methods
 	// ------------------------------------------------------
-	
+
 	/**
 	 * Main method - this is used to when running from command line
+	 * 
 	 * @param args
 	 */
 	@SuppressWarnings("static-access")
@@ -310,18 +314,18 @@ public class TestHarnessExecutor implements RunnableComponent
 			}
 			catch (JAXBException error)
 			{
-				System.err.println( ImplMessages.getMessage("TEST_HARNESS_EXECUTOR_CONFIG_ERROR", fixturesFilePath ) );
+				System.err.println(ImplMessages.getMessage("TEST_HARNESS_EXECUTOR_CONFIG_ERROR", fixturesFilePath));
 				error.printStackTrace();
 				return;
 			}
-			
+
 			// run the test harness
 			try
 			{
 				TestHarnessExecutor executor = new TestHarnessExecutor(fixtures);
 				executor.start();
-			} 
-			catch( RunningException error )
+			}
+			catch (RunningException error)
 			{
 				error.printStackTrace();
 			}
@@ -395,11 +399,14 @@ public class TestHarnessExecutor implements RunnableComponent
 						producer = new StreamServiceEventProducer();
 						break;
 					case KAFKA:
-					  producer = new KafkaEventProducer();
-					  break;
+						producer = new KafkaEventProducer();
+						break;
 					case WEBSOCKET_SERVER:
 						producer = new WebsocketServerEventProducer(serverPort);
-            break;
+						break;
+					case AZURE:
+						producer = new AzureIoTHubProducer();
+						break;
 					default:
 						return;
 				}
@@ -422,7 +429,7 @@ public class TestHarnessExecutor implements RunnableComponent
 						break;
 					case WEBSOCKET_SERVER:
 						consumer = new WebsocketServerEventConsumer(serverPort);
-            break;
+						break;
 					case ACTIVE_MQ:
 						consumer = new ActiveMQEventConsumer();
 						break;
@@ -435,7 +442,7 @@ public class TestHarnessExecutor implements RunnableComponent
 					case KAFKA:
 						consumer = new KafkaEventConsumer();
 						break;
-          case CASSANDRA:
+					case CASSANDRA:
 						consumer = new CassandraEventConsumer();
 						break;
 					case POSTGRESQL:
@@ -444,6 +451,9 @@ public class TestHarnessExecutor implements RunnableComponent
 					case ES:
 						consumer = new ElasticSearchEventConsumer();
 						break;
+					case AZURE:
+						consumer = new AzureIoTHubConsumer();
+						break;
 					default:
 						return;
 				}
@@ -451,16 +461,16 @@ public class TestHarnessExecutor implements RunnableComponent
 			}
 		}
 	}
-	
+
 	private void writeReport(final Fixtures fixtures, final List<String> testNames, long totalTestingTime)
 	{
-		if( fixtures == null || testNames.size() == 0 || reportComplete)
+		if (fixtures == null || testNames.size() == 0 || reportComplete)
 			return;
 
 		// write out the report
 		ReportWriter reportWriter = null;
 		ReportType type = fixtures.getReport().getType();
-		switch( type )
+		switch (type)
 		{
 			case XLSX:
 				reportWriter = new XLSXReportWriter();
@@ -470,16 +480,16 @@ public class TestHarnessExecutor implements RunnableComponent
 				reportWriter = new CSVReportWriter();
 				break;
 		}
-		
-		//write the report			
+
+		// write the report
 		try
 		{
-			List<String> columnNames = reportWriter.getReportColumnNames(fixtures.getReport().getReportColumns(),  fixtures.getReport().getAdditionalReportColumns());
+			List<String> columnNames = reportWriter.getReportColumnNames(fixtures.getReport().getReportColumns(), fixtures.getReport().getAdditionalReportColumns());
 			reportWriter.setMaxNumberOfReportFiles(fixtures.getReport().getMaxNumberOfReportFiles());
 			reportWriter.setTotalTestingTime(totalTestingTime);
 			reportWriter.writeReport(fixtures.getReport().getReportFile(), testNames, columnNames, FixturesStatistics.getInstance().getStats());
 		}
-		catch( Exception error)
+		catch (Exception error)
 		{
 			error.printStackTrace();
 		}
@@ -488,7 +498,7 @@ public class TestHarnessExecutor implements RunnableComponent
 			reportComplete = true;
 		}
 	}
-	
+
 	// -------------------------------------------------------------------------------
 	// Main Helper Methods
 	// -------------------------------------------------------------------------------
@@ -501,18 +511,18 @@ public class TestHarnessExecutor implements RunnableComponent
 		formatter.setWidth(100);
 		// do not sort the options in any order
 		formatter.setOptionComparator(new Comparator<Option>()
-		{
-			@Override
-			public int compare(Option o1, Option o2)
 			{
-				return 0;
-			}
-		});
+				@Override
+				public int compare(Option o1, Option o2)
+				{
+					return 0;
+				}
+			});
 
-		formatter.printHelp( ImplMessages.getMessage("TEST_HARNESS_EXECUTOR_HELP_TITLE_MSG"), testHarnessOptions, true);
+		formatter.printHelp(ImplMessages.getMessage("TEST_HARNESS_EXECUTOR_HELP_TITLE_MSG"), testHarnessOptions, true);
 		System.out.println("");
-		System.out.println( ImplMessages.getMessage("TEST_HARNESS_EXECUTOR_HELP_SUBTITLE_MSG") );
-		formatter.printHelp( ImplMessages.getMessage("TEST_HARNESS_EXECUTOR_HELP_TITLE_MSG"), performerOptions, true);
+		System.out.println(ImplMessages.getMessage("TEST_HARNESS_EXECUTOR_HELP_SUBTITLE_MSG"));
+		formatter.printHelp(ImplMessages.getMessage("TEST_HARNESS_EXECUTOR_HELP_TITLE_MSG"), performerOptions, true);
 		System.out.println("");
 	}
 
@@ -520,13 +530,13 @@ public class TestHarnessExecutor implements RunnableComponent
 	{
 		if (StringUtils.isEmpty(fixturesFilePath))
 		{
-			System.err.println( ImplMessages.getMessage("TEST_HARNESS_EXECUTOR_FIXTURE_VALIDATION", fixturesFilePath) );
+			System.err.println(ImplMessages.getMessage("TEST_HARNESS_EXECUTOR_FIXTURE_VALIDATION", fixturesFilePath));
 			return false;
 		}
 		File fixturesFile = new File(fixturesFilePath);
 		if (!fixturesFile.exists() || fixturesFile.isDirectory())
 		{
-			System.err.println( ImplMessages.getMessage("TEST_HARNESS_EXECUTOR_FIXTURE_FILE_VALIDATION", fixturesFilePath) );
+			System.err.println(ImplMessages.getMessage("TEST_HARNESS_EXECUTOR_FIXTURE_FILE_VALIDATION", fixturesFilePath));
 			return false;
 		}
 		return true;
@@ -537,13 +547,13 @@ public class TestHarnessExecutor implements RunnableComponent
 		Protocol protocol = Protocol.fromValue(protocolStr);
 		if (protocol == Protocol.UNKNOWN)
 		{
-			System.err.println( ImplMessages.getMessage("TEST_HARNESS_EXECUTOR_PROTOCOL_VALIDATION", protocolStr, Protocol.getAllowableValues()) );
+			System.err.println(ImplMessages.getMessage("TEST_HARNESS_EXECUTOR_PROTOCOL_VALIDATION", protocolStr, Protocol.getAllowableValues()));
 			return false;
 		}
 		Mode mode = Mode.fromValue(modeStr);
 		if (mode == Mode.Unknown)
 		{
-			System.err.println( ImplMessages.getMessage("TEST_HARNESS_EXECUTOR_MODE_VALIDATION", modeStr, Mode.getAllowableValues() ) );
+			System.err.println(ImplMessages.getMessage("TEST_HARNESS_EXECUTOR_MODE_VALIDATION", modeStr, Mode.getAllowableValues()));
 			return false;
 		}
 
@@ -556,7 +566,7 @@ public class TestHarnessExecutor implements RunnableComponent
 			}
 			catch (NumberFormatException error)
 			{
-				System.err.println( ImplMessages.getMessage("TEST_HARNESS_EXECUTOR_COMMAND_PORT_VALIDATION", String.valueOf(commandListenerPort)) );
+				System.err.println(ImplMessages.getMessage("TEST_HARNESS_EXECUTOR_COMMAND_PORT_VALIDATION", String.valueOf(commandListenerPort)));
 				return false;
 			}
 		}

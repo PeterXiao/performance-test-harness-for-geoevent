@@ -52,188 +52,220 @@ public class TestHarnessExecutorTest
 		String args = "-m consumer -t tcp -p local";
 		TestHarnessExecutor.main(args.split(" "));
 	}
-	
+
 	@Test
 	public void testProducerMode()
 	{
 		String args = "-m producer -t tcp -p local";
 		TestHarnessExecutor.main(args.split(" "));
 	}
-	
+
 	@Test
 	public void testPerformanceTestHarnessMode_TCP_SANITY() throws InterruptedException
 	{
 		// setup consumer
 		String args = "-m consumer -t tcp -p local";
 		TestHarnessExecutor.main(args.split(" "));
-		
+
 		// setup producer
 		args = "-m producer -t tcp -p local";
 		TestHarnessExecutor.main(args.split(" "));
-		
+
 		// run the test
 		args = "-f src/test/resources/fixtures_simple_tcp.xml";
 		TestHarnessExecutor.main(args.split(" "));
 	}
-	
+
 	@Test
 	public void testPerformanceTestHarnessMode_MINIMAL() throws InterruptedException
 	{
 		// setup consumer
 		String args = "-m consumer -t tcp -p local";
 		TestHarnessExecutor.main(args.split(" "));
-		
+
 		// setup producer
 		args = "-m producer -t tcp -p local";
 		TestHarnessExecutor.main(args.split(" "));
-		
+
 		// run the test
 		args = "-f src/test/resources/fixtures_minimal.xml";
 		TestHarnessExecutor.main(args.split(" "));
 	}
-	
+
 	@Test
 	public void testPerformanceTestHarnessMode_TCP_RAMP_UP() throws InterruptedException
 	{
 		// setup consumer
 		String args = "-m consumer -t tcp -p local";
 		TestHarnessExecutor.main(args.split(" "));
-		
+
 		// setup producer
 		args = "-m producer -t tcp -p local";
 		TestHarnessExecutor.main(args.split(" "));
-		
+
 		// run the test
 		args = "-f src/test/resources/fixtures_ramp_tcp.xml";
 		TestHarnessExecutor.main(args.split(" "));
 	}
-	
+
 	@Test
 	public void testPerformanceTestHarnessMode_TCP_STRESS() throws InterruptedException
 	{
 		// setup consumer
 		String args = "-m consumer -t tcp -p local";
 		TestHarnessExecutor.main(args.split(" "));
-		
+
 		// setup producer
 		args = "-m producer -t tcp -p local";
 		TestHarnessExecutor.main(args.split(" "));
-		
+
 		// run the test
 		args = "-f src/test/resources/fixtures_stress_tcp.xml";
 		TestHarnessExecutor.main(args.split(" "));
 	}
-	
+
 	@Test
 	public void testPerformanceTestHarnessMode_PROVISIONING_TCP() throws InterruptedException
 	{
 		// setup consumer
 		String args = "-m consumer -t tcp -p local";
 		TestHarnessExecutor.main(args.split(" "));
-		
+
 		// setup producer
 		args = "-m producer -t tcp -p local";
 		TestHarnessExecutor.main(args.split(" "));
-		
+
 		// run the test
 		args = "-f src/test/resources/fixtures_provisioning_tcp.xml";
 		TestHarnessExecutor.main(args.split(" "));
 	}
-	
+
 	@Test
 	public void testPerformanceTestHarnessMode_PROVISIONING_PER_FIXTURE_TCP() throws InterruptedException
 	{
 		// setup consumer
 		String args = "-m consumer -t tcp -p local";
 		TestHarnessExecutor.main(args.split(" "));
-		
+
 		// setup producer
 		args = "-m producer -t tcp -p local";
 		TestHarnessExecutor.main(args.split(" "));
-		
+
 		// run the test
 		args = "-f src/test/resources/fixtures_provisioning_per_fixture_tcp.xml";
 		TestHarnessExecutor.main(args.split(" "));
 	}
-	
+
 	@Test
 	public void testPerformanceTestHarnessMode_WS_SANITY() throws InterruptedException
 	{
 		// setup consumer
 		String args = "-m consumer -t websockets -p local";
 		TestHarnessExecutor.main(args.split(" "));
-		
+
 		// setup producer
 		args = "-m producer -t websockets -p local";
 		TestHarnessExecutor.main(args.split(" "));
-		
+
 		// run the test
 		args = "-f src/test/resources/fixtures_simple_ws.xml";
 		TestHarnessExecutor.main(args.split(" "));
 	}
-	
+
 	@Test
 	public void testPerformanceTestHarnessMode_SS_SANITY() throws InterruptedException
 	{
 		// setup consumer
 		String args = "-m consumer -t stream_service -p local";
 		TestHarnessExecutor.main(args.split(" "));
-		
+
 		// setup producer
 		args = "-m producer -t stream_service -p local";
 		TestHarnessExecutor.main(args.split(" "));
-		
+
 		// run the test
 		args = "-f src/test/resources/fixtures_simple_ss.xml";
 		TestHarnessExecutor.main(args.split(" "));
 	}
-	
+
 	@Test
 	public void testPerformanceTestHarnessMode_RABBITMQ() throws InterruptedException
-	{	  
-	  // setup consumer
-	  String args = "-m consumer -t rabbit_mq -p local";
-	  TestHarnessExecutor.main(args.split(" "));
-	  
-	  // setup producer
-	  args = "-m producer -t rabbit_mq -p local";
-	  TestHarnessExecutor.main(args.split(" "));
-	  
-	  // run the test
-	  args = "-f src/test/resources/fixtures_rabbitmq.xml";
-	  TestHarnessExecutor.main(args.split(" "));
+	{
+		// setup consumer
+		String args = "-m consumer -t rabbit_mq -p local";
+		TestHarnessExecutor.main(args.split(" "));
+
+		// setup producer
+		args = "-m producer -t rabbit_mq -p local";
+		TestHarnessExecutor.main(args.split(" "));
+
+		// run the test
+		args = "-f src/test/resources/fixtures_rabbitmq.xml";
+		TestHarnessExecutor.main(args.split(" "));
 	}
-	
+
+	@Test
+	public void testPerformanceTestHarnessMode_AZURE_IOT_IOT() throws InterruptedException
+	{
+		// setup consumer
+		String args = "-m consumer -t azure -p local";
+		TestHarnessExecutor.main(args.split(" "));
+
+		// setup producer
+		args = "-m producer -t azure -p local";
+		TestHarnessExecutor.main(args.split(" "));
+
+		// run the test
+		args = "-f src/test/resources/fixtures_azure.xml";
+		TestHarnessExecutor.main(args.split(" "));
+	}
+
+	@Test
+	public void testPerformanceTestHarnessMode_AZURE_IOT_TCP() throws InterruptedException
+	{
+		// setup consumer
+		String args = "-m consumer -t tcp_server -sp 5575 -p local";
+		TestHarnessExecutor.main(args.split(" "));
+
+		// setup producer
+		args = "-m producer -t azure -p local";
+		TestHarnessExecutor.main(args.split(" "));
+
+		// run the test
+		args = "-f src/test/resources/fixtures_azure_tcp.xml";
+		TestHarnessExecutor.main(args.split(" "));
+	}
+
 	@Test
 	public void testPerformanceTestHarnessMode_KAFKA() throws InterruptedException
 	{
-	  String args;
-	  
-	  // setup consumer
-//	  args = "-m consumer -t tcp -p local -cp 5665 -c yes";
-//	  TestHarnessExecutor.main(args.split(" "));
-	  
-	  // setup producer
-	  args = "-m producer -t kafka -p local";
-	  TestHarnessExecutor.main(args.split(" "));
-	  
-	  // run the test
-	  args = "-f src/test/resources/fixtures_kafka.xml";
-	  TestHarnessExecutor.main(args.split(" "));
+		String args;
+
+		// setup consumer
+		// args = "-m consumer -t tcp -p local -cp 5665 -c yes";
+		// TestHarnessExecutor.main(args.split(" "));
+
+		// setup producer
+		args = "-m producer -t kafka -p local";
+		TestHarnessExecutor.main(args.split(" "));
+
+		// run the test
+		args = "-f src/test/resources/fixtures_kafka.xml";
+		TestHarnessExecutor.main(args.split(" "));
 	}
-	
+
 	@Test
 	public void testCMDLineParameters_HELP()
 	{
 		String cmdLineParameters = "-h";
 		CommandLine cmd = parseCMDLineParameters(cmdLineParameters.split(" "));
 		Assert.assertNull(cmd);
-		
+
 		cmdLineParameters = "-help";
 		cmd = parseCMDLineParameters(cmdLineParameters.split(" "));
 		Assert.assertNull(cmd);
 	}
-	
+
 	@Test
 	public void testCMDLineParameters_TH_BASIC()
 	{
@@ -241,7 +273,7 @@ public class TestHarnessExecutorTest
 		CommandLine cmd = parseCMDLineParameters(cmdLineParameters.split(" "));
 		Assert.assertNotNull(cmd);
 		Assert.assertNotNull(cmd.getOptionValue("f"));
-		
+
 		cmdLineParameters = "-fixtures fixtures.xml";
 		cmd = parseCMDLineParameters(cmdLineParameters.split(" "));
 		Assert.assertNotNull(cmd);
@@ -257,14 +289,14 @@ public class TestHarnessExecutorTest
 	{
 		// test harness options
 		Options testHarnessOptions = new Options();
-		testHarnessOptions.addOption( OptionBuilder.withLongOpt("fixtures").withDescription("The fixtures xml file to load and configure the performance test harness.").hasArg().isRequired().create("f"));
+		testHarnessOptions.addOption(OptionBuilder.withLongOpt("fixtures").withDescription("The fixtures xml file to load and configure the performance test harness.").hasArg().isRequired().create("f"));
 		testHarnessOptions.addOption("h", "help", false, "print the help message");
 
 		// performer options
 		Options performerOptions = new Options();
-		performerOptions.addOption( OptionBuilder.withLongOpt("protocol").withDescription("[TCP(default) | WEBSOCKETS | ACTIVE_MQ | RABBIT_MQ]").hasArg().isRequired().create("p") );
-		performerOptions.addOption( OptionBuilder.withLongOpt("type").withDescription("[producer|consumer]").hasArg().isRequired().create("t") );
-		performerOptions.addOption( OptionBuilder.withLongOpt("commandListenerPort").withDescription("The TCP Port where this diagnostic tool will listen for commands from the orchestrator, e.g. 5010").hasArg().isRequired().create("c"));
+		performerOptions.addOption(OptionBuilder.withLongOpt("protocol").withDescription("[TCP(default) | WEBSOCKETS | ACTIVE_MQ | RABBIT_MQ]").hasArg().isRequired().create("p"));
+		performerOptions.addOption(OptionBuilder.withLongOpt("type").withDescription("[producer|consumer]").hasArg().isRequired().create("t"));
+		performerOptions.addOption(OptionBuilder.withLongOpt("commandListenerPort").withDescription("The TCP Port where this diagnostic tool will listen for commands from the orchestrator, e.g. 5010").hasArg().isRequired().create("c"));
 		performerOptions.addOption("h", "help", false, "print the help message");
 
 		// parse the command line
@@ -276,10 +308,10 @@ public class TestHarnessExecutorTest
 		}
 		catch (ParseException ignore)
 		{
-			//ignore
+			// ignore
 			;
 		}
-		
+
 		// do we have options for the test harness or help
 		if (cmd != null && cmd.getOptions().length > 0)
 		{
@@ -331,16 +363,16 @@ public class TestHarnessExecutorTest
 		formatter.setLongOptPrefix("-");
 		formatter.setArgName("value");
 		formatter.setWidth(100);
-		//do not sort the options in any order
+		// do not sort the options in any order
 		formatter.setOptionComparator(new Comparator<Option>()
-		{
-			@Override
-			public int compare(Option o1, Option o2)
 			{
-				return 0;
-			}
-		});
-		
+				@Override
+				public int compare(Option o1, Option o2)
+				{
+					return 0;
+				}
+			});
+
 		formatter.printHelp("java ThroughputPerformanceTestHarness", testHarnessOptions, true);
 		System.out.println("");
 		System.out.println("or simply invoke as a remotely controlled process like this:");
