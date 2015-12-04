@@ -33,12 +33,11 @@ import com.microsoft.azure.iothub.IotHubEventCallback;
 import com.microsoft.azure.iothub.IotHubStatusCode;
 import com.microsoft.azure.iothub.Message;
 
-
 public class AzureIoTHubProducer extends ProducerBase
 {
-	private String			connectionString = null;
-	private DeviceClient client;
-	private IotHubEventCallback callback;
+	private String							connectionString	= null;
+	private DeviceClient				client;
+	private IotHubEventCallback	callback;
 
 	class EventCallback implements IotHubEventCallback
 	{
@@ -53,7 +52,7 @@ public class AzureIoTHubProducer extends ProducerBase
 	public void init(Config config) throws TestException
 	{
 		super.init(config);
-		
+
 		connectionString = config.getPropertyValue("producerConnectionString");
 
 		if (connectionString == null)
@@ -63,11 +62,12 @@ public class AzureIoTHubProducer extends ProducerBase
 		{
 			callback = new EventCallback();
 			IotHubClientProtocol protocol = IotHubClientProtocol.AMQPS;
-			client = new DeviceClient(connectionString + ";DeviceId=1", protocol);
+			client = new DeviceClient("HostName=esri-iot-hub2.azure-devices.net;DeviceId=A12345;SharedAccessKey=PF6Rwt0cPpTkLY7G8JX9/Gx46DUakhsnalQP01vaZus=", protocol);
+			client.open();
 		}
 		catch (Exception error)
 		{
-			throw new TestException( ImplMessages.getMessage("INIT_FAILURE", getClass().getName(), error.getMessage()), error );
+			throw new TestException(ImplMessages.getMessage("INIT_FAILURE", getClass().getName(), error.getMessage()), error);
 		}
 	}
 
@@ -95,7 +95,7 @@ public class AzureIoTHubProducer extends ProducerBase
 				byte[] bytes = msgStr.getBytes();
 				Message msg = new Message(bytes);
 				msg.setProperty("messageCount", Integer.toString(i));
-				//System.out.println(msgStr);
+				// System.out.println(msgStr);
 
 				client.sendEventAsync(msg, callback, i);
 
@@ -114,6 +114,6 @@ public class AzureIoTHubProducer extends ProducerBase
 	public void destroy()
 	{
 		super.destroy();
-		//TODO ...
+		// TODO ...
 	}
 }

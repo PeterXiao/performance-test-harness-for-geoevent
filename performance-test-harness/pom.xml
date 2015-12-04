@@ -141,7 +141,8 @@
 			<groupId>org.apache.qpid</groupId>
 			<artifactId>qpid-amqp-1-0-client-jms</artifactId>
 			<version>0.32</version>
-		</dependency>	</dependencies>
+		</dependency>
+	</dependencies>
 	<build>
 		<resources>
 			<resource>
