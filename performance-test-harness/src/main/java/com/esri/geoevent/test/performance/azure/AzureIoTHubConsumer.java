@@ -125,7 +125,7 @@ public class AzureIoTHubConsumer extends ConsumerBase implements MessageListener
 
 				// parse out the message to string
 				String messageAsString = new String(data, StandardCharsets.UTF_8);
-				//LOGGER.debug("MSG_RECEIVED_DEBUG", messageAsString);
+				System.out.println("R message received - " + messageAsString.trim());
 
 				super.receive(messageAsString);
 			}

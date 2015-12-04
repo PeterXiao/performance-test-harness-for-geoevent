@@ -33,6 +33,11 @@ import com.microsoft.azure.iothub.IotHubEventCallback;
 import com.microsoft.azure.iothub.IotHubStatusCode;
 import com.microsoft.azure.iothub.Message;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.TimeZone;
+
 public class AzureIoTHubProducer extends ProducerBase
 {
 	private String							connectionString	= null;
@@ -44,7 +49,7 @@ public class AzureIoTHubProducer extends ProducerBase
 		@Override
 		public void execute(IotHubStatusCode responseStatus, Object callbackContext)
 		{
-			// TODO Auto-generated method stub
+			System.out.println("S sent ack for " + callbackContext.toString() + " - " + responseStatus.toString());
 		}
 	}
 
@@ -62,7 +67,7 @@ public class AzureIoTHubProducer extends ProducerBase
 		{
 			callback = new EventCallback();
 			IotHubClientProtocol protocol = IotHubClientProtocol.AMQPS;
-			client = new DeviceClient("HostName=esri-iot-hub2.azure-devices.net;DeviceId=A12345;SharedAccessKey=PF6Rwt0cPpTkLY7G8JX9/Gx46DUakhsnalQP01vaZus=", protocol);
+			client = new DeviceClient("HostName=esri-simulator-test.azure-devices.net;DeviceId=testdevice1;SharedAccessKey=OWChjfJ9t1+XQKXZArA1wvNliENL+v5VJ4eedeWBmf4=", protocol);
 			client.open();
 		}
 		catch (Exception error)
@@ -92,10 +97,11 @@ public class AzureIoTHubProducer extends ProducerBase
 			String msgStr = augmentMessage(events.get(eventIndex++));
 			try
 			{
+				msgStr = getCurrentISOTime() + "," + msgStr;
 				byte[] bytes = msgStr.getBytes();
 				Message msg = new Message(bytes);
 				msg.setProperty("messageCount", Integer.toString(i));
-				// System.out.println(msgStr);
+				System.out.println("S sent message - " + msgStr.trim());
 
 				client.sendEventAsync(msg, callback, i);
 
@@ -115,5 +121,13 @@ public class AzureIoTHubProducer extends ProducerBase
 	{
 		super.destroy();
 		// TODO ...
+	}
+
+	private String getCurrentISOTime()
+	{
+		TimeZone tz = TimeZone.getTimeZone("UTC");
+		DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+		//df.setTimeZone(tz);
+		return df.format(new Date());
 	}
 }
