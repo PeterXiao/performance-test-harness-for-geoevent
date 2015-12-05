@@ -132,17 +132,26 @@
 			<artifactId>performance-test-harness-api</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		<!-- Java Device SDK -->
 		<dependency>
 			<groupId>com.microsoft.azure.iothub-java-client</groupId>
 			<artifactId>iothub-java-client</artifactId>
 			<version>1.0.0-preview.7</version>
 		</dependency>
+		<!-- Java Service SDK -->
+		<dependency>
+			<groupId>com.microsoft.azure.iothub.service.sdk</groupId>
+			<artifactId>iothub-service-sdk</artifactId>
+			<version>1.0.0-preview.7</version>
+		</dependency>
+		<!-- Java Event Hub SDK -->
 		<dependency>
 			<groupId>org.apache.qpid</groupId>
 			<artifactId>qpid-amqp-1-0-client-jms</artifactId>
 			<version>0.32</version>
 		</dependency>
 	</dependencies>
+
 	<build>
 		<resources>
 			<resource>

@@ -25,6 +25,8 @@ package com.esri.geoevent.test.performance.azure;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Enumeration;
 import java.util.List;
 
 import javax.jms.Connection;
@@ -35,6 +37,8 @@ import javax.jms.MessageConsumer;
 import javax.jms.MessageListener;
 import javax.jms.Session;
 
+import org.apache.lucene.queryparser.flexible.messages.MessageImpl;
+import org.apache.qpid.amqp_1_0.jms.AmqpMessage;
 import org.apache.qpid.amqp_1_0.jms.BytesMessage;
 import org.apache.qpid.amqp_1_0.jms.impl.ConnectionFactoryImpl;
 
@@ -42,6 +46,8 @@ import com.esri.geoevent.test.performance.ConsumerBase;
 import com.esri.geoevent.test.performance.ImplMessages;
 import com.esri.geoevent.test.performance.TestException;
 import com.esri.geoevent.test.performance.jaxb.Config;
+import org.apache.qpid.amqp_1_0.type.Section;
+import org.apache.qpid.amqp_1_0.type.messaging.MessageAnnotations;
 
 public class AzureIoTHubConsumer extends ConsumerBase implements MessageListener
 {
@@ -80,7 +86,7 @@ public class AzureIoTHubConsumer extends ConsumerBase implements MessageListener
 			{
 				String queueName = eventHubName + i;
 				Destination destination = session.createQueue(queueName);
-				MessageConsumer consumer = session.createConsumer(destination);
+				MessageConsumer consumer = session.createConsumer(destination);  // add message selector string?
 				consumer.setMessageListener(this);
 				consumers.add(consumer);
 			}
@@ -115,6 +121,9 @@ public class AzureIoTHubConsumer extends ConsumerBase implements MessageListener
 		{
 			if (message instanceof BytesMessage)
 			{
+				//if (!message.propertyExists("messageCount"))
+				//	return;
+
 				// read the message body
 				BytesMessage byteMessage = (BytesMessage) message;
 				byte[] data = new byte[(int) byteMessage.getBodyLength()];
@@ -125,6 +134,12 @@ public class AzureIoTHubConsumer extends ConsumerBase implements MessageListener
 
 				// parse out the message to string
 				String messageAsString = new String(data, StandardCharsets.UTF_8);
+
+				//Object annotations = message.getObjectProperty("JMS_AMQP_MESSAGE_ANNOTATIONS");
+
+				//AmqpMessage amqpMsg = (AmqpMessage)message;
+				//Section s1 = amqpMsg.getSection(1);
+
 				System.out.println("R message received - " + messageAsString.trim());
 
 				super.receive(messageAsString);

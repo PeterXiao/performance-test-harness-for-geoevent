@@ -20,7 +20,7 @@
 				<Property name="simulationFile">src/test/resources/simulations/county_envelopes_10_points.csv</Property>
 			</Properties>
 		</ProducerConfig>
-		<ConsumerConfig commandPort="5020" timeoutInSec="5" />
+		<ConsumerConfig commandPort="5020" timeoutInSec="120" />
 		<Simulation>
 			<TimeTest eventsPerSec="1" totalTimeInSec="2" staggeringInterval="1" />
 		</Simulation>

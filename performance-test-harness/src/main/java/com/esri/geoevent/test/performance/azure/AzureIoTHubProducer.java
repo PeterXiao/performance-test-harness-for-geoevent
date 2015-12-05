@@ -33,6 +33,12 @@ import com.microsoft.azure.iothub.IotHubEventCallback;
 import com.microsoft.azure.iothub.IotHubStatusCode;
 import com.microsoft.azure.iothub.Message;
 
+import java.io.IOException;
+
+import com.microsoft.azure.iot.service.exceptions.IotHubException;
+import com.microsoft.azure.iot.service.sdk.Device;
+import com.microsoft.azure.iot.service.sdk.RegistryManager;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -41,15 +47,17 @@ import java.util.TimeZone;
 public class AzureIoTHubProducer extends ProducerBase
 {
 	private String							connectionString	= null;
-	private DeviceClient				client;
 	private IotHubEventCallback	callback;
+	private Device[]						devices;
+	private DeviceClient[]			clients;
+	private int									deviceCount				= 10;
 
 	class EventCallback implements IotHubEventCallback
 	{
 		@Override
 		public void execute(IotHubStatusCode responseStatus, Object callbackContext)
 		{
-			System.out.println("S sent ack for " + callbackContext.toString() + " - " + responseStatus.toString());
+			System.out.println("A sent ack for " + callbackContext.toString() + " - " + responseStatus.toString());
 		}
 	}
 
@@ -63,12 +71,26 @@ public class AzureIoTHubProducer extends ProducerBase
 		if (connectionString == null)
 			throw new TestException("Azure Iot Hub event producer ERROR: 'uri' property must be specified");
 
+		devices = new Device[deviceCount];
+		clients = new DeviceClient[deviceCount];
+		callback = new EventCallback();
+		IotHubClientProtocol protocol = IotHubClientProtocol.AMQPS;
+
 		try
 		{
-			callback = new EventCallback();
-			IotHubClientProtocol protocol = IotHubClientProtocol.AMQPS;
-			client = new DeviceClient("HostName=esri-simulator-test.azure-devices.net;DeviceId=testdevice1;SharedAccessKey=OWChjfJ9t1+XQKXZArA1wvNliENL+v5VJ4eedeWBmf4=", protocol);
-			client.open();
+			for (int i = 0; i < deviceCount; i++)
+			{
+				//Device device = getDevice("device-" + i);
+
+				String deviceConnectionString = "HostName=esri-simulator-test.azure-devices.net;DeviceId=testdevice1;SharedAccessKey=OWChjfJ9t1+XQKXZArA1wvNliENL+v5VJ4eedeWBmf4=";
+				// String deviceConnectionString = "HostName=esri-simulator-test.azure-devices.net;DeviceId=" +
+				// device.getDeviceId() + ";SharedAccessKey=" + device.getPrimaryKey();
+				DeviceClient client = new DeviceClient(deviceConnectionString, protocol);
+				client.open();
+
+				//devices[i] = device;
+				clients[i] = client;
+			}
 		}
 		catch (Exception error)
 		{
@@ -80,7 +102,7 @@ public class AzureIoTHubProducer extends ProducerBase
 	public void validate() throws TestException
 	{
 		super.validate();
-		if (client == null)
+		if (clients == null)
 			throw new TestException("Azure Iot Hub Event Producer could not be created.");
 		if (events.isEmpty())
 			throw new TestException("Azure Iot Hub Event Producer has no events to simulate.");
@@ -97,13 +119,13 @@ public class AzureIoTHubProducer extends ProducerBase
 			String msgStr = augmentMessage(events.get(eventIndex++));
 			try
 			{
-				msgStr = getCurrentISOTime() + "," + msgStr;
+				msgStr = getCurrentTime() + "," + msgStr;
 				byte[] bytes = msgStr.getBytes();
 				Message msg = new Message(bytes);
 				msg.setProperty("messageCount", Integer.toString(i));
-				System.out.println("S sent message - " + msgStr.trim());
 
-				client.sendEventAsync(msg, callback, i);
+				clients[0].sendEventAsync(msg, callback, i);
+				System.out.println("S sent message - " + msgStr.trim());
 
 				if (running.get() == false)
 					break;
@@ -123,11 +145,51 @@ public class AzureIoTHubProducer extends ProducerBase
 		// TODO ...
 	}
 
-	private String getCurrentISOTime()
+	private String getCurrentTime()
 	{
 		TimeZone tz = TimeZone.getTimeZone("UTC");
 		DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-		//df.setTimeZone(tz);
+		// df.setTimeZone(tz);
 		return df.format(new Date());
 	}
+
+	/*
+	private Device getDevice(String deviceId) throws Exception
+	{
+		RegistryManager registryManager = RegistryManager.createFromConnectionString(connectionString);
+
+		Device device;
+		try
+		{
+			device = registryManager.getDevice(deviceId);
+		}
+		catch (Exception ignored)
+		{
+			device = null;
+		}
+
+		if (device == null)
+		{
+			device = Device.createFromId(deviceId);
+			try
+			{
+				device = registryManager.addDevice(device);
+
+				System.out.println("Device created: " + device.getDeviceId());
+				System.out.println("Device key: " + device.getPrimaryKey());
+			}
+			catch (IotHubException iote)
+			{
+				iote.printStackTrace();
+			}
+			catch (IOException e)
+			{
+				e.printStackTrace();
+			}
+		}
+
+		return device;
+	}
+	*/
+
 }
