@@ -18,13 +18,12 @@
 	</properties>
 
 	<dependencies>
-	<dependency>
+		<dependency>
 			<groupId>com.esri.geoevent.sdk</groupId>
 			<artifactId>geoevent-sdk</artifactId>
 			<version>10.3.0</version>
 			<scope>provided</scope>
 		</dependency>
-		
 		<dependency>
 			<groupId>org.apache.kafka</groupId>
 			<artifactId>kafka_2.10</artifactId>
@@ -64,9 +63,9 @@
 			<type>jar</type>
 		</dependency>
 		<dependency>
-  			<groupId>com.datastax.cassandra</groupId>
-  			<artifactId>cassandra-driver-core</artifactId>
-  			<version>2.1.5</version>
+			<groupId>com.datastax.cassandra</groupId>
+			<artifactId>cassandra-driver-core</artifactId>
+			<version>2.1.5</version>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
@@ -74,9 +73,9 @@
 			<version>1.5.11</version>
 		</dependency>
 		<dependency>
-		    <groupId>org.elasticsearch</groupId>
-		    <artifactId>elasticsearch</artifactId>
-		    <version>1.5.0</version>
+			<groupId>org.elasticsearch</groupId>
+			<artifactId>elasticsearch</artifactId>
+			<version>1.5.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.poi</groupId>
@@ -128,19 +127,38 @@
 			<artifactId>postgresql</artifactId>
 			<version>9.3-1103-jdbc41</version>
 		</dependency>
-	 <dependency>
-	  <groupId>${project.groupId}</groupId>
-	  <artifactId>performance-test-harness-api</artifactId>
-	  <version>${project.version}</version>
-	 </dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>performance-test-harness-api</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<!-- Azure Java Device SDK -->
+		<dependency>
+			<groupId>com.microsoft.azure.iothub-java-client</groupId>
+			<artifactId>iothub-java-client</artifactId>
+			<version>1.0.0-preview.7</version>
+		</dependency>
+		<!-- Azure Java Service SDK -->
+		<dependency>
+			<groupId>com.microsoft.azure.iothub.service.sdk</groupId>
+			<artifactId>iothub-service-sdk</artifactId>
+			<version>1.0.0-preview.7</version>
+		</dependency>
+		<!-- Azure Java Event Hub SDK -->
+		<dependency>
+			<groupId>org.apache.qpid</groupId>
+			<artifactId>qpid-amqp-1-0-client-jms</artifactId>
+			<version>0.32</version>
+		</dependency>
 	</dependencies>
+
 	<build>
 		<resources>
-            <resource>
-                <directory>src/main/resources</directory>
-                <filtering>true</filtering>
-            </resource>
-        </resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
+			</resource>
+		</resources>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -211,7 +229,7 @@
 				</configuration>
 			</plugin>
 		</plugins>
-		
+
 		<pluginManagement>
 			<plugins>
 				<!--This plugin's configuration is used to store Eclipse m2e settings 

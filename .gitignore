@@ -215,3 +215,18 @@ pip-log.txt
 #Mr Developer
 .mr.developer.cfg
 *.MF
+
+
+####################
+## IntelliJ IDEA
+####################
+*.iml
+*.ipr
+*.iws
+.idea/
+
+####################
+## NetBeans
+####################
+nbactions.xml
+
