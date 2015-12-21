@@ -54,7 +54,7 @@
         <dependency>
             <groupId>com.esri.arcgis.discovery</groupId>
             <artifactId>arcgis-common</artifactId>
-            <version>10.4.0.5356</version>
+            <version>10.4.0.0-SNAPSHOT</version>
             <type>jar</type>
         </dependency>
     </dependencies>

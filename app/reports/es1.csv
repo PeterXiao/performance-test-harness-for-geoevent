@@ -1,6 +1,0 @@
-"Test Name","Rate","totalEvents","successes","expectedResultCount","failures","avgTotalTime","avgEventsPerSec","%","totalBytesConsumed","avgBytesConsumedPerMessage"
-"1000 e/s","1000","10000","10000","10000","0","11348.0","881.2125484666901","0.8812125484666902","0","0.0"
-"2000 e/s","2000","20000","20000","20000","0","12918.0","1710.5713308244954","0.8552856654122477","0","0.0"
-""
-""
-"Total Testing Time: 00:32.912"
