@@ -79,7 +79,7 @@ public interface Config
 	/**
 	 * Perform a deep copy of this object.
 	 * 
-	 * @return
+	 * @return Config
 	 */
 	Config copy();
 }

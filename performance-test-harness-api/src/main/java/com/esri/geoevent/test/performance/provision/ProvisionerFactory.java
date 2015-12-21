@@ -27,7 +27,7 @@ import com.esri.geoevent.test.performance.jaxb.ProvisionerConfig;
 
 /**
  * This factory interface is used to create and instantiate {@link Provisioner} objects.
- * The {@ Provisioner} objects are used to setup the Performance Test Harness.
+ * The {@link Provisioner} objects are used to setup the Performance Test Harness.
  * 
  * @see Provisioner
  * @see ProvisionerConfig

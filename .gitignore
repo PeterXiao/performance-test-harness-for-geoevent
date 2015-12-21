@@ -225,3 +225,8 @@ pip-log.txt
 *.iws
 .idea/
 
+####################
+## NetBeans
+####################
+nbactions.xml
+

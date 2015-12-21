@@ -17,7 +17,7 @@ The Performance Test Harness is an application which measures the throughput per
 
 ## Requirements
 
-* ArcGIS 10.3.x GeoEvent Extension for Server.
+* ArcGIS 10.4.x GeoEvent Extension for Server.
 * Java JDK 1.8 or greater.
 * Maven 3.2.x or greater.
 

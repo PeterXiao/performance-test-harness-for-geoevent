@@ -29,7 +29,7 @@ import java.util.ResourceBundle;
 public class MessagesImpl implements Messages
 {	
 	/**
-	 * The main {@link ResourceBundle}
+	 * The main {link ResourceBundle}
 	 */
 	private final ResourceBundle bundle;
 	
@@ -45,7 +45,7 @@ public class MessagesImpl implements Messages
 	
 	/**
 	 * This convenience method fetches a localized string according to the parameter <code>key</code> which is passed in. The 
-	 * ResourceBundle it looks for is this class's name {@link Messages.class.getName()}
+	 * ResourceBundle it looks for is this class's name {link Messages.class.getName()}
 	 * 
 	 * @param key
 	 *          The property key to look up the translated string.
@@ -76,7 +76,7 @@ public class MessagesImpl implements Messages
 	
 	/**
 	 * This convenience method fetches a localized string according to the parameter <code>key</code> which is passed in. The 
-	 * ResourceBundle it looks for is this class's name {@link Messages.class.getName()}
+	 * ResourceBundle it looks for is this class's name {link Messages.class.getName()}
 	 * 
 	 * @param key
 	 *          The property key to look up the translated string.

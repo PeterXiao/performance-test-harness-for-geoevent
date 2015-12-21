@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Fixtures>
+    <Report type="CSV">
+        <ReportFile>D:/github/performance-test-harness-for-geoevent/app/reports//w08ags104b_simple_tcp.csv</ReportFile>
+    </Report>
+
+    <DefaultFixture>
+        <DefaultSharedConfig protocol="TCP">
+            <Properties>
+                <Property name="hosts">192.168.56.12</Property>
+            </Properties>
+        </DefaultSharedConfig>
+        <ProducerConfig commandPort="5010">
+            <Properties>
+                <Property name="simulationFile">D:/github/performance-test-harness-for-geoevent/app/simulations/county_envelopes_1000_points.csv</Property>
+                <Property name="port">5565</Property>
+            </Properties>
+        </ProducerConfig>
+        <ConsumerConfig commandPort="5020" timeoutInSec="5">
+            <Properties>
+                <Property name="port">5575</Property>
+            </Properties>
+        </ConsumerConfig>
+        <Simulation>
+            <TimeTest eventsPerSec="100" totalTimeInSec="10"
+                                  staggeringInterval="10" />
+        </Simulation>
+    </DefaultFixture>
+
+    <Fixture name="100 e/s" />
+
+    <Fixture name="200 e/s">
+        <Simulation>
+            <TimeTest eventsPerSec="200" />
+        </Simulation>
+    </Fixture>
+
+    <Fixture name="400 e/s">
+        <Simulation>
+            <TimeTest eventsPerSec="400" />
+        </Simulation>
+    </Fixture>
+
+    <Fixture name="800 e/s">
+        <Simulation>
+            <TimeTest eventsPerSec="800" />
+        </Simulation>
+    </Fixture>
+
+    <Fixture name="1600 e/s">
+        <Simulation>
+            <TimeTest eventsPerSec="1600" />
+        </Simulation>
+    </Fixture>
+
+</Fixtures>

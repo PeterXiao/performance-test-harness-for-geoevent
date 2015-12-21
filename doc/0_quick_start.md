@@ -11,9 +11,9 @@ and [Apache Maven](http://maven.apache.org/run-maven/index.html).
 
 - Install and configure Java 8 with Apache Maven 3.2.x or higher.
 
-- Install ArcGIS Server 10.3.x
+- Install ArcGIS Server 10.4.x
 
-- Install GeoEvent Extension for ArcGIS Server 10.3.x
+- Install GeoEvent Extension for ArcGIS Server 10.4.x
 
 ### Building
 See [Building](1_building.md)
@@ -80,17 +80,17 @@ You will need to start the producer and consumer first (the order does not matte
 
 Start a TCP producer
 ```
-java -jar Performance-Test-Harness-10.3.0.jar -m producer -t tcp
+java -jar Producer.jar -t tcp -p 5010
 ```
 
 Start a TCP consumer
 ```
-java -jar Performance-Test-Harness-10.3.0.jar -m consumer -t tcp
+java -jar Consumer.jar -t tcp -p 5020
 ```
 
 Start the orchestrator 
 ```
-java -jar Performance-Test-Harness-10.3.0.jar -f fixtures\my_fixtures.xml
+java -jar Orchestrator.jar -f fixtures\my_fixtures.xml
 ```
 
 ### Reading the Results
