@@ -13,8 +13,7 @@
     </properties>
     <name>Esri :: GeoEvent :: Test Harness :: Performance Test Harness Tools</name>
     <modules>
-        <module>decryptBDSPassword</module>
         <module>runTcpInTcpOutTest</module>
-        <module>runTcpInEsOutTest</module>
+        <module>runTcpInBdsOutTest</module>
     </modules>
 </project>

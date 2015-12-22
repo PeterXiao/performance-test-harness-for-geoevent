@@ -23,45 +23,32 @@
  */
 package com.esri.geoevent.test.tools;
 
-import com.esri.arcgis.discovery.util.KeyUtil;
+
 import java.io.BufferedReader;
-import java.io.DataOutputStream;
 import java.io.FileReader;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.net.HttpURLConnection;
 import java.net.Socket;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.security.GeneralSecurityException;
-import java.security.cert.X509Certificate;
 import java.text.DecimalFormat;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Base64;
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
 import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-import org.json.JSONObject;
 
 /**
  *
  * @author davi5017
  */
-public class RunTcpInEsOutTest {
+public class RunTcpInBdsOutTest {
 
     private Double send_rate;
     private Double rcv_rate;
 
 
-    public void send(String server, Integer port, Long numEvents, Integer rate, String data_file, String bdsUrl) {
+    public void send(String server, Integer port, Long numEvents, Integer rate, String data_file) {
 
         BufferedReader br = null;
         ArrayList<String> lines = new ArrayList<>();
@@ -144,19 +131,23 @@ public class RunTcpInEsOutTest {
 
     }
 
-    private void runTest(long numberEvents, int rate, String server, int in_port, String data_file, String bdsUrl, String bdsUsername, String bdsEncryptedPassword, Boolean isSingle) {
+    private void runTest(long numberEvents, int rate, String server, int in_port, String data_file, String msLayerUrl, Boolean isSingle) {
 
         this.send_rate = -1.0;
         this.rcv_rate = -1.0;
 
         try {
 
-            GetESCountRunnable reader = new GetESCountRunnable(numberEvents, bdsUrl, bdsUsername, bdsEncryptedPassword, isSingle);
+            GetMapServiceCountRunnable reader = new GetMapServiceCountRunnable(numberEvents, msLayerUrl, isSingle);
             Thread readerThread = new Thread(reader);
 
             readerThread.start();            
             
-            this.send(server, in_port, numberEvents, rate, data_file, bdsUrl);
+            // Give the consumer a couple of seconds to start
+            Thread.sleep(2000);
+            
+            
+            this.send(server, in_port, numberEvents, rate, data_file);
             
             readerThread.join();
             
@@ -177,17 +168,15 @@ public class RunTcpInEsOutTest {
     }
 
     public static void main(String args[]) {
+
+        // Example Command line args
+        //-n 10000 -g w12ags104a.jennings.home -i 5565 -m https://w12ags104a.jennings.home/arcgis/rest/services/Hosted/FAA-Stream/MapServer/0 -f D:\github\performance-test-harness-for-geoevent\app\simulations\faa-stream.csv -r 1000,3000,1000
         
-        //-n 10000 -g c7hp.jennings.home -i 5565 -d c7hp.jennings.home -u els_v0w19nm -e {crypt}qRQJuv8T+zo6PFoNpyJrMQ== -s FAA-Stream -f D:\github\performance-test-harness-for-geoevent\app\simulations\faa-stream.csv -r 1000,3000,1000
-        //-n 10000 -g w12ags104a.jennings.home -i 5565 -d w12ags104a.jennings.home -u els_n8secvw -e {crypt}eQnEBupnm7WMrM2bNFyQKw== -s FAA-Stream -f D:\github\performance-test-harness-for-geoevent\app\simulations\faa-stream.csv -r 1000,3000,1000
         int numberEvents = 10000; // Number of Events    
         String gisServer = "w12ags104a.jennings.home"; // GIS Server
-        int inputTcpPort = 5565;  // TCP Input Port        
-
-        String dataServer = "w12ags104b.jennings.home"; // Data Server
-        String bdsUsername = "els_ro5fnhw";  // BDS Username
-        String bdsEncryptedPassword = "{crypt}VovBzQGONbtJnPw02rmmag=="; // BDS Encrypted Password
-        String dataSourceName = "FAA-Stream"; // Data Source Name (GeoEvent)                
+        int inputTcpPort = 5565;  // TCP Input Port       
+        
+        String msLayerUrl = "http://w12ags104a.jennings.home/arcgis/rest/services/Hosted/FAA-Stream/MapServer/0";
 
         String EventsInputFile = "D:\\github\\performance-test-harness-for-geoevent\\app\\simulations\\faa-stream.csv"; // Events input File        
 
@@ -199,10 +188,7 @@ public class RunTcpInEsOutTest {
         opts.addOption("n", true, "Number of Events");
         opts.addOption("g", true, "GIS Server");
         opts.addOption("i", true, "Input TCP Port");
-        opts.addOption("d", true, "Data Server");
-        opts.addOption("u", true, "BDS Username");
-        opts.addOption("e", true, "BDS Encrypted Password");
-        opts.addOption("s", true, "GeoEvent Data Source Name");
+        opts.addOption("m", true, "Map Service Layer URL");
         opts.addOption("f", true, "File with GeoEvents to Send");
         opts.addOption("r", true, "Rates to test Start,End,Step");
         opts.addOption("h", false, "Help");
@@ -246,22 +232,10 @@ public class RunTcpInEsOutTest {
                 }
             }
 
-            if (cmd.hasOption("d")) {
-                dataServer = cmd.getOptionValue("d");
+            if (cmd.hasOption("m")) {
+                msLayerUrl = cmd.getOptionValue("m");
             }
-
-            if (cmd.hasOption("u")) {
-                bdsUsername = cmd.getOptionValue("u");
-            }
-
-            if (cmd.hasOption("e")) {
-                bdsEncryptedPassword = cmd.getOptionValue("e");
-            }
-
-            if (cmd.hasOption("s")) {
-                dataSourceName = cmd.getOptionValue("s");
-            }
-
+            
             if (cmd.hasOption("f")) {
                 EventsInputFile = cmd.getOptionValue("f");
             }
@@ -295,8 +269,7 @@ public class RunTcpInEsOutTest {
             }
 
             // Assuming the ES port is 9220 
-            String bdsURL = "http://" + dataServer + ":9220/" + dataSourceName + "/" + dataSourceName;
-            RunTcpInEsOutTest t = new RunTcpInEsOutTest();
+            RunTcpInBdsOutTest t = new RunTcpInBdsOutTest();
             DecimalFormat df = new DecimalFormat("##0");
 
             if (start_rate == end_rate) {
@@ -305,7 +278,7 @@ public class RunTcpInEsOutTest {
                 System.out.println("Incremental testing at requested rate: " + start_rate);
                 System.out.println("Count,Incremental Rate");
                 
-                t.runTest(numberEvents, start_rate, gisServer, inputTcpPort, EventsInputFile, bdsURL, bdsUsername, bdsEncryptedPassword, true);                
+                t.runTest(numberEvents, start_rate, gisServer, inputTcpPort, EventsInputFile, msLayerUrl, true);                
                 if (t.send_rate < 0 || t.rcv_rate < 0) {
                     throw new Exception("Test Run Failed!");
                 }
@@ -320,7 +293,7 @@ public class RunTcpInEsOutTest {
 
                 for (int rate = start_rate; rate <= end_rate; rate += rate_step) {
 
-                    t.runTest(numberEvents, rate, gisServer, inputTcpPort, EventsInputFile, bdsURL, bdsUsername, bdsEncryptedPassword, false);                
+                    t.runTest(numberEvents, rate, gisServer, inputTcpPort, EventsInputFile, msLayerUrl, false);                
                     if (t.send_rate < 0 || t.rcv_rate < 0) {
                         throw new Exception("Test Run Failed!");
                     }
@@ -335,7 +308,7 @@ public class RunTcpInEsOutTest {
         } catch (ParseException e) {
             System.out.println("Invalid Command Options: ");
             System.out.println(e.getMessage());
-            System.out.println("Command line options: -n NumberOfEvents -g GISServer -i InputTCPPort -d DataServer -u BDSUsername -e BDSEncryptedPassword -s GeoevetDataSourceName -f FileWithEvents -r StartRate,EndRate,Step");
+            System.out.println("Command line options: -n NumberOfEvents -g GISServer -i InputTCPPort -m MapServerLayerURL -f FileWithEvents -r StartRate,EndRate,Step");
 
         } catch (Exception e) {
             System.out.println(e.getMessage());
