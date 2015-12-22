@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Fixtures>
+	<Report type="CSV">
+		<ReportFile>reports/es.csv</ReportFile>
+	</Report>
+	
+		
+	<DefaultFixture>
+		<ProducerConfig commandPort="5010" protocol="TCP">
+			<Properties>
+				<Property name="hosts">w12ags104a.jennings.home</Property>
+				<Property name="simulationFile">simulations/faa-stream.csv</Property>
+				<Property name="port">5565</Property>
+			</Properties>
+		</ProducerConfig>
+		<ConsumerConfig protocol="ES" commandPort="5020" timeoutInSec="5">
+			<Properties>
+				<Property name="esUrl">http://w12ags104b.jennings.home:9220</Property>
+				<Property name="username">els_n8secvw</Property>
+				<Property name="password">{crypt}eQnEBupnm7WMrM2bNFyQKw==</Property>
+				<Property name="indexName">FAA-Stream</Property>
+				<Property name="indexType">FAA-Stream</Property>
+			</Properties>
+		</ConsumerConfig>
+		<Simulation>
+			<TimeTest eventsPerSec="1000" totalTimeInSec="10" staggeringInterval="100" />
+		</Simulation>
+	</DefaultFixture>
+	
+	<Fixture name="1000 e/s">
+		<Simulation>
+			<TimeTest eventsPerSec="1000"/>
+		</Simulation>
+	</Fixture>
+
+	<Fixture name="2000 e/s">
+		<Simulation>
+			<TimeTest eventsPerSec="2000"/>
+		</Simulation>
+	</Fixture>
+
+	<Fixture name="3000 e/s">
+		<Simulation>
+			<TimeTest eventsPerSec="2000"/>
+		</Simulation>
+	</Fixture>
+	
+</Fixtures>

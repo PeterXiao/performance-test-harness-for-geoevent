@@ -35,7 +35,7 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.lang3.math.NumberUtils;
 import com.esri.geoevent.test.performance.activemq.ActiveMQEventConsumer;
-import com.esri.geoevent.test.performance.elasticsearch.ElasticSearchEventConsumer;
+import com.esri.geoevent.test.performance.bds.BdsEventConsumer;
 import com.esri.geoevent.test.performance.kafka.KafkaEventConsumer;
 import com.esri.geoevent.test.performance.rabbitmq.RabbitMQEventConsumer;
 import com.esri.geoevent.test.performance.streamservice.StreamServiceEventConsumer;
@@ -149,8 +149,8 @@ public class ConsumerMain {
                 case KAFKA:
                     consumer = new KafkaEventConsumer();
                     break;
-                case ES:
-                    consumer = new ElasticSearchEventConsumer();
+                case BDS:
+                    consumer = new BdsEventConsumer();
                     break;
                 default:
                     return;

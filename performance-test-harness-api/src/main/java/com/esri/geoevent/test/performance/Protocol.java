@@ -41,7 +41,8 @@ public enum Protocol
 	CASSANDRA(ApiMessages.getMessage("PROTOCOL_CASSANDRA")),
 	POSTGRESQL(ApiMessages.getMessage("PROTOCOL_POSTGRESQL")),
 	ES(ApiMessages.getMessage("PROTOCOL_ES")),
-	UNKNOWN(ApiMessages.getMessage("PROTOCOL_UNKNOWN"));
+	UNKNOWN(ApiMessages.getMessage("PROTOCOL_UNKNOWN")),
+        BDS(ApiMessages.getMessage("PROTOCOL_BDS"));
 
 	private String label;
 	
@@ -87,6 +88,8 @@ public enum Protocol
 			  return POSTGRESQL;
 		else if( ES.toString().equalsIgnoreCase(valueStr) || ES.name().equalsIgnoreCase(valueStr))
 		  return ES;
+		else if( BDS.toString().equalsIgnoreCase(valueStr) || BDS.name().equalsIgnoreCase(valueStr))
+		  return BDS;                
 		else 
 			return UNKNOWN;
 	}

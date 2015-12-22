@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<template key="Y/Atp/C2MIjNmGLyelADMw==" productVersion="10.4.0">
+    <geoEventServices/>
+    <inputs/>
+    <outputs/>
+    <geoEventDefinitions>
+        <geoEventDefinition guid="3bf4265e-31ad-4686-b8f0-78786b6c3cdb" name="FAA-Stream" owner="auto-generated/com.esri.ges.adapter.inbound.Text/10.4.0" accessType="editable">
+            <fieldDefinitions>
+                <fieldDefinition name="UID" type="Integer" cardinality="One">
+                    <fieldDefinitions/>
+                </fieldDefinition>
+                <fieldDefinition name="Name" type="String" cardinality="One">
+                    <fieldDefinitionTag>
+                        <name>TRACK_ID</name>
+                    </fieldDefinitionTag>
+                    <fieldDefinitions/>
+                </fieldDefinition>
+                <fieldDefinition name="StartTime" type="Date" cardinality="One">
+                    <fieldDefinitionTag>
+                        <name>TIME_START</name>
+                    </fieldDefinitionTag>
+                    <fieldDefinitions/>
+                </fieldDefinition>
+                <fieldDefinition name="Longitude" type="Double" cardinality="One">
+                    <fieldDefinitions/>
+                </fieldDefinition>
+                <fieldDefinition name="Latitude" type="Double" cardinality="One">
+                    <fieldDefinitions/>
+                </fieldDefinition>
+                <fieldDefinition name="Heading" type="Double" cardinality="One">
+                    <fieldDefinitions/>
+                </fieldDefinition>
+                <fieldDefinition name="Capacity" type="Integer" cardinality="One">
+                    <fieldDefinitions/>
+                </fieldDefinition>
+                <fieldDefinition name="PassengerCount" type="Integer" cardinality="One">
+                    <fieldDefinitions/>
+                </fieldDefinition>
+                <fieldDefinition name="AircraftModel" type="String" cardinality="One">
+                    <fieldDefinitions/>
+                </fieldDefinition>
+                <fieldDefinition name="Origin" type="String" cardinality="One">
+                    <fieldDefinitions/>
+                </fieldDefinition>
+                <fieldDefinition name="Destination" type="String" cardinality="One">
+                    <fieldDefinitions/>
+                </fieldDefinition>
+                <fieldDefinition name="Description" type="String" cardinality="One">
+                    <fieldDefinitions/>
+                </fieldDefinition>
+                <fieldDefinition name="AircraftType" type="String" cardinality="One">
+                    <fieldDefinitions/>
+                </fieldDefinition>
+                <fieldDefinition name="Purpose" type="String" cardinality="One">
+                    <fieldDefinitions/>
+                </fieldDefinition>
+                <fieldDefinition name="Status" type="String" cardinality="One">
+                    <fieldDefinitions/>
+                </fieldDefinition>
+                <fieldDefinition name="GA" type="String" cardinality="One">
+                    <fieldDefinitions/>
+                </fieldDefinition>
+                <fieldDefinition name="Geometry" type="Geometry" cardinality="One">
+                    <fieldDefinitionTag>
+                        <name>GEOMETRY</name>
+                    </fieldDefinitionTag>
+                    <fieldDefinitions/>
+                </fieldDefinition>
+            </fieldDefinitions>
+        </geoEventDefinition>
+    </geoEventDefinitions>
+    <tags/>
+    <arcgisServerConnections>
+        <arcgisServerConnection accessType="editable" connectionType="PORTAL" label="Default" name="default" referer="https://w12ags104a.jennings.home:6143/geoevent/admin/datastores/agsconnection/default" token="0QIX5QwP7GX4mdXXwm0x3SI3ywU9RbitDHSRum/FDzEFIex01WOhgya0AkTr6DWfZCYmnmlIybhSaoOskGzhk7m7yWWJoAnth8rK7wrrocimodXdCr6oZlRtuT2juOcgDk44RskpnH8o7cjwdTe6MeRvdJr5NpzhNqewAn+G1rwBHVCUNAdlQ+IuFr2vom4Y35UbV6PHRgACSbn6x0PItJZenXEmDdhcDFVFubeDnWC0ctM/f31JP1feXbBXQrVk4JvDYwtqDh8mnRVu83r9h/Cs/SX6aXHmjfBKtim8SZ4=" tokenConfigured="false" updateIntervalSec="60" url="https://w12ags104a.jennings.home/portal/">
+            <properties>
+                <property name="agsconnection.webtier.username" type="String">admin</property>
+                <property name="agsconnection.webtier.password" type="Password">YNCn7SjLYlmMzfpsljreKw==</property>
+            </properties>
+        </arcgisServerConnection>
+    </arcgisServerConnections>
+</template>
