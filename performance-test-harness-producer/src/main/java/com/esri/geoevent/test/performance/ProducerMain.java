@@ -36,6 +36,7 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.lang3.math.NumberUtils;
 
 import com.esri.geoevent.test.performance.activemq.ActiveMQEventProducer;
+import com.esri.geoevent.test.performance.azure.AzureIoTHubProducer;
 import com.esri.geoevent.test.performance.kafka.KafkaEventProducer;
 import com.esri.geoevent.test.performance.rabbitmq.RabbitMQEventProducer;
 import com.esri.geoevent.test.performance.streamservice.StreamServiceEventProducer;
@@ -151,6 +152,9 @@ public class ProducerMain {
                     break;
                 case WEBSOCKET_SERVER:
                     producer = new WebsocketServerEventProducer(serverPort);
+                    break;
+                case AZURE:
+                    producer = new AzureIoTHubProducer();
                     break;
                 default:
                     return;

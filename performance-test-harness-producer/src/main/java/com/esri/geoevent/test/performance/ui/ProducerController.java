@@ -37,6 +37,7 @@ import com.esri.geoevent.test.performance.Mode;
 import com.esri.geoevent.test.performance.PerformanceCollector;
 import com.esri.geoevent.test.performance.Protocol;
 import com.esri.geoevent.test.performance.activemq.ActiveMQEventProducer;
+import com.esri.geoevent.test.performance.azure.AzureIoTHubProducer;
 import com.esri.geoevent.test.performance.kafka.KafkaEventProducer;
 import com.esri.geoevent.test.performance.rabbitmq.RabbitMQEventProducer;
 import com.esri.geoevent.test.performance.streamservice.StreamServiceEventProducer;
@@ -99,6 +100,9 @@ public class ProducerController extends PerformanceCollectorController {
             case KAFKA:
                 producer = new KafkaEventProducer();
                 break;
+            case AZURE:
+                producer = new AzureIoTHubProducer();
+                break;                
             default:
                 return;
         }
@@ -142,13 +146,14 @@ public class ProducerController extends PerformanceCollectorController {
     private ObservableList<Protocol> getProtocolList() {
         ArrayList<Protocol> list = new ArrayList<Protocol>();
         list.add(Protocol.ACTIVE_MQ);
+        list.add(Protocol.AZURE);
         list.add(Protocol.KAFKA);
         list.add(Protocol.RABBIT_MQ);
         list.add(Protocol.STREAM_SERVICE);
         list.add(Protocol.TCP);
         list.add(Protocol.TCP_SERVER);
         list.add(Protocol.WEBSOCKETS);
-        list.add(Protocol.WEBSOCKET_SERVER);
+        list.add(Protocol.WEBSOCKET_SERVER);        
         return FXCollections.observableList(list);
     }
 }

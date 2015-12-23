@@ -37,6 +37,8 @@ import com.esri.geoevent.test.performance.Mode;
 import com.esri.geoevent.test.performance.PerformanceCollector;
 import com.esri.geoevent.test.performance.Protocol;
 import com.esri.geoevent.test.performance.activemq.ActiveMQEventConsumer;
+import com.esri.geoevent.test.performance.azure.AzureIoTHubConsumer;
+import com.esri.geoevent.test.performance.bds.BdsEventConsumer;
 import com.esri.geoevent.test.performance.kafka.KafkaEventConsumer;
 import com.esri.geoevent.test.performance.rabbitmq.RabbitMQEventConsumer;
 import com.esri.geoevent.test.performance.streamservice.StreamServiceEventConsumer;
@@ -100,6 +102,12 @@ public class ConsumerController extends PerformanceCollectorController {
             case KAFKA:
                 consumer = new KafkaEventConsumer();
                 break;
+            case BDS:
+                consumer = new BdsEventConsumer();
+                break;        
+            case AZURE:
+                consumer = new AzureIoTHubConsumer();
+                break;                 
             default:
                 return;
         }
@@ -150,6 +158,8 @@ public class ConsumerController extends PerformanceCollectorController {
         list.add(Protocol.WEBSOCKETS);
         list.add(Protocol.WEBSOCKET_SERVER);
         list.add(Protocol.KAFKA);
+        list.add(Protocol.BDS);
+        list.add(Protocol.AZURE);
 
         return FXCollections.observableList(list);
     }

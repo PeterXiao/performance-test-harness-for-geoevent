@@ -41,6 +41,7 @@ public enum Protocol
 	CASSANDRA(ApiMessages.getMessage("PROTOCOL_CASSANDRA")),
 	POSTGRESQL(ApiMessages.getMessage("PROTOCOL_POSTGRESQL")),
 	ES(ApiMessages.getMessage("PROTOCOL_ES")),
+	AZURE(ApiMessages.getMessage("PROTOCOL_AZURE")),         
 	UNKNOWN(ApiMessages.getMessage("PROTOCOL_UNKNOWN")),
         BDS(ApiMessages.getMessage("PROTOCOL_BDS"));
 
@@ -89,7 +90,9 @@ public enum Protocol
 		else if( ES.toString().equalsIgnoreCase(valueStr) || ES.name().equalsIgnoreCase(valueStr))
 		  return ES;
 		else if( BDS.toString().equalsIgnoreCase(valueStr) || BDS.name().equalsIgnoreCase(valueStr))
-		  return BDS;                
+		  return BDS;      
+		else if( AZURE.toString().equalsIgnoreCase(valueStr) || AZURE.name().equalsIgnoreCase(valueStr))
+		  return AZURE;                
 		else 
 			return UNKNOWN;
 	}

@@ -77,6 +77,24 @@
             <artifactId>javax.json</artifactId>
             <version>1.0.4</version>
         </dependency>
+        <!-- Azure Java Device SDK -->
+        <dependency>
+            <groupId>com.microsoft.azure.iothub-java-client</groupId>
+            <artifactId>iothub-java-device-client</artifactId>
+            <version>1.0.0-preview.8</version>
+        </dependency>
+        <!-- Azure Java Service SDK -->
+        <dependency>
+            <groupId>com.microsoft.azure.iothub-java-client</groupId>
+            <artifactId>iothub-java-service-client</artifactId>
+            <version>1.0.0-preview.8</version>
+        </dependency>
+        <!-- Azure Java Event Hub SDK -->
+        <dependency>
+            <groupId>org.apache.qpid</groupId>
+            <artifactId>qpid-amqp-1-0-client-jms</artifactId>
+            <version>0.32</version>
+        </dependency>        
     </dependencies>    
     <build>
         <resources>

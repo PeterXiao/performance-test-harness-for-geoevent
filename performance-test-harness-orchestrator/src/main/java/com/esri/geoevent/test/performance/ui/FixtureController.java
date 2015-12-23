@@ -824,6 +824,7 @@ public class FixtureController implements Initializable {
     private ObservableList<Protocol> getProducerProtocolList() {
         ArrayList<Protocol> list = new ArrayList<Protocol>();
         list.add(Protocol.ACTIVE_MQ);
+        list.add(Protocol.AZURE);
         list.add(Protocol.KAFKA);
         list.add(Protocol.RABBIT_MQ);
         list.add(Protocol.STREAM_SERVICE);
@@ -837,6 +838,8 @@ public class FixtureController implements Initializable {
     private ObservableList<Protocol> getConsumerProtocolList() {
         ArrayList<Protocol> list = new ArrayList<Protocol>();
         list.add(Protocol.ACTIVE_MQ);
+        list.add(Protocol.AZURE);
+        list.add(Protocol.BDS);
         list.add(Protocol.RABBIT_MQ);
         list.add(Protocol.STREAM_SERVICE);
         list.add(Protocol.TCP);
@@ -916,13 +919,19 @@ public class FixtureController implements Initializable {
         props.add(new Property("port", "5565"));
         producerPropertiesCache.put(Protocol.WEBSOCKET_SERVER, FXCollections.observableList(props));
 
-        // Producers
+        // AZURE
+        props = new ArrayList<Property>();
+        props.add(simulationFile);
+        props.add(new Property("producerConnectionString", ""));
+        producerPropertiesCache.put(Protocol.AZURE, FXCollections.observableList(props));        
+        
+        // Consumers
         consumerPropertiesCache = new HashMap<Protocol, ObservableList<Property>>();
 
         // TCP
         props = new ArrayList<Property>();
         props.add(new Property("hosts", "localhost"));
-        props.add(new Property("port", "5565"));
+        props.add(new Property("port", "5575"));
         consumerPropertiesCache.put(Protocol.TCP, FXCollections.observableList(props));
 
         //TCP_SERVER
@@ -966,6 +975,18 @@ public class FixtureController implements Initializable {
         props.add(new Property("topic", "testtopic"));
         props.add(new Property("numthreads", "1"));
         consumerPropertiesCache.put(Protocol.KAFKA, FXCollections.observableList(props));
+        
+        // BDS
+        props = new ArrayList<Property>();
+        props.add(new Property("msLayerUrl", "https://gis.server.com/arcgis/rest/services/Hosted/FAA-Stream/MapServer/0"));
+        consumerPropertiesCache.put(Protocol.BDS, FXCollections.observableList(props));
+        
+        // AXURE
+        props = new ArrayList<Property>();
+        props.add(new Property("consumerConnectionUri", ""));
+        props.add(new Property("consumerEventHubName", ""));
+        props.add(new Property("consumerNumberOfPartitions", ""));
+        consumerPropertiesCache.put(Protocol.AZURE, FXCollections.observableList(props));        
     }
 
     /**

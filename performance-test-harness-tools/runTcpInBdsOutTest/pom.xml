@@ -49,13 +49,13 @@
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>2.6</version>
                 <configuration>
-                    <finalName>runTcpInEsOutTest</finalName>
+                    <finalName>runTcpInBdsOutTest</finalName>
                     <outputDirectory>${basedir}/../../app</outputDirectory>
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>lib/</classpathPrefix>
-                            <mainClass>com.esri.geoevent.test.tools.RunTcpInEsOutTest</mainClass>
+                            <mainClass>com.esri.geoevent.test.tools.RunTcpInBdsOutTest</mainClass>
                         </manifest>
                         <manifestEntries>
                             <Class-Path>config/ lib/</Class-Path>

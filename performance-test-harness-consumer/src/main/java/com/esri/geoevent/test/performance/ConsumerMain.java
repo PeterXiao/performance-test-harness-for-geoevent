@@ -35,6 +35,7 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.lang3.math.NumberUtils;
 import com.esri.geoevent.test.performance.activemq.ActiveMQEventConsumer;
+import com.esri.geoevent.test.performance.azure.AzureIoTHubConsumer;
 import com.esri.geoevent.test.performance.bds.BdsEventConsumer;
 import com.esri.geoevent.test.performance.kafka.KafkaEventConsumer;
 import com.esri.geoevent.test.performance.rabbitmq.RabbitMQEventConsumer;
@@ -151,6 +152,9 @@ public class ConsumerMain {
                     break;
                 case BDS:
                     consumer = new BdsEventConsumer();
+                    break;
+                case AZURE:
+                    consumer = new AzureIoTHubConsumer();
                     break;
                 default:
                     return;
