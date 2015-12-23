@@ -35,6 +35,8 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.security.GeneralSecurityException;
 import java.security.cert.X509Certificate;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
@@ -164,6 +166,11 @@ public class BdsEventConsumer extends ConsumerBase {
             trustAll();
             
             startCount = getMsLayerCount(msLayerUrl);
+            if (startCount < 0) {
+                // Wait a second and try again
+                Thread.sleep(1000);
+                startCount = getMsLayerCount(msLayerUrl);
+            }
             timeLast = System.currentTimeMillis();
             curCount = startCount;
             timeLastChange = timeLast;
@@ -180,7 +187,15 @@ public class BdsEventConsumer extends ConsumerBase {
     public void receive(String message) {
         
         int cnt = getMsLayerCount(this.msLayerUrl);
-        
+        if (cnt < 0) {
+            try {
+                // Wait a second and try again
+                Thread.sleep(1000);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(BdsEventConsumer.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            cnt = getMsLayerCount(this.msLayerUrl);
+        }
         
         
         int cntChange = cnt - curCount;       
@@ -222,9 +237,14 @@ public class BdsEventConsumer extends ConsumerBase {
     public void validate() throws TestException {
         try {            
             int cnt = getMsLayerCount(this.msLayerUrl);
+            if (cnt < 0) {
+                // Wait a second and try again
+                Thread.sleep(1000);
+                cnt = getMsLayerCount(this.msLayerUrl);
+            }
             if (cnt < 0) throw new Exception("Get Count Failed");
         } catch (Exception e) {
-            throw new TestException("Could not connect to Elastic Search Server."); 
+            throw new TestException("Could to get count from Map Server."); 
         }    }
     
 }
