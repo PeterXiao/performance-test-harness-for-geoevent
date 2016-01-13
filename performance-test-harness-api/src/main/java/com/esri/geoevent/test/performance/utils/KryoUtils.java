@@ -27,6 +27,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 
 import com.esotericsoftware.kryo.Kryo;
@@ -66,7 +67,7 @@ public class KryoUtils
 			return null;
 		
 		Kryo kryo = setupKryo();
-		Input input = new Input(new ByteArrayInputStream(data.getBytes()));
+		Input input = new Input(new ByteArrayInputStream(Base64.decodeBase64(data)));
 		T returnObj = kryo.readObject(input, type);
 		input.close();
 		return returnObj;
@@ -82,8 +83,8 @@ public class KryoUtils
 		Output output = new Output(baos);
 		kryo.writeObject(output, t);
 		output.close();
-		
-		return new String(baos.toByteArray());
+
+		return Base64.encodeBase64String(baos.toByteArray());
 	}
 	
 	/**
