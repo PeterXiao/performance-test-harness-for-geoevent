@@ -2,7 +2,7 @@
 <Fixtures>
 	
 	<Report type="XLSX">
-		<ReportFile>target/reports/azure.xlsx</ReportFile>
+		<ReportFile>reports/azure.xlsx</ReportFile>
 	</Report>
 	
 	<DefaultFixture>

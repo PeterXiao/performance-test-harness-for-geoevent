@@ -2,7 +2,7 @@
 <Fixtures>
 	
 	<Report type="XLSX">
-		<ReportFile>target/reports/azure_tcp.xlsx</ReportFile>
+		<ReportFile>reports/azure_tcp.xlsx</ReportFile>
 	</Report>
 	
 	<DefaultFixture>
