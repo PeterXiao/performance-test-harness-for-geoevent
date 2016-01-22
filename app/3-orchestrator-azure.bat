@@ -1,1 +1,1 @@
-java -jar .\target\main\app\Performance-Test-Harness-10.3.0.jar -f ./src/test/resources/fixtures_azure.xml
+java -jar .\Orchestrator.jar -f ./fixtures/fixtures_azure.xml
