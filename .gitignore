@@ -19,7 +19,8 @@ local.properties
 # build artifacts
 *.jar
 target
-
+app/lib
+app/reports
 
 
 # External tool builders
