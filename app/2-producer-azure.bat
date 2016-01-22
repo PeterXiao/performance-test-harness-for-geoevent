@@ -1,0 +1,1 @@
+java -jar .\target\main\app\Performance-Test-Harness-10.3.0.jar -m producer -p local -t azure

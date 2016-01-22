@@ -15,7 +15,12 @@ local.properties
 .classpath
 .settings/
 .loadpath
+
+# build artifacts
+*.jar
 target
+
+
 
 # External tool builders
 .externalToolBuilders/
