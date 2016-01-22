@@ -17,7 +17,7 @@
 		</DefaultSharedConfig>
 		<ProducerConfig commandPort="5010">
 			<Properties>
-				<Property name="simulationFile">src/test/resources/simulations/county_envelopes_1000_points.csv</Property>
+				<Property name="simulationFile">simulations/county_envelopes_1000_points.csv</Property>
 			</Properties>
 		</ProducerConfig>
 		<ConsumerConfig protocol="TCP_SERVER" commandPort="5020" timeoutInSec="5">
