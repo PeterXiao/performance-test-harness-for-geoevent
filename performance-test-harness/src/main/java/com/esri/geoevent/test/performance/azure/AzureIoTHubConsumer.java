@@ -1,5 +1,5 @@
 /*
-  Copyright 1995-2015 Esri
+	  Copyright 1995-2015 Esri
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -24,9 +24,8 @@
 package com.esri.geoevent.test.performance.azure;
 
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.Enumeration;
 import java.util.List;
 
 import javax.jms.Connection;
@@ -37,59 +36,88 @@ import javax.jms.MessageConsumer;
 import javax.jms.MessageListener;
 import javax.jms.Session;
 
-import org.apache.lucene.queryparser.flexible.messages.MessageImpl;
-import org.apache.qpid.amqp_1_0.jms.AmqpMessage;
-import org.apache.qpid.amqp_1_0.jms.BytesMessage;
-import org.apache.qpid.amqp_1_0.jms.impl.ConnectionFactoryImpl;
-
 import com.esri.geoevent.test.performance.ConsumerBase;
 import com.esri.geoevent.test.performance.ImplMessages;
 import com.esri.geoevent.test.performance.TestException;
 import com.esri.geoevent.test.performance.jaxb.Config;
-import org.apache.qpid.amqp_1_0.type.Section;
-import org.apache.qpid.amqp_1_0.type.messaging.MessageAnnotations;
+import com.microsoft.azure.eventhubs.EventHubClient;
+import com.microsoft.azure.eventhubs.PartitionReceiver;
+import com.microsoft.azure.servicebus.ConnectionStringBuilder;
 
-public class AzureIoTHubConsumer extends ConsumerBase implements MessageListener
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.time.*;
+import java.util.Collection;
+import java.util.concurrent.ExecutionException;
+import java.util.function.*;
+import java.util.logging.*;
+
+import com.microsoft.azure.eventhubs.*;
+import com.microsoft.azure.servicebus.*;
+
+public class AzureIoTHubConsumer extends ConsumerBase
 {
 	// connection properties
-	private String	connectionUri				= "";
-	private String	eventHubName				= "";
-	private int			numberOfPartitions	= 4;
+	private String						eventHubNamespace						= "";
+	private String						eventHubName								= "";
+	private String						eventHubSharedAccessKeyName	= "";
+	private String						eventHubSharedAccessKey			= "";
+	private int								eventHubNumberOfPartitions	= 4;
 
-	private Connection						connection							= null;
-	private Session								session									= null;
-	private List<MessageConsumer>	consumers								= new ArrayList<MessageConsumer>();
-
+	private PartitionReceiver receiver = null;
+	
 	@Override
 	public void init(Config config) throws TestException
 	{
 		super.init(config);
 
-		connectionUri = config.getPropertyValue("consumerConnectionUri");
-		eventHubName = config.getPropertyValue("consumerEventHubName");
-		numberOfPartitions = Integer.parseInt(config.getPropertyValue("consumerNumberOfPartitions", String.valueOf(4)));
-		
-		if (connectionUri == null)
-			throw new TestException("Azure Iot Hub event consumer ERROR: 'connectionUri' property must be specified");
+		eventHubNamespace = config.getPropertyValue("eventHubNamespace");
+		eventHubName = config.getPropertyValue("eventHubName");
+		eventHubSharedAccessKeyName = config.getPropertyValue("eventHubSharedAccessKeyName");
+		eventHubSharedAccessKey = config.getPropertyValue("eventHubSharedAccessKey");
+		eventHubNumberOfPartitions = Integer.parseInt(config.getPropertyValue("eventHubNumberOfPartitions", String.valueOf(4)));
+
+		if (eventHubNamespace == null)
+			throw new TestException("Azure Iot Hub event consumer ERROR: 'eventHubNamespace' property must be specified");
 		if (eventHubName == null)
 			throw new TestException("Azure Iot Hub event consumer ERROR: 'eventHubName' property must be specified");
+		if (eventHubSharedAccessKeyName == null)
+			throw new TestException("Azure Iot Hub event consumer ERROR: 'eventHubSharedAccessKeyName' property must be specified");
+		if (eventHubSharedAccessKey == null)
+			throw new TestException("Azure Iot Hub event consumer ERROR: 'eventHubSharedAccessKey' property must be specified");
 
-		ConnectionFactory factory = null;
 		try
 		{
-			factory = ConnectionFactoryImpl.createFromURL(connectionUri);
-			connection = factory.createConnection();
-			connection.start();
+			//ConnectionStringBuilder connStr = new ConnectionStringBuilder("iothub-ns-esri-iot-h-13970-9601a151f1", "esri-iot-hub3", "iothubowner", "Ey439woq9U6L/fEt7wR3sBfZBoYwgHKBJLJ1+7qkKks=");
+			ConnectionStringBuilder connStr = new ConnectionStringBuilder(eventHubNamespace, eventHubName, eventHubSharedAccessKeyName, eventHubSharedAccessKey);
+			EventHubClient ehClient = EventHubClient.createFromConnectionString(connStr.toString(), true).get();  // the true boolean is temp
+			String partitionId = "0"; // API to get PartitionIds will be released as part of V0.2
+			receiver = ehClient.createReceiver(EventHubClient.DefaultConsumerGroupName, partitionId, Instant.now()).get();
+			System.out.println("R receiver created...");
 
-			session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-			for (int i = 0; i < numberOfPartitions; i++)
+			while (true)
 			{
-				String queueName = eventHubName + i;
-				Destination destination = session.createQueue(queueName);
-				MessageConsumer consumer = session.createConsumer(destination);  // add message selector string?
-				consumer.setMessageListener(this);
-				consumers.add(consumer);
+				receiver.receive().thenAccept(new Consumer<Iterable<EventData>>()
+				{
+					public void accept(Iterable<EventData> receivedEvents)
+					{
+						for (EventData receivedEvent: receivedEvents)
+						{
+							String messageAsString = new String(receivedEvent.getBody(), Charset.defaultCharset());
+
+							//String offset = receivedEvent.getSystemProperties().getOffset();
+							//long seqNumber = receivedEvent.getSystemProperties().getSequenceNumber();
+							//Instant enqueuedTime = receivedEvent.getSystemProperties().getEnqueuedTime();
+							//String partitionKey = receivedEvent.getSystemProperties().getPartitionKey();
+							//System.out.println(String.format("R Message Payload: %s", messageAsString));
+
+							System.out.println("R message received - " + messageAsString.trim());
+							receive(messageAsString);
+						}
+					}
+				}).get();
 			}
+
 		}
 		catch (Exception error)
 		{
@@ -100,7 +128,7 @@ public class AzureIoTHubConsumer extends ConsumerBase implements MessageListener
 	@Override
 	public void validate() throws TestException
 	{
-		if (session == null)
+		if (receiver == null)
 			throw new TestException("Azure Iot Hub event consumer could not be created.");
 	}
 
@@ -111,42 +139,7 @@ public class AzureIoTHubConsumer extends ConsumerBase implements MessageListener
 
 		//TODO ...
 
-		connection = null;
+		receiver = null;
 	}
 
-	@Override
-	public void onMessage(Message message)
-	{
-		try
-		{
-			if (message instanceof BytesMessage)
-			{
-				//if (!message.propertyExists("messageCount"))
-				//	return;
-
-				// read the message body
-				BytesMessage byteMessage = (BytesMessage) message;
-				byte[] data = new byte[(int) byteMessage.getBodyLength()];
-				byteMessage.readBytes(data);
-				byteMessage.reset();
-
-				//String deviceId = byteMessage.getStringProperty("iothub-connection-device-id");
-
-				// parse out the message to string
-				String messageAsString = new String(data, StandardCharsets.UTF_8);
-
-				//Object annotations = message.getObjectProperty("JMS_AMQP_MESSAGE_ANNOTATIONS");
-
-				//AmqpMessage amqpMsg = (AmqpMessage)message;
-				//Section s1 = amqpMsg.getSection(1);
-
-				System.out.println("R message received - " + messageAsString.trim());
-
-				super.receive(messageAsString);
-			}
-		}
-		catch (Exception error)
-		{
-			//LOGGER.error("ERROR_READING_MSG", error);
-		}
-	}}
+}

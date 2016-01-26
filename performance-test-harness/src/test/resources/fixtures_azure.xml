@@ -9,18 +9,23 @@
 		<!-- SHARED CONFIGURATION -->
 		<DefaultSharedConfig protocol="AZURE">
 			<Properties>
-				<Property name="producerConnectionString">HostName=esri-iot-hub2.azure-devices.net;SharedAccessKeyName=iothubowner;SharedAccessKey=ocrjMMoB7nXd9Fz6hXsXByutrV4LA7WYhEAR7j7oelk=</Property>
-				<Property name="consumerConnectionUri">amqps://iothubowner:ocrjMMoB7nXd9Fz6hXsXByutrV4LA7WYhEAR7j7oelk%3D@iothub-ns-esri-iot-h-4325-b9735fe3ee.servicebus.windows.net?sync-publish=true&amp;max-sessions=10000</Property>
-				<Property name="consumerEventHubName">esri-iot-hub2/ConsumerGroups/$Default/Partitions/</Property>
-				<Property name="consumerNumberOfPartitions">4</Property>
 			</Properties>
 		</DefaultSharedConfig>
 		<ProducerConfig commandPort="5010">
 			<Properties>
 				<Property name="simulationFile">src/test/resources/simulations/county_envelopes_1000_points.csv</Property>
+				<Property name="deviceConnectionString">HostName=esri-iot-hub3.azure-devices.net;SharedAccessKeyName=device;SharedAccessKey=ZiA1LMzu/9a7WBz9OE40ZuksgMQdE6jVOl5caAkzltE=</Property>
 			</Properties>
 		</ProducerConfig>
-		<ConsumerConfig commandPort="5020" timeoutInSec="5" />
+		<ConsumerConfig commandPort="5020" timeoutInSec="5">
+			<Properties>
+				<Property name="eventHubNamespace">iothub-ns-esri-iot-h-13970-9601a151f1</Property>
+				<Property name="eventHubName">esri-iot-hub3</Property>
+				<Property name="eventHubSharedAccessKeyName">iothubowner</Property>
+				<Property name="eventHubSharedAccessKey">Ey439woq9U6L/fEt7wR3sBfZBoYwgHKBJLJ1+7qkKks=</Property>
+				<Property name="eventHubNumberOfPartitions">4</Property>
+			</Properties>
+		</ConsumerConfig>
 		<Simulation>
 			<TimeTest eventsPerSec="100" totalTimeInSec="10" staggeringInterval="10" />
 		</Simulation>

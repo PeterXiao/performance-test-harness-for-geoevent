@@ -136,19 +136,33 @@
 		<dependency>
 			<groupId>com.microsoft.azure.iothub-java-client</groupId>
 			<artifactId>iothub-java-device-client</artifactId>
-			<version>1.0.0-preview.8</version>
+			<version>1.0.0-preview.9</version>
 		</dependency>
 		<!-- Azure Java Service SDK -->
 		<dependency>
 			<groupId>com.microsoft.azure.iothub-java-client</groupId>
 			<artifactId>iothub-java-service-client</artifactId>
-			<version>1.0.0-preview.8</version>
+			<version>1.0.0-preview.9</version>
 		</dependency>
 		<!-- Azure Java Event Hub SDK -->
 		<dependency>
+			<groupId>com.microsoft.azure</groupId>
+			<artifactId>azure-eventhubs</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+			<scope>system</scope>
+			<systemPath>c:\GitHub\performance-test-harness-for-geoevent-10.3.x\lib\azure-eventhubs-0.0.1-SNAPSHOT.jar</systemPath>			
+		</dependency>
+		<dependency>
 			<groupId>org.apache.qpid</groupId>
-			<artifactId>qpid-amqp-1-0-client-jms</artifactId>
-			<version>0.32</version>
+			<artifactId>proton-j</artifactId>
+			<scope>system</scope>
+			<version>0.12.0-SNAPSHOT</version>
+			<systemPath>c:\GitHub\performance-test-harness-for-geoevent-10.3.x\lib\proton-j-0.12.0-SNAPSHOT.jar</systemPath>
+		</dependency>
+		<dependency>
+			<groupId>org.bouncycastle</groupId>
+			<artifactId>bcpkix-jdk15on</artifactId>
+			<version>1.47</version>
 		</dependency>
 	</dependencies>
 

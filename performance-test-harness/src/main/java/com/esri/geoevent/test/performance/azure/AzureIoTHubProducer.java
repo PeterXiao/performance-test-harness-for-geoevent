@@ -50,7 +50,7 @@ public class AzureIoTHubProducer extends ProducerBase
 	private IotHubEventCallback	callback;
 	private Device[]						devices;
 	private DeviceClient[]			clients;
-	private int									deviceCount				= 10;
+	private int									deviceCount				= 1;
 
 	class EventCallback implements IotHubEventCallback
 	{
@@ -66,10 +66,10 @@ public class AzureIoTHubProducer extends ProducerBase
 	{
 		super.init(config);
 
-		connectionString = config.getPropertyValue("producerConnectionString");
+		connectionString = config.getPropertyValue("deviceConnectionString");
 
 		if (connectionString == null)
-			throw new TestException("Azure Iot Hub event producer ERROR: 'uri' property must be specified");
+			throw new TestException("Azure Iot Hub event producer ERROR: 'deviceConnectionString' property must be specified");
 
 		devices = new Device[deviceCount];
 		clients = new DeviceClient[deviceCount];
