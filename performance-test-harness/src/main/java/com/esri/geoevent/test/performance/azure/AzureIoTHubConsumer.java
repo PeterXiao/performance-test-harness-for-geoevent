@@ -25,6 +25,7 @@ package com.esri.geoevent.test.performance.azure;
 
 import java.nio.charset.Charset;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.function.Consumer;
 
 import com.esri.geoevent.test.performance.ConsumerBase;
@@ -72,7 +73,10 @@ public class AzureIoTHubConsumer extends ConsumerBase
 			ConnectionStringBuilder connStr = new ConnectionStringBuilder(eventHubNamespace, eventHubName, eventHubSharedAccessKeyName, eventHubSharedAccessKey);
 			EventHubClient ehClient = EventHubClient.createFromConnectionString(connStr.toString(), true).get();  // the true boolean is temp
 			String partitionId = "0"; // API to get PartitionIds will be released as part of V0.2
+
+			//receiver = ehClient.createReceiver(EventHubClient.DefaultConsumerGroupName, partitionId, Instant.now().minus(12, ChronoUnit.HOURS)).get();
 			receiver = ehClient.createReceiver(EventHubClient.DefaultConsumerGroupName, partitionId, Instant.now()).get();
+
 			System.out.println("R receiver created...");
 		}
 		catch (Exception error)

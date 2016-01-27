@@ -52,7 +52,7 @@ public class AzureIoTHubProducer extends ProducerBase
 		@Override
 		public void execute(IotHubStatusCode responseStatus, Object callbackContext)
 		{
-			System.out.println("A sent ack for " + callbackContext.toString() + " - " + responseStatus.toString());
+			//System.out.println("A sent ack for " + callbackContext.toString() + " - " + responseStatus.toString());
 		}
 	}
 
@@ -120,7 +120,7 @@ public class AzureIoTHubProducer extends ProducerBase
 				msg.setProperty("messageCount", Integer.toString(i));
 
 				clients[0].sendEventAsync(msg, callback, i);
-				System.out.println("S sent message - " + msgStr.trim());
+				//System.out.println("S sent message - " + msgStr.trim());
 
 				if (running.get() == false)
 					break;
