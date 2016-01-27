@@ -23,26 +23,21 @@
  */
 package com.esri.geoevent.test.performance.azure;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.TimeZone;
+
 import com.esri.geoevent.test.performance.ImplMessages;
 import com.esri.geoevent.test.performance.ProducerBase;
 import com.esri.geoevent.test.performance.TestException;
 import com.esri.geoevent.test.performance.jaxb.Config;
+import com.microsoft.azure.iot.service.sdk.Device;
 import com.microsoft.azure.iothub.DeviceClient;
 import com.microsoft.azure.iothub.IotHubClientProtocol;
 import com.microsoft.azure.iothub.IotHubEventCallback;
 import com.microsoft.azure.iothub.IotHubStatusCode;
 import com.microsoft.azure.iothub.Message;
-
-import java.io.IOException;
-
-import com.microsoft.azure.iot.service.exceptions.IotHubException;
-import com.microsoft.azure.iot.service.sdk.Device;
-import com.microsoft.azure.iot.service.sdk.RegistryManager;
-
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.TimeZone;
 
 public class AzureIoTHubProducer extends ProducerBase
 {
@@ -82,7 +77,7 @@ public class AzureIoTHubProducer extends ProducerBase
 			{
 				//Device device = getDevice("device-" + i);
 
-				String deviceConnectionString = "HostName=esri-simulator-test.azure-devices.net;DeviceId=testdevice1;SharedAccessKey=OWChjfJ9t1+XQKXZArA1wvNliENL+v5VJ4eedeWBmf4=";
+				String deviceConnectionString = "HostName=esri-iot-hub3.azure-devices.net;DeviceId=device-1;SharedAccessKey=TJ5V2xjV8qk6eELx7wVvdLG7RWyUizyhcTHc2EOEArw=";
 				// String deviceConnectionString = "HostName=esri-simulator-test.azure-devices.net;DeviceId=" +
 				// device.getDeviceId() + ";SharedAccessKey=" + device.getPrimaryKey();
 				DeviceClient client = new DeviceClient(deviceConnectionString, protocol);

@@ -23,37 +23,18 @@
  */
 package com.esri.geoevent.test.performance.azure;
 
-import java.nio.charset.StandardCharsets;
+import java.nio.charset.Charset;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.jms.Connection;
-import javax.jms.ConnectionFactory;
-import javax.jms.Destination;
-import javax.jms.Message;
-import javax.jms.MessageConsumer;
-import javax.jms.MessageListener;
-import javax.jms.Session;
+import java.util.function.Consumer;
 
 import com.esri.geoevent.test.performance.ConsumerBase;
 import com.esri.geoevent.test.performance.ImplMessages;
 import com.esri.geoevent.test.performance.TestException;
 import com.esri.geoevent.test.performance.jaxb.Config;
+import com.microsoft.azure.eventhubs.EventData;
 import com.microsoft.azure.eventhubs.EventHubClient;
 import com.microsoft.azure.eventhubs.PartitionReceiver;
 import com.microsoft.azure.servicebus.ConnectionStringBuilder;
-
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.time.*;
-import java.util.Collection;
-import java.util.concurrent.ExecutionException;
-import java.util.function.*;
-import java.util.logging.*;
-
-import com.microsoft.azure.eventhubs.*;
-import com.microsoft.azure.servicebus.*;
 
 public class AzureIoTHubConsumer extends ConsumerBase
 {
@@ -88,36 +69,11 @@ public class AzureIoTHubConsumer extends ConsumerBase
 
 		try
 		{
-			//ConnectionStringBuilder connStr = new ConnectionStringBuilder("iothub-ns-esri-iot-h-13970-9601a151f1", "esri-iot-hub3", "iothubowner", "Ey439woq9U6L/fEt7wR3sBfZBoYwgHKBJLJ1+7qkKks=");
 			ConnectionStringBuilder connStr = new ConnectionStringBuilder(eventHubNamespace, eventHubName, eventHubSharedAccessKeyName, eventHubSharedAccessKey);
 			EventHubClient ehClient = EventHubClient.createFromConnectionString(connStr.toString(), true).get();  // the true boolean is temp
 			String partitionId = "0"; // API to get PartitionIds will be released as part of V0.2
 			receiver = ehClient.createReceiver(EventHubClient.DefaultConsumerGroupName, partitionId, Instant.now()).get();
 			System.out.println("R receiver created...");
-
-			while (true)
-			{
-				receiver.receive().thenAccept(new Consumer<Iterable<EventData>>()
-				{
-					public void accept(Iterable<EventData> receivedEvents)
-					{
-						for (EventData receivedEvent: receivedEvents)
-						{
-							String messageAsString = new String(receivedEvent.getBody(), Charset.defaultCharset());
-
-							//String offset = receivedEvent.getSystemProperties().getOffset();
-							//long seqNumber = receivedEvent.getSystemProperties().getSequenceNumber();
-							//Instant enqueuedTime = receivedEvent.getSystemProperties().getEnqueuedTime();
-							//String partitionKey = receivedEvent.getSystemProperties().getPartitionKey();
-							//System.out.println(String.format("R Message Payload: %s", messageAsString));
-
-							System.out.println("R message received - " + messageAsString.trim());
-							receive(messageAsString);
-						}
-					}
-				}).get();
-			}
-
 		}
 		catch (Exception error)
 		{
@@ -130,6 +86,38 @@ public class AzureIoTHubConsumer extends ConsumerBase
 	{
 		if (receiver == null)
 			throw new TestException("Azure Iot Hub event consumer could not be created.");
+	}
+
+	@Override
+	public String pullMessage()
+	{
+		String message = null;
+		try
+		{
+			receiver.receive().thenAccept(new Consumer<Iterable<EventData>>()
+			{
+				public void accept(Iterable<EventData> receivedEvents)
+				{
+					for (EventData receivedEvent: receivedEvents)
+					{
+						String messageAsString = new String(receivedEvent.getBody(), Charset.defaultCharset());
+
+						//String offset = receivedEvent.getSystemProperties().getOffset();
+						//long seqNumber = receivedEvent.getSystemProperties().getSequenceNumber();
+						//Instant enqueuedTime = receivedEvent.getSystemProperties().getEnqueuedTime();
+						//String partitionKey = receivedEvent.getSystemProperties().getPartitionKey();
+						//System.out.println(String.format("R Message Payload: %s", messageAsString));
+
+						System.out.println("R message received - " + messageAsString.trim());
+						receive(messageAsString);
+					}
+				}
+			}).get();
+		}
+		catch (Exception ignored)
+		{
+		}
+		return message;
 	}
 
 	@Override

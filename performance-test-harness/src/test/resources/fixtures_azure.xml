@@ -27,21 +27,21 @@
 			</Properties>
 		</ConsumerConfig>
 		<Simulation>
-			<TimeTest eventsPerSec="100" totalTimeInSec="10" staggeringInterval="10" />
+			<TimeTest eventsPerSec="10" totalTimeInSec="10" staggeringInterval="10" />
 		</Simulation>
 	</DefaultFixture>
 
-	<Fixture name="100 e/s" />
+	<Fixture name="10 e/s" />
 	
-	<Fixture name="200 e/s">
+	<Fixture name="20 e/s">
 		<Simulation>
-			<TimeTest eventsPerSec="200"/>
+			<TimeTest eventsPerSec="20"/>
 		</Simulation>
 	</Fixture>
 	
-	<Fixture name="300 e/s">
+	<Fixture name="30 e/s">
 		<Simulation>
-			<TimeTest eventsPerSec="300"/>
+			<TimeTest eventsPerSec="30"/>
 		</Simulation>
 	</Fixture>
 	
