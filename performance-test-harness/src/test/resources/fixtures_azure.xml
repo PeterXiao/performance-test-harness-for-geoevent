@@ -9,30 +9,34 @@
 		<!-- SHARED CONFIGURATION -->
 		<DefaultSharedConfig protocol="AZURE">
 			<Properties>
+				<Property name="eventHubName">esri-iot-hub3</Property>
 			</Properties>
 		</DefaultSharedConfig>
 		<ProducerConfig commandPort="5010">
 			<Properties>
+				<Property name="deviceCount">4</Property>
+				<Property name="deviceSharedAccessKey">ZiA1LMzu/9a7WBz9OE40ZuksgMQdE6jVOl5caAkzltE=</Property>
 				<Property name="simulationFile">src/test/resources/simulations/county_envelopes_1000_points.csv</Property>
-				<Property name="deviceConnectionString">HostName=esri-iot-hub3.azure-devices.net;SharedAccessKeyName=device;SharedAccessKey=ZiA1LMzu/9a7WBz9OE40ZuksgMQdE6jVOl5caAkzltE=</Property>
 			</Properties>
 		</ProducerConfig>
-		<ConsumerConfig commandPort="5020" timeoutInSec="5">
+		<ConsumerConfig commandPort="5020" timeoutInSec="20">
 			<Properties>
 				<Property name="eventHubNamespace">iothub-ns-esri-iot-h-13970-9601a151f1</Property>
-				<Property name="eventHubName">esri-iot-hub3</Property>
 				<Property name="eventHubSharedAccessKeyName">iothubowner</Property>
 				<Property name="eventHubSharedAccessKey">Ey439woq9U6L/fEt7wR3sBfZBoYwgHKBJLJ1+7qkKks=</Property>
 				<Property name="eventHubNumberOfPartitions">4</Property>
 			</Properties>
 		</ConsumerConfig>
-		<Simulation>
-			<TimeTest eventsPerSec="10" totalTimeInSec="10" staggeringInterval="10" />
-		</Simulation>
+		
 	</DefaultFixture>
 
-	<Fixture name="10 e/s" />
-	
+	<Fixture name="10 e/s">
+        <Simulation>
+            <TimeTest eventsPerSec="10" totalTimeInSec="2" staggeringInterval="1" />
+        </Simulation>
+    </Fixture>
+
+	<!--
 	<Fixture name="20 e/s">
 		<Simulation>
 			<TimeTest eventsPerSec="20"/>
@@ -44,5 +48,5 @@
 			<TimeTest eventsPerSec="30"/>
 		</Simulation>
 	</Fixture>
-	
+	-->
 </Fixtures>

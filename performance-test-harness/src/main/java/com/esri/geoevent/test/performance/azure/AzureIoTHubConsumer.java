@@ -26,7 +26,15 @@ package com.esri.geoevent.test.performance.azure;
 import java.nio.charset.Charset;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
+import java.util.logging.FileHandler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 
 import com.esri.geoevent.test.performance.ConsumerBase;
 import com.esri.geoevent.test.performance.ImplMessages;
@@ -40,18 +48,22 @@ import com.microsoft.azure.servicebus.ConnectionStringBuilder;
 public class AzureIoTHubConsumer extends ConsumerBase
 {
 	// connection properties
-	private String						eventHubNamespace						= "";
-	private String						eventHubName								= "";
-	private String						eventHubSharedAccessKeyName	= "";
-	private String						eventHubSharedAccessKey			= "";
-	private int								eventHubNumberOfPartitions	= 4;
+	private String									eventHubNamespace						= "";
+	private String									eventHubName								= "";
+	private String									eventHubSharedAccessKeyName	= "";
+	private String									eventHubSharedAccessKey			= "";
+	private int											eventHubNumberOfPartitions	= 4;
+	private ReceiverThread					receiverThread;
 
-	private PartitionReceiver receiver = null;
-	
+	private List<PartitionReceiver>	receivers										= null;
+	private EventHubClient					ehClient										= null;
+
 	@Override
 	public void init(Config config) throws TestException
 	{
 		super.init(config);
+
+		System.out.println("Initializing Consumer...");
 
 		eventHubNamespace = config.getPropertyValue("eventHubNamespace");
 		eventHubName = config.getPropertyValue("eventHubName");
@@ -70,68 +82,124 @@ public class AzureIoTHubConsumer extends ConsumerBase
 
 		try
 		{
+			receivers = new ArrayList<PartitionReceiver>();
 			ConnectionStringBuilder connStr = new ConnectionStringBuilder(eventHubNamespace, eventHubName, eventHubSharedAccessKeyName, eventHubSharedAccessKey);
-			EventHubClient ehClient = EventHubClient.createFromConnectionString(connStr.toString(), true).get();  // the true boolean is temp
-			String partitionId = "0"; // API to get PartitionIds will be released as part of V0.2
+			ehClient = EventHubClient.createFromConnectionString(connStr.toString(), true).get(); // the true boolean is temp
 
-			//receiver = ehClient.createReceiver(EventHubClient.DefaultConsumerGroupName, partitionId, Instant.now().minus(12, ChronoUnit.HOURS)).get();
-			receiver = ehClient.createReceiver(EventHubClient.DefaultConsumerGroupName, partitionId, Instant.now()).get();
-
-			System.out.println("R receiver created...");
+			// receiver = ehClient.createReceiver(EventHubClient.DefaultConsumerGroupName, partitionId,
+			// Instant.now().minus(12, ChronoUnit.HOURS)).get();
+			for (int i = 0; i < eventHubNumberOfPartitions; i++)
+			{
+				PartitionReceiver receiver = ehClient.createReceiver(EventHubClient.DefaultConsumerGroupName, Integer.toString(i), Instant.now()).get();
+				receivers.add(receiver);
+			}
+			startReceiverThread();
+			System.out.println("Consumer receiver created...");
 		}
 		catch (Exception error)
 		{
+			cleanup();
 			throw new TestException(ImplMessages.getMessage("INIT_FAILURE", getClass().getName(), error.getMessage()), error);
+		}
+	}
+
+	private void cleanup()
+	{
+		System.out.println("Closing receivers ...");
+		for (PartitionReceiver receiver : receivers)
+		{
+			if (receiver != null)
+			{
+				System.out.println("Closing receiver " + receiver.getPartitionId());
+				receiver.close();
+			}
+		}
+		if (ehClient != null)
+		{
+			System.out.println("Closing Event Hub Client.");
+			ehClient.close();
 		}
 	}
 
 	@Override
 	public void validate() throws TestException
 	{
-		if (receiver == null)
+		if (receivers == null || receivers.size() == 0)
 			throw new TestException("Azure Iot Hub event consumer could not be created.");
-	}
-
-	@Override
-	public String pullMessage()
-	{
-		String message = null;
-		try
-		{
-			receiver.receive().thenAccept(new Consumer<Iterable<EventData>>()
-			{
-				public void accept(Iterable<EventData> receivedEvents)
-				{
-					for (EventData receivedEvent: receivedEvents)
-					{
-						String messageAsString = new String(receivedEvent.getBody(), Charset.defaultCharset());
-
-						//String offset = receivedEvent.getSystemProperties().getOffset();
-						//long seqNumber = receivedEvent.getSystemProperties().getSequenceNumber();
-						//Instant enqueuedTime = receivedEvent.getSystemProperties().getEnqueuedTime();
-						//String partitionKey = receivedEvent.getSystemProperties().getPartitionKey();
-						//System.out.println(String.format("R Message Payload: %s", messageAsString));
-
-						System.out.println("R message received - " + messageAsString.trim());
-						receive(messageAsString);
-					}
-				}
-			}).get();
-		}
-		catch (Exception ignored)
-		{
-		}
-		return message;
 	}
 
 	@Override
 	public void destroy()
 	{
 		super.destroy();
-
-		//TODO ...
-
-		receiver = null;
+		System.out.println("Destroy called");
+		if (receiverThread != null)
+		{
+			receiverThread.dismiss();
+			receiverThread = null;
+		}
+		cleanup();
 	}
 
+	private void startReceiverThread() throws InterruptedException
+	{
+		if (receiverThread != null)
+		{
+			receiverThread.dismiss();
+			receiverThread = null;
+		}
+		receiverThread = new ReceiverThread();
+		receiverThread.setName("AzureIotHubConsumer-receiverThread");
+		receiverThread.setDaemon(true);
+		receiverThread.start();
+	}
+
+	class ReceiverThread extends Thread
+	{
+		private volatile boolean running = true;
+
+		private void dismiss()
+		{
+			running = false;
+		}
+
+		public void run()
+		{
+			Consumer<Iterable<EventData>> receiveAndPrint = new Consumer<Iterable<EventData>>()
+				{
+					public void accept(Iterable<EventData> receivedEvents)
+					{
+						if (receivedEvents != null)
+							for (EventData receivedEvent : receivedEvents)
+							{
+								String message = new String(receivedEvent.getBody(), Charset.defaultCharset());
+								receive(message);
+							}
+					}
+				};
+
+			try
+			{
+				while (running)
+				{
+					CompletableFuture<Void>[] futures = new CompletableFuture[receivers.size()];
+					int i = 0;
+					for (PartitionReceiver receiver : receivers)
+					{
+						futures[i] = receiver.receive().thenAccept(receiveAndPrint);
+						i++;
+					}
+					CompletableFuture.anyOf(futures).get();
+				}
+				System.out.println("Receiver Thread existing...");
+			}
+			catch (Throwable t)
+			{
+				cleanup();
+				System.out.println("Receiver Thread Exception.");
+				t.printStackTrace();
+			}
+
+		}
+	}
 }

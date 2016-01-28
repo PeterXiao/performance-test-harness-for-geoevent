@@ -133,10 +133,18 @@
 			<version>${project.version}</version>
 		</dependency>
 		<!-- Azure Java Device SDK -->
+		<!-- 
 		<dependency>
 			<groupId>com.microsoft.azure.iothub-java-client</groupId>
 			<artifactId>iothub-java-device-client</artifactId>
 			<version>1.0.0-preview.9</version>
+		</dependency>
+		-->
+		<dependency>
+			<groupId>com.microsoft.azure.iothub-java-client</groupId>
+			<artifactId>iothub-java-client</artifactId>
+			<version>1.0.0-preview.9</version>
+			<classifier>with-deps</classifier>
 		</dependency>
 		<!-- Azure Java Service SDK -->
 		<dependency>
