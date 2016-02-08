@@ -441,10 +441,10 @@ public abstract class PerformanceCollectorBase implements PerformanceCollector, 
 
 								case DESTROY:
 									reset();
+									PerformanceCollectorBase.this.destroy();
 									response = new Response(ResponseType.OK);
 									respond(response);
 									destroy();
-									PerformanceCollectorBase.this.destroy();
 									listenOnCommandPort(commandPort, isLocal);
 									break;
 
