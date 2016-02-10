@@ -26,9 +26,12 @@ package com.esri.geoevent.test.performance.azure;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.TimeZone;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import com.esri.geoevent.test.performance.ImplMessages;
 import com.esri.geoevent.test.performance.ProducerBase;
@@ -50,22 +53,29 @@ public class AzureIoTHubProducer extends ProducerBase
 	private List<Device>				devicesInRegistry;
 	private DeviceClient[]			clients;
 	private Device[]						devices;
-	private boolean							initDone							= false;
 
 	private String							eventHubName					= null;
 	private String							deviceSharedAccessKey	= null;
 	private int									deviceCount						= 4;
 
 	private int									currentDeviceId				= 0;
-	private int									ackCount							= 0;
+	private AtomicInteger				ackCount							= new AtomicInteger(0);
+	private Date								startTime;
+	private Date								lastAckTime;
+	private Date								firstAckTime;
+	private int									threadPoolSize				= 100;
+	private boolean							sendEventStarted			= false;
 
 	class EventCallback implements IotHubEventCallback
 	{
 		@Override
 		public void execute(IotHubStatusCode responseStatus, Object callbackContext)
 		{
-			ackCount++;
-			System.out.println("A sent ack for " + callbackContext.toString() + " - " + responseStatus.toString());
+			if (ackCount.get() == 0)
+				firstAckTime = Calendar.getInstance().getTime();
+			ackCount.getAndIncrement();
+			lastAckTime = Calendar.getInstance().getTime();
+			// System.out.println("A sent ack for " + callbackContext.toString() + " - " + responseStatus.toString());
 		}
 	}
 
@@ -73,74 +83,138 @@ public class AzureIoTHubProducer extends ProducerBase
 	public void init(Config config) throws TestException
 	{
 		super.init(config);
-		System.out.println("Iniializing Producer...");
+		ackCount.set(0);
+		sendEventStarted = false;
 
-		ackCount = 0;
-
-		eventHubName = config.getPropertyValue("eventHubName");
-		deviceSharedAccessKey = config.getPropertyValue("deviceSharedAccessKey");
-		deviceCount = Integer.parseInt(config.getPropertyValue("deviceCount", String.valueOf(4)));
-
-		if (eventHubName == null)
-			throw new TestException("Azure Iot Hub event producer ERROR: 'eventHubName' property must be specified");
-		if (deviceSharedAccessKey == null)
-			throw new TestException("Azure Iot Hub event producer ERROR: 'deviceSharedAccessKey' property must be specified");
-
-		callback = new EventCallback();
-		IotHubClientProtocol protocol = IotHubClientProtocol.HTTPS; //AMQPS;
-
-		// create/get all devices and open client connections
-		try
+		if (clients == null)
 		{
-			String deviceConnectionStringFormat = "HostName=%s.azure-devices.net;SharedAccessKeyName=device;SharedAccessKey=%s";
-			String deviceIdConnectionStringFormat = "HostName=%s.azure-devices.net;DeviceId=%s;SharedAccessKey=%s";
+			System.out.println("Iniializing Producer...");
+			// add the shutdown hook
+			Runtime.getRuntime().addShutdownHook(new Thread(() -> shutdown()));
+			
+			eventHubName = config.getPropertyValue("eventHubName");
+			deviceSharedAccessKey = config.getPropertyValue("deviceSharedAccessKey");
+			deviceCount = Integer.parseInt(config.getPropertyValue("deviceCount", String.valueOf(4)));
 
-			String deviceConnectionString = String.format(deviceConnectionStringFormat, eventHubName, deviceSharedAccessKey);
-			registryManager = RegistryManager.createFromConnectionString(deviceConnectionString);
-			devicesInRegistry = registryManager.getDevices(1000);
+			if (eventHubName == null)
+				throw new TestException("Azure Iot Hub event producer ERROR: 'eventHubName' property must be specified");
+			if (deviceSharedAccessKey == null)
+				throw new TestException("Azure Iot Hub event producer ERROR: 'deviceSharedAccessKey' property must be specified");
 
-			devices = new Device[deviceCount];
-			clients = new DeviceClient[deviceCount];
+			callback = new EventCallback();
+			IotHubClientProtocol protocol = IotHubClientProtocol.AMQPS;
 
-			for (int index = 0; index < deviceCount; index++)
+			// create/get all devices and open client connections
+			try
 			{
-				String deviceId = "device-" + index;
-				Device device = getDevice(deviceId);
-				devices[index] = device;
+				String deviceConnectionStringFormat = "HostName=%s.azure-devices.net;SharedAccessKeyName=device;SharedAccessKey=%s";
+				String deviceIdConnectionStringFormat = "HostName=%s.azure-devices.net;DeviceId=%s;SharedAccessKey=%s";
 
-				// create and cache the client
-				String deviceIdConnectionString = String.format(deviceIdConnectionStringFormat, eventHubName, device.getDeviceId(), device.getPrimaryKey());
-				DeviceClient client = new DeviceClient(deviceIdConnectionString, protocol);
-				clients[index] = client;
-				client.open();
+				String deviceConnectionString = String.format(deviceConnectionStringFormat, eventHubName, deviceSharedAccessKey);
+				registryManager = RegistryManager.createFromConnectionString(deviceConnectionString);
+				// devicesInRegistry = registryManager.getDevices(1000);
+
+				devices = new Device[deviceCount];
+
+				for (int i = 0; i < deviceCount; i++)
+				{
+					devices[i] = registryManager.getDevice("device-" + i);
+					// System.out.println("got " + i);
+				}
+
+				clients = new DeviceClient[deviceCount];
+
+				for (int index = 0; index < deviceCount; index++)
+				{
+					Device device = devices[index];
+					String deviceIdConnectionString = String.format(deviceIdConnectionStringFormat, eventHubName, device.getDeviceId(), device.getPrimaryKey());
+					DeviceClient client = new DeviceClient(deviceIdConnectionString, protocol);
+					clients[index] = client;
+
+					boolean cont = true;
+					int count = 0;
+					while (cont && count < 3)
+					{
+						try
+						{
+							client.open();
+							cont = false;
+						}
+						catch (Exception e)
+						{
+							count++;
+							System.out.println("Unable to open client for " + index);
+						}
+
+					}
+					System.out.println("Opened " + index);
+				}
 			}
-		}
-		catch (Throwable error)
-		{
-			// TODO ...
-			error.printStackTrace();
-			throw new TestException(ImplMessages.getMessage("INIT_FAILURE", getClass().getName(), error.getMessage()), error);
-		}
+			catch (Throwable error)
+			{
+				// TODO ...
+				error.printStackTrace();
+				throw new TestException(ImplMessages.getMessage("INIT_FAILURE", getClass().getName(), error.getMessage()), error);
+			}
 
-		initDone = true;
-		System.out.println("Producer Client opened...");
+			System.out.println("Producer Client opened...");
+		}
 	}
 
 	@Override
 	public void validate() throws TestException
 	{
 		super.validate();
-		if (!initDone)
-			throw new TestException("Azure Iot Hub Event Producer could not be create device clients.");
+		for (DeviceClient client : clients)
+			if (client == null)
+				throw new TestException("Azure Iot Hub Event Producer does not have all clients initiated.");
 		if (events.isEmpty())
 			throw new TestException("Azure Iot Hub Event Producer has no events to simulate.");
 	}
 
+	// @Override
+	// public int sendEvents(int index, int numEventsToSend)
+	// {
+	// if (!sendEventStarted)
+	// {
+	// startTime = Calendar.getInstance().getTime();
+	// System.out.println("Capturing the time the first event is sent. " + startTime.getTime());
+	// sendEventStarted = true;
+	// }
+	// // System.out.println("Producer sending events...");
+	// int eventIndex = index;
+	//
+	// ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(threadPoolSize);
+	// for (int i = 0; i < numEventsToSend; i++)
+	// {
+	// if (eventIndex == events.size())
+	// eventIndex = 0;
+	//
+	// String msgStr = augmentMessage(events.get(eventIndex++));
+	// SendThread sendThread = new SendThread(clients[currentDeviceId], msgStr, i);
+	// // System.out.println("A new task has been added for client: " + currentDeviceId + " and event index " + i);
+	// currentDeviceId = (currentDeviceId + 1) % this.deviceCount;
+	// executor.execute(sendThread);
+	// if (running.get() == false)
+	// break;
+	// }
+	// executor.shutdown();
+	//
+	// return eventIndex;
+	// }
+
 	@Override
 	public int sendEvents(int index, int numEventsToSend)
 	{
-		System.out.println("Producer sending events...");
+		if (!sendEventStarted)
+		{
+			startTime = Calendar.getInstance().getTime();
+			System.out.println("Capturing the time the first event is sent. " + startTime.getTime());
+			sendEventStarted = true;
+		}
+		// System.out.println("Producer sending events... Number of Events to Send is " + numEventsToSend);
 		int eventIndex = index;
+
 		for (int i = 0; i < numEventsToSend; i++)
 		{
 			if (eventIndex == events.size())
@@ -149,10 +223,10 @@ public class AzureIoTHubProducer extends ProducerBase
 			String msgStr = augmentMessage(events.get(eventIndex++));
 			try
 			{
-				msgStr = getCurrentTime() + "," + msgStr;
+				// msgStr = getCurrentTime() + "," + msgStr;
 				byte[] bytes = msgStr.getBytes();
 				Message msg = new Message(bytes);
-				msg.setProperty("messageCount", Integer.toString(i));
+				// msg.setProperty("messageCount", Integer.toString(i));
 
 				clients[currentDeviceId].sendEventAsync(msg, callback, i);
 				currentDeviceId = (currentDeviceId + 1) % this.deviceCount;
@@ -173,10 +247,15 @@ public class AzureIoTHubProducer extends ProducerBase
 	@Override
 	public void destroy()
 	{
-		System.out.println("A number of device ack received: " + ackCount);
-
+		System.out.println("The number of device ack received: " + ackCount.get());
+		double ackAvgTime = (double) (lastAckTime.getTime() - startTime.getTime()) / ackCount.get();
+		System.out.println("Based on ACK, latency is " + (firstAckTime.getTime() - startTime.getTime()) + ", average time per event is " + ackAvgTime + " and average events per second is " + (double) 1000 / ackAvgTime);
 		super.destroy();
-
+	}
+	
+	public void shutdown()
+	{
+		System.out.println("Producer shutting down...");
 		if (clients != null)
 		{
 			for (DeviceClient client : clients)
@@ -198,7 +277,7 @@ public class AzureIoTHubProducer extends ProducerBase
 	private String getCurrentTime()
 	{
 		DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-		//TimeZone tz = TimeZone.getTimeZone("UTC");
+		// TimeZone tz = TimeZone.getTimeZone("UTC");
 		// df.setTimeZone(tz);
 		return df.format(new Date());
 	}
@@ -241,6 +320,29 @@ public class AzureIoTHubProducer extends ProducerBase
 		}
 
 		return null;
+	}
+
+	class SendThread implements Runnable
+	{
+		private DeviceClient	client;
+		private String				event;
+		private int						index;
+
+		public SendThread(DeviceClient client, String event, int index)
+		{
+			this.client = client;
+			this.event = event;
+			this.index = index;
+		}
+
+		@Override
+		public void run()
+		{
+			byte[] bytes = event.getBytes();
+			Message msg = new Message(bytes);
+			client.sendEventAsync(msg, callback, index);
+			messageSent(event);
+		}
 	}
 
 }

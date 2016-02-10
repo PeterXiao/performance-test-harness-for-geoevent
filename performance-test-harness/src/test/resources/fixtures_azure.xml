@@ -14,12 +14,12 @@
 		</DefaultSharedConfig>
 		<ProducerConfig commandPort="5010">
 			<Properties>
-				<Property name="deviceCount">4</Property>
+				<Property name="deviceCount">100</Property>
 				<Property name="deviceSharedAccessKey">ZiA1LMzu/9a7WBz9OE40ZuksgMQdE6jVOl5caAkzltE=</Property>
-				<Property name="simulationFile">src/test/resources/simulations/county_envelopes_1000_points.csv</Property>
+				<Property name="simulationFile">C:\GitHub\performance-test-harness-for-geoevent\performance-test-harness\src\test\resources\simulations\county_envelopes_1000_points.csv</Property>
 			</Properties>
 		</ProducerConfig>
-		<ConsumerConfig commandPort="5020" timeoutInSec="20">
+		<ConsumerConfig commandPort="5020" timeoutInSec="40">
 			<Properties>
 				<Property name="eventHubNamespace">iothub-ns-esri-iot-h-13970-9601a151f1</Property>
 				<Property name="eventHubSharedAccessKeyName">iothubowner</Property>
@@ -27,26 +27,118 @@
 				<Property name="eventHubNumberOfPartitions">4</Property>
 			</Properties>
 		</ConsumerConfig>
-		
 	</DefaultFixture>
-
-	<Fixture name="10 e/s">
+	<!--
+	<Fixture name="200 e/s">
         <Simulation>
-            <TimeTest eventsPerSec="10" totalTimeInSec="2" staggeringInterval="1" />
+            <TimeTest eventsPerSec="200" totalTimeInSec="20" staggeringInterval="1" />
+        </Simulation>
+    </Fixture>
+	<Fixture name="400 e/s">
+        <Simulation>
+            <TimeTest eventsPerSec="400" totalTimeInSec="20" staggeringInterval="1" />
+        </Simulation>
+    </Fixture>
+  	<Fixture name="600 e/s">
+        <Simulation>
+            <TimeTest eventsPerSec="600" totalTimeInSec="20" staggeringInterval="1" />
+        </Simulation>
+    </Fixture>
+	<Fixture name="800 e/s">
+        <Simulation>
+            <TimeTest eventsPerSec="800" totalTimeInSec="20" staggeringInterval="1" />
+        </Simulation>
+    </Fixture>
+    <Fixture name="1000 e/s">
+        <Simulation>
+            <TimeTest eventsPerSec="1000" totalTimeInSec="20" staggeringInterval="1" />
+        </Simulation>
+    </Fixture>
+    <Fixture name="1200 e/s">
+        <Simulation>
+            <TimeTest eventsPerSec="1200" totalTimeInSec="20" staggeringInterval="1" />
+        </Simulation>
+    </Fixture>
+	
+    <Fixture name="100 e/s">
+        <Simulation>
+            <TimeTest eventsPerSec="100" totalTimeInSec="20" staggeringInterval="1" />
+        </Simulation>
+    </Fixture>
+    <Fixture name="200 e/s">
+        <Simulation>
+            <TimeTest eventsPerSec="200" totalTimeInSec="20" staggeringInterval="1" />
+        </Simulation>
+    </Fixture>
+    <Fixture name="300 e/s">
+        <Simulation>
+            <TimeTest eventsPerSec="300" totalTimeInSec="20" staggeringInterval="1" />
+        </Simulation>
+    </Fixture>
+    <Fixture name="400 e/s">
+        <Simulation>
+            <TimeTest eventsPerSec="400" totalTimeInSec="20" staggeringInterval="1" />
+        </Simulation>
+    </Fixture>
+    <Fixture name="500 e/s">
+        <Simulation>
+            <TimeTest eventsPerSec="500" totalTimeInSec="20" staggeringInterval="1" />
         </Simulation>
     </Fixture>
 
-	<!--
-	<Fixture name="20 e/s">
-		<Simulation>
-			<TimeTest eventsPerSec="20"/>
-		</Simulation>
-	</Fixture>
-	
-	<Fixture name="30 e/s">
-		<Simulation>
-			<TimeTest eventsPerSec="30"/>
-		</Simulation>
-	</Fixture>
-	-->
+	<Fixture name="600 e/s">
+        <Simulation>
+            <TimeTest eventsPerSec="600" totalTimeInSec="20" staggeringInterval="1" />
+        </Simulation>
+    </Fixture>
+	<Fixture name="700 e/s">
+        <Simulation>
+            <TimeTest eventsPerSec="700" totalTimeInSec="20" staggeringInterval="1" />
+        </Simulation>
+    </Fixture>
+    <Fixture name="800 e/s">
+        <Simulation>
+            <TimeTest eventsPerSec="800" totalTimeInSec="20" staggeringInterval="1" />
+        </Simulation>
+    </Fixture>
+    <Fixture name="900 e/s">
+        <Simulation>
+            <TimeTest eventsPerSec="900" totalTimeInSec="20" staggeringInterval="1" />
+        </Simulation>
+    </Fixture>
+    <Fixture name="1000 e/s">
+        <Simulation>
+            <TimeTest eventsPerSec="1000" totalTimeInSec="20" staggeringInterval="1" />
+        </Simulation>
+    </Fixture>     
+    -->
+    
+    
+
+     <Fixture name="1100 e/s">
+        <Simulation>
+            <TimeTest eventsPerSec="1100" totalTimeInSec="20" staggeringInterval="1" />
+        </Simulation>
+    </Fixture>
+    <Fixture name="1200 e/s">
+        <Simulation>
+            <TimeTest eventsPerSec="1200" totalTimeInSec="20" staggeringInterval="1" />
+        </Simulation>
+    </Fixture>
+    <Fixture name="1300 e/s">
+        <Simulation>
+            <TimeTest eventsPerSec="1300" totalTimeInSec="20" staggeringInterval="1" />
+        </Simulation>
+    </Fixture>
+    <Fixture name="1400 e/s">
+        <Simulation>
+            <TimeTest eventsPerSec="1400" totalTimeInSec="20" staggeringInterval="1" />
+        </Simulation>
+    </Fixture>
+    <Fixture name="1500 e/s">
+        <Simulation>
+            <TimeTest eventsPerSec="1500" totalTimeInSec="20" staggeringInterval="1" />
+        </Simulation>
+    </Fixture>
+ 
 </Fixtures>
