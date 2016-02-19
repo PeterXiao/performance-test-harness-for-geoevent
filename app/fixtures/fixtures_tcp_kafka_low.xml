@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Fixtures>
+	<Report type="XLSX">
+		<ReportFile>C:/performance-test-results/reports/tcp-spark-kafka.xlsx</ReportFile>
+	</Report>
+	
+	<DefaultFixture>
+		<DefaultSharedConfig >
+			<Properties>
+				<Property name="hosts">localhost</Property>
+			</Properties>
+		</DefaultSharedConfig>
+		<ProducerConfig commandPort="5010" protocol="TCP_SERVER">
+			<Properties>
+				<Property name="simulationFile">C:\\ages\\utilities\\geoevent-simulator\\simulations\\Flight-no-GED.csv</Property>
+				<Property name="port">5565</Property>
+			</Properties>
+		</ProducerConfig>
+		<ConsumerConfig commandPort="5020" timeoutInSec="5" protocol="KAFKA">
+			<Properties>
+				<Property name="zookeeper">mingz-1:2181</Property>
+				<Property name="consumergroup">consumergroup3</Property>
+				<Property name="topic">f8f65b16-5680-44c6-8f7e-a89873f0bb16</Property>
+				<Property name="receiveGeoEvent">false</Property>
+				<Property name="numthreads">1</Property>
+			</Properties>
+		</ConsumerConfig>
+		<Simulation>
+			<TimeTest eventsPerSec="100" totalTimeInSec="10" staggeringInterval="10" />
+		</Simulation>
+	</DefaultFixture>
+	
+	<Fixture name="30k">
+        <Simulation>
+            <TimeTest eventsPerSec="30000" totalTimeInSec="20" staggeringInterval="10" />
+        </Simulation>
+    </Fixture>
+	<Fixture name="35k">
+        <Simulation>
+            <TimeTest eventsPerSec="35000" totalTimeInSec="20" staggeringInterval="10" />
+        </Simulation>
+    </Fixture>
+	<Fixture name="40k">
+        <Simulation>
+            <TimeTest eventsPerSec="40000" totalTimeInSec="20" staggeringInterval="10" />
+        </Simulation>
+    </Fixture>
+	<Fixture name="45k">
+        <Simulation>
+            <TimeTest eventsPerSec="45000" totalTimeInSec="20" staggeringInterval="10" />
+        </Simulation>
+    </Fixture>
+	<Fixture name="50k">
+        <Simulation>
+            <TimeTest eventsPerSec="50000" totalTimeInSec="20" staggeringInterval="10" />
+        </Simulation>
+    </Fixture>
+	<Fixture name="55k">
+        <Simulation>
+            <TimeTest eventsPerSec="55000" totalTimeInSec="20" staggeringInterval="10" />
+        </Simulation>
+    </Fixture>
+	<Fixture name="60k">
+        <Simulation>
+            <TimeTest eventsPerSec="60000" totalTimeInSec="20" staggeringInterval="10" />
+        </Simulation>
+    </Fixture>
+	<Fixture name="65k">
+        <Simulation>
+            <TimeTest eventsPerSec="65000" totalTimeInSec="20" staggeringInterval="10" />
+        </Simulation>
+    </Fixture>
+	<Fixture name="70k">
+        <Simulation>
+            <TimeTest eventsPerSec="70000" totalTimeInSec="20" staggeringInterval="10" />
+        </Simulation>
+    </Fixture>
+	<Fixture name="75k">
+        <Simulation>
+            <TimeTest eventsPerSec="75000" totalTimeInSec="20" staggeringInterval="10" />
+        </Simulation>
+    </Fixture>
+	<Fixture name="80k">
+        <Simulation>
+            <TimeTest eventsPerSec="80000" totalTimeInSec="20" staggeringInterval="10" />
+        </Simulation>
+    </Fixture>
+	<Fixture name="85k">
+        <Simulation>
+            <TimeTest eventsPerSec="85000" totalTimeInSec="20" staggeringInterval="10" />
+        </Simulation>
+    </Fixture>
+	<Fixture name="90k">
+        <Simulation>
+            <TimeTest eventsPerSec="90000" totalTimeInSec="20" staggeringInterval="10" />
+        </Simulation>
+    </Fixture>
+</Fixtures>
