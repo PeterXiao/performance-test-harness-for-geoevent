@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Fixtures>
+    <Report type="CSV">
+        <ReportFile>D:/sourcetree/performance-test-harness-for-geoevent/app/reports/rest-json-2-tcp.csv</ReportFile>
+    </Report>
+
+    <DefaultFixture>
+        <ProducerConfig commandPort="5010" protocol="REST_JSON">
+            <Properties>
+                <Property name="url">https://w12ags104.jennings.home:6143/geoevent/rest/receiver/rest-json-in</Property>
+                <Property name="simulationFile">D:/sourcetree/performance-test-harness-for-geoevent/app/simulations/faa-stream.txt</Property>
+            </Properties>
+        </ProducerConfig>
+        <ConsumerConfig protocol="TCP" commandPort="5020" timeoutInSec="5">
+            <Properties>
+                <Property name="hosts">w12ags104.jennings.home</Property>
+                <Property name="port">5575</Property>
+            </Properties>
+        </ConsumerConfig>
+        <Simulation>
+            <TimeTest eventsPerSec="100" totalTimeInSec="10" staggeringInterval="100" />
+        </Simulation>
+    </DefaultFixture>
+
+    <Fixture name="100e/s">
+        <Simulation>
+            <TimeTest eventsPerSec="100"/>
+        </Simulation>
+    </Fixture>
+
+    <Fixture name="200e/s">
+        <Simulation>
+            <TimeTest eventsPerSec="200"/>
+        </Simulation>
+    </Fixture>
+
+</Fixtures>

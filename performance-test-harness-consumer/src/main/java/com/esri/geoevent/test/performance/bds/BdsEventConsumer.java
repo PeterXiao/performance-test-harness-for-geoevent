@@ -72,7 +72,7 @@ public class BdsEventConsumer extends ConsumerBase {
             URL obj = new URL(url + "/query");
             HttpsURLConnection con = (HttpsURLConnection) obj.openConnection();
             
-            //add reuqest header
+            //add request header
             con.setRequestMethod("POST");
             
             con.setRequestProperty("Content-type", "application/x-www-form-urlencoded");

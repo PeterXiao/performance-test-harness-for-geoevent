@@ -7,7 +7,7 @@
     <DefaultFixture>
         <DefaultSharedConfig protocol="TCP">
             <Properties>
-                <Property name="hosts">w12ags104a.jennings.home</Property>
+                <Property name="hosts">w12ags104.jennings.home</Property>
             </Properties>
         </DefaultSharedConfig>
         <ProducerConfig commandPort="5010">

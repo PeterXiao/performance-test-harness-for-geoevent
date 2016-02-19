@@ -25,6 +25,7 @@ package com.esri.geoevent.test.performance;
 
 import java.util.Comparator;
 
+
 import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -35,6 +36,7 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.lang3.math.NumberUtils;
 
+import com.esri.geoevent.test.performance.rest.JsonEventProducer;
 import com.esri.geoevent.test.performance.activemq.ActiveMQEventProducer;
 import com.esri.geoevent.test.performance.azure.AzureIoTHubProducer;
 import com.esri.geoevent.test.performance.kafka.KafkaEventProducer;
@@ -155,6 +157,9 @@ public class ProducerMain {
                     break;
                 case AZURE:
                     producer = new AzureIoTHubProducer();
+                    break;
+                case REST_JSON:
+                    producer = new JsonEventProducer();
                     break;
                 default:
                     return;

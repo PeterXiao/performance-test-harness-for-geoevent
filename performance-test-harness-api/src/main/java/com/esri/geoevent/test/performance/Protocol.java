@@ -43,7 +43,8 @@ public enum Protocol
 	ES(ApiMessages.getMessage("PROTOCOL_ES")),
 	AZURE(ApiMessages.getMessage("PROTOCOL_AZURE")),         
 	UNKNOWN(ApiMessages.getMessage("PROTOCOL_UNKNOWN")),
-        BDS(ApiMessages.getMessage("PROTOCOL_BDS"));
+	BDS(ApiMessages.getMessage("PROTOCOL_BDS")),
+	REST_JSON(ApiMessages.getMessage("REST_JSON"));
 
 	private String label;
 	
@@ -92,7 +93,9 @@ public enum Protocol
 		else if( BDS.toString().equalsIgnoreCase(valueStr) || BDS.name().equalsIgnoreCase(valueStr))
 		  return BDS;      
 		else if( AZURE.toString().equalsIgnoreCase(valueStr) || AZURE.name().equalsIgnoreCase(valueStr))
-		  return AZURE;                
+		  return AZURE;
+		else if( REST_JSON.toString().equalsIgnoreCase(valueStr) || REST_JSON.name().equalsIgnoreCase(valueStr))
+			return REST_JSON;
 		else 
 			return UNKNOWN;
 	}
