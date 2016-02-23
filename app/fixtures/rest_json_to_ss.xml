@@ -11,7 +11,7 @@
                 <Property name="simulationFile">D:/sourcetree/performance-test-harness-for-geoevent/app/simulations/faa-stream2.txt</Property>
             </Properties>
         </ProducerConfig>
-        <ConsumerConfig protocol="TCP" commandPort="5020" timeoutInSec="5">
+        <ConsumerConfig protocol="Stream Services" commandPort="5020" timeoutInSec="5">
             <Properties>
                 <Property name="url">http://w12ags104.jennings.home:6080/arcgis/rest/services/FAA-Stream/StreamServer</Property>
             </Properties>
@@ -39,9 +39,9 @@
         </Simulation>
     </Fixture>
     -->
-    <Fixture name="400e/s">
+    <Fixture name="100e/s">
         <Simulation>
-            <TimeTest eventsPerSec="800" totalTimeInSec="100" staggeringInterval="100"/>
+            <TimeTest eventsPerSec="100" totalTimeInSec="10" staggeringInterval="100"/>
         </Simulation>
     </Fixture>
 
