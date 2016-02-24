@@ -14,7 +14,8 @@
 		</DefaultSharedConfig>
 		<ProducerConfig commandPort="5010">
 			<Properties>
-				<Property name="deviceCount">100</Property>
+				<Property name="deviceCount">1000</Property>
+				<Property name="threadCount">1000</Property>
 				<Property name="deviceSharedAccessKey">ZiA1LMzu/9a7WBz9OE40ZuksgMQdE6jVOl5caAkzltE=</Property>
 				<Property name="simulationFile">C:\GitHub\performance-test-harness-for-geoevent\performance-test-harness\src\test\resources\simulations\county_envelopes_1000_points.csv</Property>
 			</Properties>
@@ -28,38 +29,75 @@
 			</Properties>
 		</ConsumerConfig>
 	</DefaultFixture>
-	<!--
-	<Fixture name="200 e/s">
+		
+	<Fixture name="4000 e/s">
         <Simulation>
-            <TimeTest eventsPerSec="200" totalTimeInSec="20" staggeringInterval="1" />
+            <TimeTest eventsPerSec="4000" totalTimeInSec="20" staggeringInterval="1" />
         </Simulation>
     </Fixture>
-	<Fixture name="400 e/s">
+    <Fixture name="4500 e/s">
         <Simulation>
-            <TimeTest eventsPerSec="400" totalTimeInSec="20" staggeringInterval="1" />
+            <TimeTest eventsPerSec="4500" totalTimeInSec="20" staggeringInterval="1" />
         </Simulation>
     </Fixture>
-  	<Fixture name="600 e/s">
+    <Fixture name="5000 e/s">
         <Simulation>
-            <TimeTest eventsPerSec="600" totalTimeInSec="20" staggeringInterval="1" />
+            <TimeTest eventsPerSec="5000" totalTimeInSec="20" staggeringInterval="1" />
         </Simulation>
     </Fixture>
-	<Fixture name="800 e/s">
+    <Fixture name="5500 e/s">
         <Simulation>
-            <TimeTest eventsPerSec="800" totalTimeInSec="20" staggeringInterval="1" />
+            <TimeTest eventsPerSec="5500" totalTimeInSec="20" staggeringInterval="1" />
         </Simulation>
     </Fixture>
-    <Fixture name="1000 e/s">
+    <Fixture name="6000 e/s">
         <Simulation>
-            <TimeTest eventsPerSec="1000" totalTimeInSec="20" staggeringInterval="1" />
+            <TimeTest eventsPerSec="6000" totalTimeInSec="20" staggeringInterval="1" />
         </Simulation>
     </Fixture>
-    <Fixture name="1200 e/s">
+    <Fixture name="6500 e/s">
         <Simulation>
-            <TimeTest eventsPerSec="1200" totalTimeInSec="20" staggeringInterval="1" />
+            <TimeTest eventsPerSec="6500" totalTimeInSec="20" staggeringInterval="1" />
         </Simulation>
     </Fixture>
-	
+    <Fixture name="7000 e/s">
+        <Simulation>
+            <TimeTest eventsPerSec="7000" totalTimeInSec="20" staggeringInterval="1" />
+        </Simulation>
+    </Fixture>
+    <!--  
+    <Fixture name="10000 e/s">
+        <Simulation>
+            <TimeTest eventsPerSec="10000" totalTimeInSec="20" staggeringInterval="1" />
+        </Simulation>
+    </Fixture>
+	<Fixture name="12000 e/s">
+        <Simulation>
+            <TimeTest eventsPerSec="12000" totalTimeInSec="20" staggeringInterval="1" />
+        </Simulation>
+    </Fixture>
+	<Fixture name="14000 e/s">
+        <Simulation>
+            <TimeTest eventsPerSec="14000" totalTimeInSec="20" staggeringInterval="1" />
+        </Simulation>
+    </Fixture>
+  	<Fixture name="16000 e/s">
+        <Simulation>
+            <TimeTest eventsPerSec="16000" totalTimeInSec="20" staggeringInterval="1" />
+        </Simulation>
+    </Fixture>
+	<Fixture name="18000 e/s">
+        <Simulation>
+            <TimeTest eventsPerSec="18000" totalTimeInSec="20" staggeringInterval="1" />
+        </Simulation>
+    </Fixture>
+    <Fixture name="20000 e/s">
+        <Simulation>
+            <TimeTest eventsPerSec="20000" totalTimeInSec="20" staggeringInterval="1" />
+        </Simulation>
+    </Fixture>
+    -->
+		<!--
     <Fixture name="100 e/s">
         <Simulation>
             <TimeTest eventsPerSec="100" totalTimeInSec="20" staggeringInterval="1" />
@@ -111,9 +149,6 @@
             <TimeTest eventsPerSec="1000" totalTimeInSec="20" staggeringInterval="1" />
         </Simulation>
     </Fixture>     
-    -->
-    
-    
 
      <Fixture name="1100 e/s">
         <Simulation>
@@ -140,5 +175,5 @@
             <TimeTest eventsPerSec="1500" totalTimeInSec="20" staggeringInterval="1" />
         </Simulation>
     </Fixture>
- 
+ -->
 </Fixtures>

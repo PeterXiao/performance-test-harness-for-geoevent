@@ -2,46 +2,70 @@
 <Fixtures>
 	
 	<Report type="XLSX">
-		<ReportFile>target/reports/azure_tcp.xlsx</ReportFile>
+		<ReportFile>target/reports/azure-to-tcp.xlsx</ReportFile>
 	</Report>
 	
 	<DefaultFixture>
-		<!-- SHARED CONFIGURATION -->
-		<DefaultSharedConfig protocol="AZURE">
-			<Properties>
-				<Property name="producerConnectionString">HostName=esri-iot-hub2.azure-devices.net;SharedAccessKeyName=iothubowner;SharedAccessKey=ocrjMMoB7nXd9Fz6hXsXByutrV4LA7WYhEAR7j7oelk=</Property>
-				<Property name="consumerConnectionUri">amqps://iothubowner:ocrjMMoB7nXd9Fz6hXsXByutrV4LA7WYhEAR7j7oelk%3D@iothub-ns-esri-iot-h-4325-b9735fe3ee.servicebus.windows.net?sync-publish=true&amp;max-sessions=10000</Property>
-				<Property name="consumerEventHubName">esri-iot-hub2/ConsumerGroups/$Default/Partitions/</Property>
-				<Property name="consumerNumberOfPartitions">4</Property>
-			</Properties>
-		</DefaultSharedConfig>
 		<ProducerConfig commandPort="5010">
 			<Properties>
-				<Property name="simulationFile">src/test/resources/simulations/county_envelopes_1000_points.csv</Property>
+				<Property name="eventHubName">esri-iot-hub3</Property>
+				<Property name="deviceCount">1000</Property>
+				<Property name="threadCount">1000</Property>
+				<Property name="deviceSharedAccessKey">ZiA1LMzu/9a7WBz9OE40ZuksgMQdE6jVOl5caAkzltE=</Property>
+				<Property name="simulationFile">C:\GitHub\performance-test-harness-for-geoevent\performance-test-harness\src\test\resources\simulations\county_envelopes_1000_points.csv</Property>
 			</Properties>
 		</ProducerConfig>
-		<ConsumerConfig protocol="TCP_SERVER" commandPort="5020" timeoutInSec="5">
+		<ConsumerConfig commandPort="5020" timeoutInSec="20" protocol="TCP_SERVER">
 			<Properties>
-				<Property name="port">5575</Property>
+				<Property name="hosts">localhost</Property>
+				<Property name="port">5566</Property>
 			</Properties>
 		</ConsumerConfig>
-		<Simulation>
-			<TimeTest eventsPerSec="100" totalTimeInSec="10" staggeringInterval="10" />
-		</Simulation>
 	</DefaultFixture>
-	
-	<Fixture name="100 e/s" />
-	
-	<Fixture name="200 e/s">
-		<Simulation>
-			<TimeTest eventsPerSec="200"/>
-		</Simulation>
-	</Fixture>
-	
-	<Fixture name="300 e/s">
-		<Simulation>
-			<TimeTest eventsPerSec="300"/>
-		</Simulation>
-	</Fixture>
-	
+ 
+ 	<Fixture name="6000 e/s">
+        <Simulation>
+            <TimeTest eventsPerSec="6000" totalTimeInSec="20" staggeringInterval="1" />
+        </Simulation>
+    </Fixture>
+	<Fixture name="7000 e/s">
+        <Simulation>
+            <TimeTest eventsPerSec="7000" totalTimeInSec="20" staggeringInterval="1" />
+        </Simulation>
+    </Fixture>
+    <Fixture name="8000 e/s">
+        <Simulation>
+            <TimeTest eventsPerSec="8000" totalTimeInSec="20" staggeringInterval="1" />
+        </Simulation>
+    </Fixture>
+    <Fixture name="9000 e/s">
+        <Simulation>
+            <TimeTest eventsPerSec="9000" totalTimeInSec="20" staggeringInterval="1" />
+        </Simulation>
+    </Fixture>
+    <Fixture name="10000 e/s">
+        <Simulation>
+            <TimeTest eventsPerSec="10000" totalTimeInSec="20" staggeringInterval="1" />
+        </Simulation>
+    </Fixture>
+    <Fixture name="11000 e/s">
+        <Simulation>
+            <TimeTest eventsPerSec="11000" totalTimeInSec="20" staggeringInterval="1" />
+        </Simulation>
+    </Fixture>
+        <Fixture name="12000 e/s">
+        <Simulation>
+            <TimeTest eventsPerSec="12000" totalTimeInSec="20" staggeringInterval="1" />
+        </Simulation>
+    </Fixture>
+        <Fixture name="13000 e/s">
+        <Simulation>
+            <TimeTest eventsPerSec="13000" totalTimeInSec="20" staggeringInterval="1" />
+        </Simulation>
+    </Fixture>
+        <Fixture name="14000 e/s">
+        <Simulation>
+            <TimeTest eventsPerSec="14000" totalTimeInSec="20" staggeringInterval="1" />
+        </Simulation>
+    </Fixture>
 </Fixtures>
