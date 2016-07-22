@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Fixtures>
+	<Report type="CSV">
+		<ReportFile>reports/lin4_bds.csv</ReportFile>
+	</Report>
+	
+		
+	<DefaultFixture>
+		<ProducerConfig commandPort="5010" protocol="TCP">
+			<Properties>
+				<Property name="hosts">172.31.26.112</Property>
+				<Property name="simulationFile">simulations/faa-stream.csv</Property>
+				<Property name="port">5566</Property>
+			</Properties>
+		</ProducerConfig>
+		<ConsumerConfig protocol="BDS" commandPort="5020" timeoutInSec="5">
+			<Properties>
+				<Property name="msLsyerUrl">https://ec2-52-90-69-79.compute-1.amazonaws.com/arcgis/rest/services/Hosted/FAA-Stream/MapServer/0</Property>
+			</Properties>
+		</ConsumerConfig>
+		<Simulation>
+			<TimeTest eventsPerSec="1000" totalTimeInSec="10" staggeringInterval="100" />
+		</Simulation>
+	</DefaultFixture>
+	
+	<Fixture name="5000 e/s">
+		<Simulation>
+			<TimeTest eventsPerSec="5000"/>
+		</Simulation>
+	</Fixture>
+
+	<Fixture name="5000 e/s">
+		<Simulation>
+			<TimeTest eventsPerSec="5000"/>
+		</Simulation>
+	</Fixture>
+
+	<Fixture name="5000 e/s">
+		<Simulation>
+			<TimeTest eventsPerSec="5000"/>
+		</Simulation>
+	</Fixture>
+	
+</Fixtures>

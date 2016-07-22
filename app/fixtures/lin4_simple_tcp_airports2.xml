@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Fixtures>
+    <Report type="CSV">
+        <ReportFile>reports/lin4_simple_tcp_airports2.csv</ReportFile>
+    </Report>
+
+    <DefaultFixture>
+        <DefaultSharedConfig protocol="TCP">
+            <Properties>
+                <Property name="hosts">172.31.26.112</Property>
+            </Properties>
+        </DefaultSharedConfig>
+        <ProducerConfig commandPort="5010">
+            <Properties>
+                <Property name="simulationFile">simulations/simFile_1000_10s.dat</Property>
+                <Property name="port">5567</Property>
+            </Properties>
+        </ProducerConfig>
+        <ConsumerConfig commandPort="5020" timeoutInSec="5">
+            <Properties>
+                <Property name="port">5575</Property>
+            </Properties>
+        </ConsumerConfig>
+        <Simulation>
+            <TimeTest eventsPerSec="100" totalTimeInSec="10"
+                                  staggeringInterval="10" />
+        </Simulation>
+    </DefaultFixture>
+    <Fixture name="2000 e/s">
+        <Simulation>
+            <TimeTest eventsPerSec="2000" />
+        </Simulation>
+    </Fixture>
+    <Fixture name="2000 e/s">
+        <Simulation>
+            <TimeTest eventsPerSec="2000" />
+        </Simulation>
+    </Fixture>
+    <Fixture name="2000 e/s">
+        <Simulation>
+            <TimeTest eventsPerSec="2000" />
+        </Simulation>
+    </Fixture>
+
+</Fixtures>

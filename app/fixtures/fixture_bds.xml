@@ -8,7 +8,7 @@
 	<DefaultFixture>
 		<ProducerConfig commandPort="5010" protocol="TCP">
 			<Properties>
-				<Property name="hosts">w12ags104a.jennings.home</Property>
+				<Property name="hosts">ags105.jennings.home</Property>
 				<Property name="simulationFile">simulations/faa-stream.csv</Property>
 				<Property name="port">5565</Property>
 			</Properties>
