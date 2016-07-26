@@ -33,7 +33,7 @@ See [Building](doc/1_building.md)
 
 ## Resources
 
-* [GeoEvent gallery item](http://www.arcgis.com/home/item.html?id=) on the ArcGIS GeoEvent Extension Gallery
+* [GeoEvent gallery item](https://www.arcgis.com/home/item.html?id=d33b7f78738247578ed16456e43098ff) on the ArcGIS GeoEvent Gallery
 * [ArcGIS GeoEvent Extension for Server Resources](http://links.esri.com/geoevent)
 * [ArcGIS Blog](http://blogs.esri.com/esri/arcgis/)
 * [twitter@esri](http://twitter.com/esri)
